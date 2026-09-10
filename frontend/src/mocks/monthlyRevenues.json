@@ -1,0 +1,122 @@
+[
+  {
+    "mes": "Janeiro",
+    "competencia": "01/2026",
+    "servicosSemNf": 3200.00,
+    "servicosComNf": 1200.00,
+    "total": 4400.00,
+    "dasStatus": "pago",
+    "dasValor": 75.60,
+    "dasPagoEm": "20/02/2026"
+  },
+  {
+    "mes": "Fevereiro",
+    "competencia": "02/2026",
+    "servicosSemNf": 2800.00,
+    "servicosComNf": 1500.00,
+    "total": 4300.00,
+    "dasStatus": "pago",
+    "dasValor": 75.60,
+    "dasPagoEm": "18/03/2026"
+  },
+  {
+    "mes": "Março",
+    "competencia": "03/2026",
+    "servicosSemNf": 3100.00,
+    "servicosComNf": 2100.00,
+    "total": 5200.00,
+    "dasStatus": "pago",
+    "dasValor": 75.60,
+    "dasPagoEm": "20/04/2026"
+  },
+  {
+    "mes": "Abril",
+    "competencia": "04/2026",
+    "servicosSemNf": 2900.00,
+    "servicosComNf": 1800.00,
+    "total": 4700.00,
+    "dasStatus": "pago",
+    "dasValor": 75.60,
+    "dasPagoEm": "19/05/2026"
+  },
+  {
+    "mes": "Maio",
+    "competencia": "05/2026",
+    "servicosSemNf": 3400.00,
+    "servicosComNf": 1400.00,
+    "total": 4800.00,
+    "dasStatus": "pago",
+    "dasValor": 75.60,
+    "dasPagoEm": "20/06/2026"
+  },
+  {
+    "mes": "Junho",
+    "competencia": "06/2026",
+    "servicosSemNf": 3600.00,
+    "servicosComNf": 1900.00,
+    "total": 5500.00,
+    "dasStatus": "pago",
+    "dasValor": 75.60,
+    "dasPagoEm": "20/07/2026"
+  },
+  {
+    "mes": "Julho",
+    "competencia": "07/2026",
+    "servicosSemNf": 3100.00,
+    "servicosComNf": 1600.00,
+    "total": 4700.00,
+    "dasStatus": "pago",
+    "dasValor": 75.60,
+    "dasPagoEm": "20/08/2026"
+  },
+  {
+    "mes": "Agosto",
+    "competencia": "08/2026",
+    "servicosSemNf": 2900.00,
+    "servicosComNf": 1700.00,
+    "total": 4600.00,
+    "dasStatus": "pago",
+    "dasValor": 75.60,
+    "dasPagoEm": "20/09/2026"
+  },
+  {
+    "mes": "Setembro",
+    "competencia": "09/2026",
+    "servicosSemNf": 2600.00,
+    "servicosComNf": 1320.00,
+    "total": 3920.00,
+    "dasStatus": "pendente",
+    "dasValor": 75.60,
+    "dasPagoEm": null
+  },
+  {
+    "mes": "Outubro",
+    "competencia": "10/2026",
+    "servicosSemNf": 0.00,
+    "servicosComNf": 0.00,
+    "total": 0.00,
+    "dasStatus": "pendente",
+    "dasValor": 75.60,
+    "dasPagoEm": null
+  },
+  {
+    "mes": "Novembro",
+    "competencia": "11/2026",
+    "servicosSemNf": 0.00,
+    "servicosComNf": 0.00,
+    "total": 0.00,
+    "dasStatus": "a_vencer",
+    "dasValor": 75.60,
+    "dasPagoEm": null
+  },
+  {
+    "mes": "Dezembro",
+    "competencia": "12/2026",
+    "servicosSemNf": 0.00,
+    "servicosComNf": 0.00,
+    "total": 0.00,
+    "dasStatus": "a_vencer",
+    "dasValor": 75.60,
+    "dasPagoEm": null
+  }
+]

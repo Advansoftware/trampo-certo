@@ -4,8 +4,13 @@ import monthlyHighlightsMock from '@/mocks/monthlyHighlights.json';
 import defaultProposalMock from '@/mocks/defaultProposal.json';
 import userMock from '@/mocks/user.json';
 import recibosMock from '@/mocks/recibos.json';
+import monthlyRevenuesMock from '@/mocks/monthlyRevenues.json';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4005';
+
+export async function fetchMonthlyRevenues() {
+  return monthlyRevenuesMock;
+}
 
 export async function fetchRecibos() {
   try {

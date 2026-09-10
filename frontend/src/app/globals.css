@@ -22,7 +22,7 @@ a {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 10mm;
+    margin: 8mm;
   }
 
   html, body {
@@ -31,40 +31,119 @@ a {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
   }
 
-  /* Oculta sidebar, navbar, botões, dock fixo e tudo fora do A4 */
-  body * {
-    visibility: hidden;
-  }
-
+  /* Oculta sidebar, navbar, botões, drawers e tudo marcado com data-print-hide */
   header,
   aside,
   nav,
   footer,
   .MuiDrawer-root,
+  .MuiBackdrop-root,
   [data-print-hide="true"] {
     display: none !important;
   }
 
-  /* Torna visível exclusivamente o documento A4 */
-  #a4-sheet-canvas,
-  #a4-sheet-canvas * {
-    visibility: visible !important;
+  /* Quando impresso pelo Modal (Dialog), oculta a página de fundo para não gerar páginas vazias */
+  body:has(.MuiDialog-root) > *:not(.MuiDialog-root) {
+    display: none !important;
   }
 
-  #a4-sheet-canvas {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+  /* Reseta os containers do MUI Dialog para fluxo estático livre e sem cortes de altura/scroll */
+  .MuiDialog-root {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    inset: auto !important;
+    overflow: visible !important;
+    z-index: auto !important;
+  }
+
+  .MuiDialog-container {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+
+  .MuiDialog-paper,
+  .MuiPaper-root {
+    position: static !important;
+    display: block !important;
     width: 100% !important;
     max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
     margin: 0 !important;
-    padding: 24px !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    overflow: visible !important;
+    transform: none !important;
+  }
+
+  .MuiDialogContent-root {
+    position: static !important;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* No criador de orçamentos, expande a coluna da folha A4 para 100% da largura da folha */
+  .MuiGrid-root,
+  .MuiGrid2-root {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-basis: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Desativa sticky no modo de impressão */
+  .MuiBox-root {
+    top: auto !important;
+  }
+
+  /* Folha A4 completa e estilizada sem cortes */
+  #a4-sheet-canvas {
+    position: relative !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    margin: 0 auto !important;
+    padding: 24px 28px !important;
     box-shadow: none !important;
     border: 1px solid rgba(196, 198, 207, 0.6) !important;
     border-radius: 12px !important;
     background-color: #FFFFFF !important;
+    overflow: visible !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }

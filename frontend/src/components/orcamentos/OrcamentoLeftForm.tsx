@@ -626,23 +626,35 @@ export default function OrcamentoLeftForm({
                   <input
                     type="number"
                     min="1"
-                    value={item.qtd}
-                    onChange={(e) => onItemChange(item.id, 'qtd', Number(e.target.value) || 1)}
+                    placeholder="1"
+                    value={item.qtd || ''}
+                    disabled={isLocked}
+                    readOnly={isLocked}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      onItemChange(item.id, 'qtd', val === '' ? 1 : Math.max(1, parseInt(val, 10) || 1));
+                    }}
+                    onFocus={(e) => {
+                      if (isLocked) return;
+                      e.target.select();
+                      e.currentTarget.style.borderColor = '#1E3A8A';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = 'rgba(196, 198, 207, 0.6)';
+                    }}
                     style={{
                       width: '100%',
                       padding: '8px 6px',
-                      backgroundColor: '#FFFFFF',
+                      backgroundColor: isLocked ? '#F8F9FD' : '#FFFFFF',
                       border: '1px solid rgba(196, 198, 207, 0.6)',
                       borderRadius: '10px',
                       fontSize: '13px',
                       textAlign: 'center',
-                      color: '#1A1B20',
+                      color: isLocked ? '#64748B' : '#1A1B20',
                       outline: 'none',
                       boxSizing: 'border-box',
                       fontFamily: 'inherit',
                     }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = '#1E3A8A'; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(196, 198, 207, 0.6)'; }}
                   />
                 </Box>
 
@@ -652,15 +664,16 @@ export default function OrcamentoLeftForm({
                   </Typography>
                   <select
                     value={item.unidade || 'un'}
+                    disabled={isLocked}
                     onChange={(e) => onItemChange(item.id, 'unidade', e.target.value)}
                     style={{
                       width: '100%',
                       padding: '8px 6px',
-                      backgroundColor: '#FFFFFF',
+                      backgroundColor: isLocked ? '#F8F9FD' : '#FFFFFF',
                       border: '1px solid rgba(196, 198, 207, 0.6)',
                       borderRadius: '10px',
                       fontSize: '13px',
-                      color: '#1A1B20',
+                      color: isLocked ? '#64748B' : '#1A1B20',
                       outline: 'none',
                       boxSizing: 'border-box',
                       fontFamily: 'inherit',
@@ -683,24 +696,37 @@ export default function OrcamentoLeftForm({
                     </span>
                     <input
                       type="number"
-                      step="1"
-                      value={item.unitario}
-                      onChange={(e) => onItemChange(item.id, 'unitario', Number(e.target.value) || 0)}
+                      step="any"
+                      min="0"
+                      placeholder="0"
+                      value={item.unitario === 0 ? '' : item.unitario}
+                      disabled={isLocked}
+                      readOnly={isLocked}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        onItemChange(item.id, 'unitario', val === '' ? 0 : Math.max(0, parseFloat(val) || 0));
+                      }}
+                      onFocus={(e) => {
+                        if (isLocked) return;
+                        e.target.select();
+                        e.currentTarget.style.borderColor = '#1E3A8A';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.borderColor = 'rgba(196, 198, 207, 0.6)';
+                      }}
                       style={{
                         width: '100%',
                         padding: '8px 8px 8px 26px',
-                        backgroundColor: '#FFFFFF',
+                        backgroundColor: isLocked ? '#F8F9FD' : '#FFFFFF',
                         border: '1px solid rgba(196, 198, 207, 0.6)',
                         borderRadius: '10px',
                         fontSize: '13px',
                         textAlign: 'right',
-                        color: '#1A1B20',
+                        color: isLocked ? '#64748B' : '#1A1B20',
                         outline: 'none',
                         boxSizing: 'border-box',
                         fontFamily: 'inherit',
                       }}
-                      onFocus={(e) => { e.currentTarget.style.borderColor = '#1E3A8A'; }}
-                      onBlur={(e) => { e.currentTarget.style.borderColor = 'rgba(196, 198, 207, 0.6)'; }}
                     />
                   </Box>
                 </Box>
@@ -771,17 +797,33 @@ export default function OrcamentoLeftForm({
               </span>
               <input
                 type="number"
-                value={desconto}
-                onChange={(e) => onDescontoChange(Math.max(0, Number(e.target.value) || 0))}
+                step="any"
+                min="0"
+                placeholder="0"
+                value={desconto === 0 ? '' : desconto}
+                disabled={isLocked}
+                readOnly={isLocked}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  onDescontoChange(val === '' ? 0 : Math.max(0, parseFloat(val) || 0));
+                }}
+                onFocus={(e) => {
+                  if (isLocked) return;
+                  e.target.select();
+                  e.currentTarget.style.borderColor = '#1E3A8A';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = 'rgba(196, 198, 207, 0.6)';
+                }}
                 style={{
                   width: '100%',
                   padding: '6px 8px 6px 26px',
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: isLocked ? '#F8F9FD' : '#FFFFFF',
                   border: '1px solid rgba(196, 198, 207, 0.6)',
                   borderRadius: '10px',
                   fontSize: '13px',
                   textAlign: 'right',
-                  color: '#2563EB',
+                  color: isLocked ? '#64748B' : '#2563EB',
                   fontWeight: 600,
                   outline: 'none',
                   boxSizing: 'border-box',

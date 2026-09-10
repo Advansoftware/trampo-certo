@@ -125,8 +125,9 @@ a {
     top: auto !important;
   }
 
-  /* Folha A4 completa e estilizada sem cortes */
-  #a4-sheet-canvas {
+  /* Folha A4 e Recibo completos e estilizados sem cortes */
+  #a4-sheet-canvas,
+  #recibo-sheet-canvas {
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;

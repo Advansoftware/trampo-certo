@@ -3,8 +3,19 @@ import recentProposalsMock from '@/mocks/recentProposals.json';
 import monthlyHighlightsMock from '@/mocks/monthlyHighlights.json';
 import defaultProposalMock from '@/mocks/defaultProposal.json';
 import userMock from '@/mocks/user.json';
+import recibosMock from '@/mocks/recibos.json';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4005';
+
+export async function fetchRecibos() {
+  try {
+    const res = await fetch(`${API_BASE}/api/recibos`, { cache: 'no-store' });
+    if (!res.ok) throw new Error('Falha ao buscar recibos');
+    return await res.json();
+  } catch {
+    return recibosMock;
+  }
+}
 
 export async function fetchMeiMetrics() {
   try {

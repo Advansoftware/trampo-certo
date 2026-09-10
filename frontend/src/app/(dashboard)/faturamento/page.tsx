@@ -37,7 +37,19 @@ export default function FaturamentoPage() {
         fetchMeiMetrics(),
         fetchMonthlyRevenues(),
       ]);
-      if (m) setMetrics(m);
+      if (m) {
+        const faturamento = Number(m.faturamentoAcumulado) || 42120;
+        const limite = Number(m.limiteAnual) || 81000;
+        const saldo = m.saldoRestante !== undefined ? Number(m.saldoRestante) : Math.max(0, limite - faturamento);
+        const media = m.mediaMensal !== undefined ? Number(m.mediaMensal) : Math.round(faturamento / 9);
+        setMetrics({
+          ...m,
+          faturamentoAcumulado: faturamento,
+          limiteAnual: limite,
+          saldoRestante: saldo,
+          mediaMensal: media,
+        });
+      }
       if (Array.isArray(rev)) setMonths(rev);
     }
     load();

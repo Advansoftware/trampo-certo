@@ -19,23 +19,29 @@ interface FaturamentoMetricsProps {
 }
 
 export default function FaturamentoMetrics({
-  faturamentoAcumulado,
-  limiteAnual,
+  faturamentoAcumulado = 42120,
+  limiteAnual = 81000,
   saldoRestante,
   mediaMensal,
-  dasValor,
-  dasVencimento,
+  dasValor = 75.6,
+  dasVencimento = '20/10/2026',
 }: FaturamentoMetricsProps) {
-  const percentual = Math.round((faturamentoAcumulado / limiteAnual) * 100);
+  const faturamento = faturamentoAcumulado || 0;
+  const limite = limiteAnual || 81000;
+  const saldo = saldoRestante !== undefined ? saldoRestante : Math.max(0, limite - faturamento);
+  const media = mediaMensal !== undefined ? mediaMensal : Math.round(faturamento / 9);
+  const percentual = Math.round((faturamento / limite) * 100);
 
-  const formatBrl = (num: number) =>
-    `R$ ${num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatBrl = (num?: number | null) => {
+    const val = typeof num === 'number' && !isNaN(num) ? num : 0;
+    return `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
 
   const cards = [
     {
       title: 'Faturamento Acumulado',
-      value: formatBrl(faturamentoAcumulado),
-      subtext: `${percentual}% do teto de ${formatBrl(limiteAnual)}`,
+      value: formatBrl(faturamento),
+      subtext: `${percentual}% do teto de ${formatBrl(limite)}`,
       badge: 'Faixa Segura',
       badgeBg: '#DCFCE7',
       badgeColor: '#166534',
@@ -45,7 +51,7 @@ export default function FaturamentoMetrics({
     },
     {
       title: 'Saldo até o Limite MEI',
-      value: formatBrl(saldoRestante),
+      value: formatBrl(saldo),
       subtext: 'Valor livre para faturar em 2026',
       badge: 'Disponível',
       badgeBg: '#EFF6FF',
@@ -56,7 +62,7 @@ export default function FaturamentoMetrics({
     },
     {
       title: 'Média Mensal Realizada',
-      value: formatBrl(mediaMensal),
+      value: formatBrl(media),
       subtext: 'Teto recomendado: R$ 6.750/mês',
       badge: 'Estável',
       badgeBg: '#F1F4F9',

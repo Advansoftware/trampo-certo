@@ -8,10 +8,12 @@ import Link from 'next/link';
 
 interface OrcamentoBreadcrumbHeaderProps {
   codigo?: string;
+  isEditing?: boolean;
 }
 
 export default function OrcamentoBreadcrumbHeader({
   codigo = '042',
+  isEditing = false,
 }: OrcamentoBreadcrumbHeaderProps) {
   return (
     <Box
@@ -28,14 +30,14 @@ export default function OrcamentoBreadcrumbHeader({
       {/* Breadcrumbs */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, fontSize: '13px', color: '#43474E' }}>
         <Link
-          href="/dashboard"
+          href="/orcamentos"
           style={{ textDecoration: 'none', color: '#43474E', transition: 'color 0.15s ease' }}
         >
           <span style={{ cursor: 'pointer' }}>Orçamentos</span>
         </Link>
         <ChevronRightIcon sx={{ fontSize: 16, color: '#74777F' }} />
         <Typography component="span" sx={{ fontSize: '13px', fontWeight: 600, color: '#1A1B20' }}>
-          Novo Orçamento #{codigo}
+          {isEditing ? `Editar Orçamento #${codigo}` : `Novo Orçamento #${codigo}`}
         </Typography>
       </Box>
 

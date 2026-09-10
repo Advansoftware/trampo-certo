@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -12,11 +13,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import PrintIcon from '@mui/icons-material/Print';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import LockIcon from '@mui/icons-material/Lock';
+import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AppButton from '@/components/common/AppButton';
 import OrcamentoA4Preview from './OrcamentoA4Preview';
 import { OrcamentoItemData } from './OrcamentosTable';
+
 
 interface OrcamentoPreviewModalProps {
   open: boolean;
@@ -35,6 +38,9 @@ export default function OrcamentoPreviewModal({
     (orcamento.status || '').toLowerCase() === 'aprovado' ||
     (orcamento.status || '').toLowerCase().includes('recibo') ||
     (orcamento.status || '').toLowerCase() === 'concluido';
+
+  const isRejected = (orcamento.status || '').toLowerCase() === 'recusado';
+  const isPending = !isApproved && !isRejected;
 
   const numTotal =
     typeof orcamento.valorTotal === 'number'
@@ -80,6 +86,15 @@ export default function OrcamentoPreviewModal({
     const tel = (orcamento.clienteTelefone || '').replace(/\D/g, '');
     const url = tel ? `https://wa.me/55${tel}?text=${texto}` : `https://wa.me/?text=${texto}`;
     window.open(url, '_blank');
+  };
+
+  const router = useRouter();
+
+  const handleEdit = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('trampo_edit_orcamento', JSON.stringify(orcamento));
+    }
+    router.push(`/orcamentos/novo?id=${orcamento.id}`);
   };
 
   return (
@@ -160,6 +175,24 @@ export default function OrcamentoPreviewModal({
               <CheckCircleIcon sx={{ fontSize: 15 }} />
               Aprovado
             </Box>
+          ) : isRejected ? (
+            <Box
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 0.75,
+                px: 1.5,
+                py: 0.5,
+                borderRadius: '9999px',
+                bgcolor: '#FEE2E2',
+                color: '#991B1B',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+              }}
+            >
+              <CloseIcon sx={{ fontSize: 14 }} />
+              Recusado
+            </Box>
           ) : (
             <Box
               sx={{
@@ -221,7 +254,7 @@ export default function OrcamentoPreviewModal({
         </Box>
       </DialogTitle>
 
-      {/* Warning Alert if Document is Locked/Approved */}
+      {/* Warning Alert if Document is Locked (Approved or Rejected) */}
       {isApproved && (
         <Box
           data-print-hide="true"
@@ -238,6 +271,26 @@ export default function OrcamentoPreviewModal({
           <LockIcon sx={{ fontSize: 17, color: '#1E3A8A' }} />
           <Typography sx={{ fontSize: '0.75rem', color: '#1E40AF', fontWeight: 600 }}>
             <strong>Orçamento Concluído & Aprovado:</strong> Este documento está protegido contra modificações para garantir conformidade fiscal e jurídica com o cliente.
+          </Typography>
+        </Box>
+      )}
+
+      {isRejected && (
+        <Box
+          data-print-hide="true"
+          sx={{
+            px: 3,
+            py: 1.25,
+            bgcolor: '#FEF2F2',
+            borderBottom: '1px solid #FECACA',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
+          }}
+        >
+          <LockIcon sx={{ fontSize: 17, color: '#DC2626' }} />
+          <Typography sx={{ fontSize: '0.75rem', color: '#991B1B', fontWeight: 600 }}>
+            <strong>Orçamento Recusado:</strong> Esta proposta foi recusada pelo cliente e está bloqueada para modificações.
           </Typography>
         </Box>
       )}
@@ -282,10 +335,20 @@ export default function OrcamentoPreviewModal({
           TrampoCerto MEI • Proposta Comercial Oficial
         </Typography>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: { xs: '100%', sm: 'auto' }, justifyContent: 'flex-end' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: { xs: '100%', sm: 'auto' }, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
           <AppButton variant="surface" size="small" onClick={onClose}>
             Fechar
           </AppButton>
+          {isPending && (
+            <AppButton
+              variant="outlined"
+              size="small"
+              startIcon={<EditIcon sx={{ fontSize: 16 }} />}
+              onClick={handleEdit}
+            >
+              Editar Orçamento
+            </AppButton>
+          )}
           <AppButton
             variant="secondary"
             size="small"

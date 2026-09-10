@@ -60,11 +60,22 @@ export default function OrcamentosPage() {
     setToastMessage('Relatório CSV de orçamentos baixado com sucesso!');
   };
 
+  const [toastSeverity, setToastSeverity] = useState<'success' | 'info' | 'warning' | 'error'>('success');
+
   const handleStatusChange = (id: string, newStatus: string) => {
     setProposals((prev) =>
       prev.map((p) => (p.id === id ? { ...p, status: newStatus } : p))
     );
-    setToastMessage('Status do orçamento atualizado para Aprovado com sucesso!');
+    if (newStatus === 'aprovado') {
+      setToastSeverity('success');
+      setToastMessage('Orçamento aprovado com sucesso! Agora protegido contra modificações.');
+    } else if (newStatus === 'recusado') {
+      setToastSeverity('warning');
+      setToastMessage('Orçamento reprovado/recusado.');
+    } else {
+      setToastSeverity('info');
+      setToastMessage('Status do orçamento atualizado com sucesso!');
+    }
   };
 
   return (
@@ -93,11 +104,11 @@ export default function OrcamentosPage() {
       >
         <Alert
           onClose={() => setToastMessage(null)}
-          severity="success"
+          severity={toastSeverity}
           sx={{
             width: '100%',
             borderRadius: '9999px',
-            bgcolor: '#1E3A8A',
+            bgcolor: toastSeverity === 'warning' ? '#991B1B' : '#1E3A8A',
             color: '#FFFFFF',
             fontWeight: 600,
             fontSize: '0.8125rem',

@@ -14,6 +14,7 @@ interface OrcamentoBottomDockProps {
   total: number;
   codigo?: string;
   prazo?: string;
+  isEditing?: boolean;
   onSaveTemplate: () => void;
   onCopyLink: () => void;
   onDownloadPdf: () => void;
@@ -24,6 +25,7 @@ export default function OrcamentoBottomDock({
   total,
   codigo = '042',
   prazo = '2 dias úteis',
+  isEditing = false,
   onSaveTemplate,
   onCopyLink,
   onDownloadPdf,
@@ -117,7 +119,7 @@ export default function OrcamentoBottomDock({
       {/* Right: Interactive Buttons (Exact Stitch Style & Colors) */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
         <AppButton
-          variant="outlined"
+          variant={isEditing ? "primary" : "outlined"}
           size="small"
           startIcon={<BookmarkAddIcon sx={{ fontSize: 17 }} />}
           onClick={onSaveTemplate}
@@ -126,7 +128,7 @@ export default function OrcamentoBottomDock({
             fontSize: '13px',
           }}
         >
-          Salvar como Modelo
+          {isEditing ? 'Salvar Alterações' : 'Salvar como Modelo'}
         </AppButton>
 
         <AppButton

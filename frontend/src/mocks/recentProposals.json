@@ -40,5 +40,19 @@
       { "descricao": "Quadro de distribuição trifásico 24 disjuntores", "qtd": 1, "unitario": 1800.00, "total": 1800.00 },
       { "descricao": "Passagem de cabeamento de rede e eletrocalha", "qtd": 1, "unitario": 1400.00, "total": 1400.00 }
     ]
+  },
+  {
+    "id": "orc-004",
+    "codigo": "ORC-2026-037",
+    "clienteNome": "Restaurante Sabor & Arte",
+    "clienteTelefone": "(11) 95544-3322",
+    "servicoDescricao": "Instalação de exaustor industrial e iluminação de emergência",
+    "valorTotal": 2150.00,
+    "status": "recusado",
+    "dataEnvio": "01/09/2026",
+    "itens": [
+      { "descricao": "Circuito independente para motor trifásico de exaustão", "qtd": 1, "unitario": 1200.00, "total": 1200.00 },
+      { "descricao": "Instalação e cabeamento de 4 blocos autônomos de emergência", "qtd": 4, "unitario": 237.50, "total": 950.00 }
+    ]
   }
 ]

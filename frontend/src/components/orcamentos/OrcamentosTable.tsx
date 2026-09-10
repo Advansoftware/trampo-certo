@@ -19,8 +19,12 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import LockIcon from '@mui/icons-material/Lock';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
+import Tooltip from '@mui/material/Tooltip';
 import AppButton from '@/components/common/AppButton';
 import OrcamentoPreviewModal from './OrcamentoPreviewModal';
+import { updateOrcamentoStatus } from '@/lib/api';
 
 export interface OrcamentoItemData {
   id: string;
@@ -28,6 +32,7 @@ export interface OrcamentoItemData {
   clienteNome: string;
   clienteTelefone?: string;
   clienteEmail?: string;
+  clienteLocalizacao?: string;
   servicoDescricao?: string;
   valorTotal: number | string;
   condicoesPagamento?: string;
@@ -35,6 +40,10 @@ export interface OrcamentoItemData {
   createdAt?: string;
   dataEnvio?: string;
   itens?: any[];
+  desconto?: number;
+  chavePix?: string;
+  validade?: string;
+  observacoes?: string;
 }
 
 interface OrcamentosTableProps {
@@ -57,14 +66,33 @@ export default function OrcamentosTable({
     setProposals(initialProposals);
   }, [initialProposals]);
 
-  const handleMarkApproved = (id: string) => {
+  const handleMarkApproved = async (id: string) => {
     setProposals((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: 'aprovado' } : item))
     );
+    await updateOrcamentoStatus(id, 'aprovado');
     if (onStatusChange) {
       onStatusChange(id, 'aprovado');
     }
   };
+
+  const handleMarkRejected = async (id: string) => {
+    setProposals((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, status: 'recusado' } : item))
+    );
+    await updateOrcamentoStatus(id, 'recusado');
+    if (onStatusChange) {
+      onStatusChange(id, 'recusado');
+    }
+  };
+
+  const handleEdit = (item: OrcamentoItemData) => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('trampo_edit_orcamento', JSON.stringify(item));
+    }
+    router.push(`/orcamentos/novo?id=${item.id}`);
+  };
+
 
   const handleSendWhatsApp = (item: OrcamentoItemData) => {
     const valFormatted =
@@ -355,6 +383,7 @@ export default function OrcamentosTable({
               filteredProposals.map((row, idx) => {
                 const statusBadge = getStatusBadge(row.status);
                 const isApproved = (row.status || '').toLowerCase() === 'aprovado' || (row.status || '').toLowerCase().includes('recibo');
+                const isRejected = (row.status || '').toLowerCase() === 'recusado';
 
                 return (
                   <TableRow
@@ -527,7 +556,31 @@ export default function OrcamentosTable({
                           <VisibilityIcon sx={{ fontSize: 17 }} />
                         </Box>
 
-                        {/* Marcar Pago / Aprovado */}
+                        {/* Botão Editar (Apenas disponível se estritamente PENDENTE) */}
+                        {!isApproved && !isRejected && (
+                          <Tooltip title="Editar orçamento" arrow>
+                            <Box
+                              onClick={() => handleEdit(row)}
+                              sx={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: '50%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                cursor: 'pointer',
+                                color: '#1E3A8A',
+                                bgcolor: '#F1F4F9',
+                                transition: 'all 0.15s ease',
+                                '&:hover': { bgcolor: '#E2E8F0', transform: 'scale(1.05)' },
+                              }}
+                            >
+                              <EditIcon sx={{ fontSize: 16 }} />
+                            </Box>
+                          </Tooltip>
+                        )}
+
+                        {/* Status / Ações de Decisão */}
                         {isApproved ? (
                           <Box
                             sx={{
@@ -546,15 +599,58 @@ export default function OrcamentosTable({
                             <CheckCircleIcon sx={{ fontSize: 13 }} />
                             Aprovado
                           </Box>
-                        ) : (
-                          <AppButton
-                            variant="table-action"
-                            size="xsmall"
-                            onClick={() => handleMarkApproved(row.id)}
-                            startIcon={<CheckCircleIcon sx={{ fontSize: 14 }} />}
+                        ) : isRejected ? (
+                          <Box
+                            sx={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 0.5,
+                              px: 1.25,
+                              py: 0.4,
+                              borderRadius: '9999px',
+                              bgcolor: '#FEE2E2',
+                              color: '#991B1B',
+                              fontSize: '0.6875rem',
+                              fontWeight: 700,
+                            }}
                           >
-                            Aprovar
-                          </AppButton>
+                            <CloseIcon sx={{ fontSize: 13 }} />
+                            Recusado
+                          </Box>
+                        ) : (
+                          <>
+                            {/* Botão Reprovar */}
+                            <Tooltip title="Reprovar / Recusar proposta" arrow>
+                              <Box
+                                onClick={() => handleMarkRejected(row.id)}
+                                sx={{
+                                  width: 32,
+                                  height: 32,
+                                  borderRadius: '50%',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  cursor: 'pointer',
+                                  color: '#DC2626',
+                                  bgcolor: '#FEE2E2',
+                                  transition: 'all 0.15s ease',
+                                  '&:hover': { bgcolor: '#FECACA', transform: 'scale(1.05)' },
+                                }}
+                              >
+                                <CloseIcon sx={{ fontSize: 16 }} />
+                              </Box>
+                            </Tooltip>
+
+                            {/* Botão Aprovar */}
+                            <AppButton
+                              variant="table-action"
+                              size="xsmall"
+                              onClick={() => handleMarkApproved(row.id)}
+                              startIcon={<CheckCircleIcon sx={{ fontSize: 14 }} />}
+                            >
+                              Aprovar
+                            </AppButton>
+                          </>
                         )}
                       </Box>
                     </TableCell>

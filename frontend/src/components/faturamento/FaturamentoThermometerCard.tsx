@@ -21,8 +21,10 @@ export default function FaturamentoThermometerCard({
 }: FaturamentoThermometerCardProps) {
   const percentual = Math.min(100, Math.round((faturamentoAcumulado / limiteAnual) * 100));
 
-  const formatMoney = (val: number) =>
-    `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  const formatMoney = (val?: number | null) => {
+    const num = typeof val === 'number' && !isNaN(val) ? val : 0;
+    return `R$ ${num.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+  };
 
   return (
     <Box

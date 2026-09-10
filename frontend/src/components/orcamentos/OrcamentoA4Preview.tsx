@@ -53,7 +53,7 @@ export default function OrcamentoA4Preview({
     val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <Box sx={{ position: { lg: 'sticky' }, top: 96, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
       {/* Preview Header Control */}
       <Box data-print-hide="true" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 0.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

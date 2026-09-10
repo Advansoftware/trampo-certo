@@ -153,7 +153,7 @@ export default function CriadorOrcamentoPage() {
       {/* 2. Main 2-Column Split Layout (50% Form / 50% Live A4 Preview) */}
       <Grid container spacing={3.5} sx={{ alignItems: 'flex-start' }}>
         {/* Left Column: Form & Configuration */}
-        <Grid size={{ xs: 12, xl: 6 }} data-print-hide="true">
+        <Grid size={{ xs: 12, lg: 6 }} data-print-hide="true">
           <OrcamentoLeftForm
             codigo="042"
             clienteNome={clienteNome}
@@ -181,8 +181,16 @@ export default function CriadorOrcamentoPage() {
           />
         </Grid>
 
-        {/* Right Column: Realistic Live A4 Sheet Preview */}
-        <Grid size={{ xs: 12, xl: 6 }}>
+        {/* Right Column: Realistic Live A4 Sheet Preview (Sticky idêntico ao Stitch) */}
+        <Grid
+          size={{ xs: 12, lg: 6 }}
+          sx={{
+            position: { lg: 'sticky' },
+            top: 96,
+            alignSelf: 'flex-start',
+            zIndex: 10,
+          }}
+        >
           <OrcamentoA4Preview
             codigo="042"
             clienteNome={clienteNome}

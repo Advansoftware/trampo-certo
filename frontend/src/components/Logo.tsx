@@ -12,7 +12,7 @@ export default function Logo({ height = 32, white = false }: LogoProps) {
   return (
     <Box
       component="img"
-      src="/stitch-logo-icon.png"
+      src="/trampo-logo.png"
       alt="TrampoCerto"
       sx={{
         height,

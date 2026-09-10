@@ -59,6 +59,17 @@ export async function createCliente(clienteData: any) {
   return newClient;
 }
 
+export async function updateCliente(id: string, updates: any) {
+  if (typeof window !== 'undefined') {
+    const saved = localStorage.getItem('tc_clientes_data');
+    const list = saved ? JSON.parse(saved) : [...clientesMock];
+    const updatedList = list.map((c: any) => (c.id === id ? { ...c, ...updates } : c));
+    localStorage.setItem('tc_clientes_data', JSON.stringify(updatedList));
+    return updatedList.find((c: any) => c.id === id);
+  }
+  return updates;
+}
+
 export async function fetchMonthlyRevenues() {
   return monthlyRevenuesMock;
 }

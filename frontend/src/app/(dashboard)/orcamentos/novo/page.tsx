@@ -13,32 +13,17 @@ import OrcamentoLeftForm from '@/components/orcamentos/OrcamentoLeftForm';
 import OrcamentoA4Preview, { OrcamentoPreviewItem } from '@/components/orcamentos/OrcamentoA4Preview';
 import OrcamentoBottomDock from '@/components/orcamentos/OrcamentoBottomDock';
 import AppButton from '@/components/common/AppButton';
-import { createOrcamento, getOrcamentoById, updateOrcamento } from '@/lib/api';
+import NovoClienteModal from '@/components/clientes/NovoClienteModal';
+import { createOrcamento, getOrcamentoById, updateOrcamento, fetchClientes } from '@/lib/api';
 
-const defaultItens: OrcamentoPreviewItem[] = [
+const emptyItens: OrcamentoPreviewItem[] = [
   {
     id: '1',
-    descricao: 'Instalação de rede elétrica e 8 pontos de tomada',
-    subDescricao: 'Mão de obra técnica qualificada',
+    descricao: '',
+    subDescricao: '',
     qtd: 1,
     unidade: 'un',
-    unitario: 850,
-  },
-  {
-    id: '2',
-    descricao: 'Quadro de distribuição trifásico com disjuntores DIN',
-    subDescricao: 'Montagem, barramentos e identificação de circuitos',
-    qtd: 1,
-    unidade: 'un',
-    unitario: 650,
-  },
-  {
-    id: '3',
-    descricao: 'Passagem de cabos de rede estruturada Cat6',
-    subDescricao: 'Conectorização RJ45 e testes de continuidade',
-    qtd: 50,
-    unidade: 'm',
-    unitario: 7,
+    unitario: 0,
   },
 ];
 
@@ -51,17 +36,22 @@ function CriadorOrcamentoContent() {
   const [isEditing, setIsEditing] = useState(false);
   const [lockedReason, setLockedReason] = useState<'aprovado' | 'recusado' | null>(null);
 
-  // Form State (matching Stitch Prototype 1:1)
-  const [clienteNome, setClienteNome] = useState('Juliana Mendes');
-  const [clienteTelefone, setClienteTelefone] = useState('(11) 98765-4321');
-  const [clienteLocalizacao, setClienteLocalizacao] = useState('São Paulo - SP (Pinheiros)');
+  // Clientes para listagem e seleção
+  const [clientes, setClientes] = useState<any[]>([]);
+  const [modalNovoClienteOpen, setModalNovoClienteOpen] = useState(false);
+  const [novoClienteInitialName, setNovoClienteInitialName] = useState('');
 
-  const [itens, setItens] = useState<OrcamentoPreviewItem[]>(defaultItens);
-  const [desconto, setDesconto] = useState<number>(50);
+  // Form State: Em branco para um novo orçamento
+  const [clienteNome, setClienteNome] = useState('');
+  const [clienteTelefone, setClienteTelefone] = useState('');
+  const [clienteLocalizacao, setClienteLocalizacao] = useState('');
+
+  const [itens, setItens] = useState<OrcamentoPreviewItem[]>(emptyItens);
+  const [desconto, setDesconto] = useState<number>(0);
 
   const [condicoesPagamento, setCondicoesPagamento] = useState('50% de entrada no aceite + 50% na conclusão da entrega');
   const [chavePix, setChavePix] = useState('rodrigo.silva@email.com (Banco Inter)');
-  const [validade, setValidade] = useState('Válido por 10 dias (até 28/10/2024)');
+  const [validade, setValidade] = useState('Válido por 10 dias');
   const [observacoes, setObservacoes] = useState(
     'Garantia técnica de 90 dias após conclusão do serviço. Materiais inclusos de 1ª linha com certificação INMETRO.',
   );
@@ -70,29 +60,98 @@ function CriadorOrcamentoContent() {
   const [toastMessage, setToastMessage] = useState('');
   const [toastOpen, setToastOpen] = useState(false);
 
-  // Carregar dados de edição se houver id
+  // Carregar lista de clientes
   useEffect(() => {
-    async function loadEditData() {
-      let targetItem: any = null;
+    fetchClientes().then((data) => {
+      if (Array.isArray(data)) {
+        setClientes(data);
+      }
+    });
+  }, []);
 
-      if (typeof window !== 'undefined') {
-        const cached = localStorage.getItem('trampo_edit_orcamento');
-        if (cached) {
-          try {
-            const parsed = JSON.parse(cached);
-            if (!editId || parsed.id === editId) {
-              targetItem = parsed;
-            }
-          } catch {}
+  // Carregar dados de edição se houver id na URL
+  useEffect(() => {
+    async function loadData() {
+      // 1. MODO EDIÇÃO: Apenas se houver editId explícito na URL
+      if (editId) {
+        let targetItem: any = null;
+
+        if (typeof window !== 'undefined') {
+          const cached = localStorage.getItem('trampo_edit_orcamento');
+          if (cached) {
+            try {
+              const parsed = JSON.parse(cached);
+              if (parsed.id === editId) {
+                targetItem = parsed;
+              }
+            } catch {}
+          }
+        }
+
+        if (!targetItem) {
+          targetItem = await getOrcamentoById(editId);
+        }
+
+        if (targetItem) {
+          setIsEditing(true);
+          if (targetItem.codigo) {
+            setCodigo(targetItem.codigo.replace(/\D/g, '') || targetItem.codigo);
+          }
+          if (targetItem.clienteNome) setClienteNome(targetItem.clienteNome);
+          if (targetItem.clienteTelefone) setClienteTelefone(targetItem.clienteTelefone);
+          if (targetItem.clienteLocalizacao) setClienteLocalizacao(targetItem.clienteLocalizacao);
+          if (targetItem.condicoesPagamento) setCondicoesPagamento(targetItem.condicoesPagamento);
+          if (targetItem.chavePix) setChavePix(targetItem.chavePix);
+          if (targetItem.validade) setValidade(targetItem.validade);
+          if (targetItem.observacoes) setObservacoes(targetItem.observacoes);
+          if (targetItem.desconto !== undefined) setDesconto(targetItem.desconto);
+
+          if (Array.isArray(targetItem.itens) && targetItem.itens.length > 0) {
+            setItens(
+              targetItem.itens.map((it: any, idx: number) => ({
+                id: it.id || String(idx + 1),
+                descricao: it.descricao || '',
+                subDescricao: it.subDescricao || '',
+                qtd: it.qtd || 1,
+                unidade: it.unidade || 'un',
+                unitario: it.unitario || 0,
+              }))
+            );
+          }
+
+          // Regra de bloqueio: nem aprovado nem recusado podem ser editados
+          const statusLower = (targetItem.status || '').toLowerCase();
+          if (statusLower === 'aprovado' || statusLower.includes('recibo') || statusLower === 'concluido') {
+            setLockedReason('aprovado');
+          } else if (statusLower === 'recusado') {
+            setLockedReason('recusado');
+          } else {
+            setLockedReason(null);
+          }
+          return;
         }
       }
 
-      if (!targetItem && editId) {
-        targetItem = await getOrcamentoById(editId);
+      // 2. MODO NOVO ORÇAMENTO: Formulário limpo e desbloqueado
+      setIsEditing(false);
+      setLockedReason(null);
+
+      // Limpar cache residual de edição no localStorage para não vazar nenhum dado
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('trampo_edit_orcamento');
       }
 
-      // Se não for edição, verificar se veio da tela de clientes para novo orçamento
-      if (!editId && typeof window !== 'undefined') {
+      setClienteNome('');
+      setClienteTelefone('');
+      setClienteLocalizacao('');
+      setItens(emptyItens);
+      setDesconto(0);
+
+      // Gerar código sequencial novo para a proposta
+      setCodigo(String(Math.floor(100 + Math.random() * 900)));
+
+      // Se veio da tela de clientes com cliente já selecionado
+      if (typeof window !== 'undefined') {
         const clientePreFill = localStorage.getItem('trampo_novo_orcamento_cliente');
         if (clientePreFill) {
           try {
@@ -104,47 +163,9 @@ function CriadorOrcamentoContent() {
           } catch {}
         }
       }
-
-      if (targetItem) {
-        setIsEditing(true);
-        if (targetItem.codigo) {
-          setCodigo(targetItem.codigo.replace(/\D/g, '') || targetItem.codigo);
-        }
-        if (targetItem.clienteNome) setClienteNome(targetItem.clienteNome);
-        if (targetItem.clienteTelefone) setClienteTelefone(targetItem.clienteTelefone);
-        if (targetItem.clienteLocalizacao) setClienteLocalizacao(targetItem.clienteLocalizacao);
-        if (targetItem.condicoesPagamento) setCondicoesPagamento(targetItem.condicoesPagamento);
-        if (targetItem.chavePix) setChavePix(targetItem.chavePix);
-        if (targetItem.validade) setValidade(targetItem.validade);
-        if (targetItem.observacoes) setObservacoes(targetItem.observacoes);
-        if (targetItem.desconto !== undefined) setDesconto(targetItem.desconto);
-
-        if (Array.isArray(targetItem.itens) && targetItem.itens.length > 0) {
-          setItens(
-            targetItem.itens.map((it: any, idx: number) => ({
-              id: it.id || String(idx + 1),
-              descricao: it.descricao || '',
-              subDescricao: it.subDescricao || '',
-              qtd: it.qtd || 1,
-              unidade: it.unidade || 'un',
-              unitario: it.unitario || 0,
-            }))
-          );
-        }
-
-        // Regra de bloqueio: nem aprovado nem recusado podem ser editados
-        const statusLower = (targetItem.status || '').toLowerCase();
-        if (statusLower === 'aprovado' || statusLower.includes('recibo') || statusLower === 'concluido') {
-          setLockedReason('aprovado');
-        } else if (statusLower === 'recusado') {
-          setLockedReason('recusado');
-        } else {
-          setLockedReason(null);
-        }
-      }
     }
 
-    loadEditData();
+    loadData();
   }, [editId]);
 
   // Calculations
@@ -263,6 +284,29 @@ function CriadorOrcamentoContent() {
     window.open(`https://wa.me/55${tel}?text=${texto}`, '_blank');
   };
 
+  const handleSelectCliente = (cli: any) => {
+    setClienteNome(cli.nome || '');
+    setClienteTelefone(cli.telefone || '');
+    setClienteLocalizacao(
+      cli.cidade ? `${cli.bairro ? cli.bairro + ', ' : ''}${cli.cidade}` : ''
+    );
+  };
+
+  const handleOpenNovoCliente = (nameToPreFill?: string) => {
+    setNovoClienteInitialName(nameToPreFill || '');
+    setModalNovoClienteOpen(true);
+  };
+
+  const handleClienteCreated = (newCli: any) => {
+    setClientes((prev) => [newCli, ...prev]);
+    setClienteNome(newCli.nome || '');
+    setClienteTelefone(newCli.telefone || '');
+    setClienteLocalizacao(
+      newCli.cidade ? `${newCli.bairro ? newCli.bairro + ', ' : ''}${newCli.cidade}` : ''
+    );
+    showToast(`Cliente "${newCli.nome}" cadastrado e selecionado com sucesso!`);
+  };
+
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', pb: { xs: 14, md: 12 } }}>
       {/* 1. Breadcrumb Topbar & Auto-save Status */}
@@ -317,9 +361,14 @@ function CriadorOrcamentoContent() {
         <Grid size={{ xs: 12, lg: 6 }} data-print-hide="true">
           <OrcamentoLeftForm
             codigo={codigo}
+            isEditing={isEditing}
+            isLocked={!!lockedReason}
             clienteNome={clienteNome}
             clienteTelefone={clienteTelefone}
             clienteLocalizacao={clienteLocalizacao}
+            clientes={clientes}
+            onSelectCliente={handleSelectCliente}
+            onOpenNovoClienteModal={handleOpenNovoCliente}
             onClienteNomeChange={setClienteNome}
             onClienteTelefoneChange={setClienteTelefone}
             onClienteLocalizacaoChange={setClienteLocalizacao}
@@ -380,6 +429,7 @@ function CriadorOrcamentoContent() {
         codigo={codigo}
         prazo="2 dias úteis"
         isEditing={isEditing}
+        isLocked={!!lockedReason}
         onSaveTemplate={handleSave}
         onCopyLink={handleCopyLink}
         onDownloadPdf={handleDownloadPdf}
@@ -410,6 +460,14 @@ function CriadorOrcamentoContent() {
           {toastMessage}
         </Alert>
       </Snackbar>
+
+      {/* Modal para Cadastro Rápido de Novo Cliente */}
+      <NovoClienteModal
+        open={modalNovoClienteOpen}
+        initialNome={novoClienteInitialName}
+        onClose={() => setModalNovoClienteOpen(false)}
+        onClienteCreated={handleClienteCreated}
+      />
     </Box>
   );
 }

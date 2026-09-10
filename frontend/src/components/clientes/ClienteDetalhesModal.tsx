@@ -17,21 +17,37 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import Grid from '@mui/material/Grid';
+import AddIcon from '@mui/icons-material/Add';
+import TextField from '@mui/material/TextField';
+import InputAdornment from '@mui/material/InputAdornment';
 import AppButton from '@/components/common/AppButton';
 import { ClienteItemData } from './ClientesMetrics';
+import { updateCliente } from '@/lib/api';
 
 interface ClienteDetalhesModalProps {
   open: boolean;
   onClose: () => void;
   cliente: ClienteItemData | null;
+  onUpdateCliente?: (cliente: ClienteItemData) => void;
 }
 
 export default function ClienteDetalhesModal({
   open,
   onClose,
   cliente,
+  onUpdateCliente,
 }: ClienteDetalhesModalProps) {
   const router = useRouter();
+  const [tags, setTags] = React.useState<string[]>([]);
+  const [newTagInput, setNewTagInput] = React.useState('');
+  const [isSavingTag, setIsSavingTag] = React.useState(false);
+
+  React.useEffect(() => {
+    if (cliente) {
+      setTags(cliente.tags || ['Cliente Ativo']);
+    }
+  }, [cliente]);
+
   if (!cliente) return null;
 
   const isPj = (cliente.tipo || '').toUpperCase() === 'PJ';
@@ -116,7 +132,7 @@ export default function ClienteDetalhesModal({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: { xs: 2.5, sm: 3 } }}>
+      <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 }, pt: '32px !important' }}>
         {/* Profile Card */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
           <Box
@@ -247,27 +263,146 @@ export default function ClienteDetalhesModal({
           </Box>
         </Box>
 
-        {/* Tags */}
-        <Box sx={{ mt: 2.5, display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
-          <Typography sx={{ fontSize: '0.75rem', color: '#74777F', fontWeight: 600 }}>
-            Tags:
-          </Typography>
-          {(cliente.tags || ['Cliente Ativo']).map((tag, tIdx) => (
-            <Box
-              key={tIdx}
-              sx={{
-                px: 1.25,
-                py: 0.35,
-                borderRadius: '9999px',
-                bgcolor: '#DBEAFE',
-                color: '#172554',
-                fontSize: '0.75rem',
-                fontWeight: 600,
+        {/* Tags & Quick Tagging Section */}
+        <Box sx={{ mt: 2.5, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#43474E', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Etiquetas & Segmentação
+            </Typography>
+            <Typography sx={{ fontSize: '0.6875rem', color: '#74777F' }}>
+              Clique para remover ou use os atalhos abaixo
+            </Typography>
+          </Box>
+
+          {/* Current Tags with remove option */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+            {tags.map((tag, tIdx) => (
+              <Box
+                key={tIdx}
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  px: 1.25,
+                  py: 0.35,
+                  borderRadius: '9999px',
+                  bgcolor: '#DBEAFE',
+                  color: '#172554',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  border: '1px solid rgba(30, 58, 138, 0.15)',
+                }}
+              >
+                <span>{tag}</span>
+                <CloseIcon
+                  onClick={() => {
+                    const next = tags.filter((t) => t !== tag);
+                    setTags(next);
+                    updateCliente(cliente.id, { tags: next });
+                    if (onUpdateCliente) onUpdateCliente({ ...cliente, tags: next });
+                  }}
+                  sx={{
+                    fontSize: 14,
+                    cursor: 'pointer',
+                    color: '#74777F',
+                    borderRadius: '50%',
+                    '&:hover': { color: '#DC2626', bgcolor: 'rgba(220, 38, 38, 0.1)' },
+                  }}
+                />
+              </Box>
+            ))}
+          </Box>
+
+          {/* Quick Input to Add Tag */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TextField
+              size="small"
+              placeholder="Digite uma nova tag (ex: VIP, Parceiro)..."
+              value={newTagInput}
+              onChange={(e) => setNewTagInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const val = newTagInput.trim();
+                  if (val && !tags.includes(val)) {
+                    const next = [...tags, val];
+                    setTags(next);
+                    setNewTagInput('');
+                    updateCliente(cliente.id, { tags: next });
+                    if (onUpdateCliente) onUpdateCliente({ ...cliente, tags: next });
+                  }
+                }
+              }}
+              slotProps={{
+                input: {
+                  sx: {
+                    borderRadius: '12px',
+                    bgcolor: '#F8F9FD',
+                    fontSize: '0.8125rem',
+                  },
+                },
+              }}
+              sx={{ flex: 1 }}
+            />
+            <AppButton
+              variant="outlined"
+              size="small"
+              startIcon={<AddIcon sx={{ fontSize: 16 }} />}
+              onClick={() => {
+                const val = newTagInput.trim();
+                if (val && !tags.includes(val)) {
+                  const next = [...tags, val];
+                  setTags(next);
+                  setNewTagInput('');
+                  updateCliente(cliente.id, { tags: next });
+                  if (onUpdateCliente) onUpdateCliente({ ...cliente, tags: next });
+                }
               }}
             >
-              {tag}
-            </Box>
-          ))}
+              Adicionar
+            </AppButton>
+          </Box>
+
+          {/* One-click Popular Tag Suggestions */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap' }}>
+            <Typography sx={{ fontSize: '0.6875rem', color: '#74777F', fontWeight: 600 }}>
+              Sugestões rápidas:
+            </Typography>
+            {['Recorrente', 'VIP', 'Bom Pagador', 'Comercial', 'Pontual', 'Indicação'].map((sug) => {
+              const alreadyHas = tags.includes(sug);
+              if (alreadyHas) return null;
+              return (
+                <Box
+                  key={sug}
+                  onClick={() => {
+                    const next = [...tags, sug];
+                    setTags(next);
+                    updateCliente(cliente.id, { tags: next });
+                    if (onUpdateCliente) onUpdateCliente({ ...cliente, tags: next });
+                  }}
+                  sx={{
+                    px: 1,
+                    py: 0.2,
+                    borderRadius: '9999px',
+                    fontSize: '0.6875rem',
+                    fontWeight: 600,
+                    bgcolor: '#F1F4F9',
+                    color: '#43474E',
+                    cursor: 'pointer',
+                    border: '1px dashed rgba(196, 198, 207, 0.8)',
+                    transition: 'all 0.15s ease',
+                    '&:hover': {
+                      bgcolor: '#DBEAFE',
+                      color: '#1E3A8A',
+                      borderColor: '#1E3A8A',
+                    },
+                  }}
+                >
+                  + {sug}
+                </Box>
+              );
+            })}
+          </Box>
         </Box>
       </DialogContent>
 

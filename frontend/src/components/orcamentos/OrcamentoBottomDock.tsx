@@ -15,6 +15,7 @@ interface OrcamentoBottomDockProps {
   codigo?: string;
   prazo?: string;
   isEditing?: boolean;
+  isLocked?: boolean;
   onSaveTemplate: () => void;
   onCopyLink: () => void;
   onDownloadPdf: () => void;
@@ -26,6 +27,7 @@ export default function OrcamentoBottomDock({
   codigo = '042',
   prazo = '2 dias úteis',
   isEditing = false,
+  isLocked = false,
   onSaveTemplate,
   onCopyLink,
   onDownloadPdf,
@@ -118,18 +120,20 @@ export default function OrcamentoBottomDock({
 
       {/* Right: Interactive Buttons (Exact Stitch Style & Colors) */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
-        <AppButton
-          variant={isEditing ? "primary" : "outlined"}
-          size="small"
-          startIcon={<BookmarkAddIcon sx={{ fontSize: 17 }} />}
-          onClick={onSaveTemplate}
-          sx={{
-            display: { xs: 'none', sm: 'inline-flex' },
-            fontSize: '13px',
-          }}
-        >
-          {isEditing ? 'Salvar Alterações' : 'Salvar como Modelo'}
-        </AppButton>
+        {!isLocked && (
+          <AppButton
+            variant={isEditing ? "primary" : "outlined"}
+            size="small"
+            startIcon={<BookmarkAddIcon sx={{ fontSize: 17 }} />}
+            onClick={onSaveTemplate}
+            sx={{
+              display: { xs: 'none', sm: 'inline-flex' },
+              fontSize: '13px',
+            }}
+          >
+            {isEditing ? 'Salvar Alterações' : 'Salvar como Modelo'}
+          </AppButton>
+        )}
 
         <AppButton
           variant="outlined"

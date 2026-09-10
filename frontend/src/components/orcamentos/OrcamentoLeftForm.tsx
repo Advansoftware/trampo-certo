@@ -16,14 +16,23 @@ import PaymentsIcon from '@mui/icons-material/Payments';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import EventIcon from '@mui/icons-material/Event';
 import EditDocumentIcon from '@mui/icons-material/EditDocument';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import BusinessIcon from '@mui/icons-material/Business';
+import SearchIcon from '@mui/icons-material/Search';
+import LockIcon from '@mui/icons-material/Lock';
 import AppButton from '@/components/common/AppButton';
 import { OrcamentoPreviewItem } from './OrcamentoA4Preview';
 
 interface OrcamentoLeftFormProps {
   codigo?: string;
+  isEditing?: boolean;
+  isLocked?: boolean;
   clienteNome: string;
   clienteTelefone: string;
   clienteLocalizacao: string;
+  clientes?: any[];
+  onSelectCliente?: (cliente: any) => void;
+  onOpenNovoClienteModal?: (initialName?: string) => void;
   onClienteNomeChange: (v: string) => void;
   onClienteTelefoneChange: (v: string) => void;
   onClienteLocalizacaoChange: (v: string) => void;
@@ -47,9 +56,14 @@ interface OrcamentoLeftFormProps {
 
 export default function OrcamentoLeftForm({
   codigo = '042',
+  isEditing = false,
+  isLocked = false,
   clienteNome,
   clienteTelefone,
   clienteLocalizacao,
+  clientes = [],
+  onSelectCliente,
+  onOpenNovoClienteModal,
   onClienteNomeChange,
   onClienteTelefoneChange,
   onClienteLocalizacaoChange,
@@ -70,8 +84,55 @@ export default function OrcamentoLeftForm({
   observacoes,
   onObservacoesChange,
 }: OrcamentoLeftFormProps) {
+  const [dropdownOpen, setDropdownOpen] = React.useState(false);
+  const dropdownRef = React.useRef<HTMLDivElement>(null);
+
+  // Fechar dropdown ao clicar fora
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const formatMoney = (val: number) =>
     val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const matchingClients = React.useMemo(() => {
+    if (!clientes || clientes.length === 0) return [];
+    const term = (clienteNome || '').trim().toLowerCase();
+    if (!term) return clientes.slice(0, 5);
+    return clientes.filter(
+      (c) =>
+        c.nome?.toLowerCase().includes(term) ||
+        c.documento?.toLowerCase().includes(term) ||
+        c.telefone?.toLowerCase().includes(term)
+    );
+  }, [clientes, clienteNome]);
+
+  const handleSelectOne = (cli: any) => {
+    if (onSelectCliente) {
+      onSelectCliente(cli);
+    } else {
+      onClienteNomeChange(cli.nome || '');
+      onClienteTelefoneChange(cli.telefone || '');
+      onClienteLocalizacaoChange(
+        cli.cidade ? `${cli.bairro ? cli.bairro + ', ' : ''}${cli.cidade}` : ''
+      );
+    }
+    setDropdownOpen(false);
+  };
+
+  const getInitials = (name: string) => {
+    const parts = (name || '').trim().split(' ');
+    if (parts.length > 1) {
+      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    }
+    return (name || 'CL').substring(0, 2).toUpperCase();
+  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
@@ -102,7 +163,7 @@ export default function OrcamentoLeftForm({
             lineHeight: 1.2,
           }}
         >
-          Criar Novo Orçamento #{codigo}
+          {isEditing ? `Editar Orçamento #${codigo}` : `Criar Novo Orçamento #${codigo}`}
         </Typography>
         <Typography sx={{ fontSize: '14px', color: '#43474E', lineHeight: 1.5 }}>
           Preencha os dados em 2 minutos. O documento técnico A4 é formatado automaticamente em tempo real.
@@ -122,7 +183,7 @@ export default function OrcamentoLeftForm({
           gap: 2,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1, borderBottom: '1px solid rgba(196, 198, 207, 0.3)' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1, borderBottom: '1px solid rgba(196, 198, 207, 0.3)', flexWrap: 'wrap', gap: 1 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
             <Box
               sx={{
@@ -142,48 +203,252 @@ export default function OrcamentoLeftForm({
               1. Dados do Cliente
             </Typography>
           </Box>
-          <Box sx={{ px: 1.5, py: 0.25, borderRadius: '9999px', bgcolor: 'rgba(219, 234, 254, 0.7)', border: '1px solid rgba(30, 58, 138, 0.2)', color: '#1E3A8A', fontSize: '11px', fontWeight: 600 }}>
-            Passo 1 de 3
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {isEditing ? (
+              <Box
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  px: 1.5,
+                  py: 0.35,
+                  borderRadius: '9999px',
+                  bgcolor: '#EFF6FF',
+                  color: '#1E3A8A',
+                  border: '1px solid #BFDBFE',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                }}
+              >
+                <LockIcon sx={{ fontSize: 13 }} />
+                Cliente Vinculado
+              </Box>
+            ) : (
+              onOpenNovoClienteModal && (
+                <AppButton
+                  variant="surface"
+                  size="xsmall"
+                  startIcon={<PersonAddIcon sx={{ fontSize: 14, color: '#1E3A8A' }} />}
+                  onClick={() => onOpenNovoClienteModal('')}
+                  sx={{
+                    bgcolor: '#EFF6FF',
+                    color: '#1E3A8A',
+                    borderColor: '#BFDBFE',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    '&:hover': { bgcolor: '#DBEAFE' },
+                  }}
+                >
+                  + Novo Cliente
+                </AppButton>
+              )
+            )}
+            <Box sx={{ px: 1.5, py: 0.25, borderRadius: '9999px', bgcolor: 'rgba(219, 234, 254, 0.7)', border: '1px solid rgba(30, 58, 138, 0.2)', color: '#1E3A8A', fontSize: '11px', fontWeight: 600 }}>
+              Passo 1 de 3
+            </Box>
           </Box>
         </Box>
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.75 }}>
-          {/* Nome ou Empresa */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-            <Typography sx={{ fontSize: '11px', color: '#43474E', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>
-              Nome ou Empresa do Cliente
-            </Typography>
+          {/* Nome ou Empresa com Dropdown Inteligente de Clientes */}
+          <Box ref={dropdownRef} sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, position: 'relative' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Typography sx={{ fontSize: '11px', color: '#43474E', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>
+                Nome ou Empresa do Cliente
+              </Typography>
+              {!isEditing && clientes.length > 0 && (
+                <Typography sx={{ fontSize: '11px', color: '#1E3A8A', cursor: 'pointer', fontWeight: 600 }} onClick={() => setDropdownOpen(true)}>
+                  {dropdownOpen ? 'Ocultar clientes' : 'Selecionar da carteira'}
+                </Typography>
+              )}
+            </Box>
+
             <Box sx={{ position: 'relative' }}>
               <input
                 type="text"
                 value={clienteNome}
-                onChange={(e) => onClienteNomeChange(e.target.value)}
-                placeholder="Ex: Juliana Mendes"
+                readOnly={isEditing}
+                disabled={isLocked}
+                onChange={(e) => {
+                  if (isEditing) return;
+                  onClienteNomeChange(e.target.value);
+                  if (!dropdownOpen) setDropdownOpen(true);
+                }}
+                onFocus={() => {
+                  if (!isEditing) setDropdownOpen(true);
+                }}
+                placeholder={isEditing ? 'Cliente vinculado' : 'Busque ou digite o nome do cliente...'}
                 style={{
                   width: '100%',
                   padding: '11px 40px 11px 16px',
-                  backgroundColor: '#F1F4F9',
-                  border: '1px solid rgba(196, 198, 207, 0.6)',
+                  backgroundColor: isEditing ? '#F8F9FD' : '#F1F4F9',
+                  border: isEditing ? '1px solid rgba(196, 198, 207, 0.5)' : dropdownOpen ? '1.5px solid #1E3A8A' : '1px solid rgba(196, 198, 207, 0.6)',
                   borderRadius: '12px',
                   fontSize: '14px',
-                  color: '#1A1B20',
+                  color: isEditing ? '#334155' : '#1A1B20',
+                  fontWeight: isEditing ? 600 : 400,
                   outline: 'none',
+                  cursor: isEditing ? 'not-allowed' : 'text',
                   boxSizing: 'border-box',
                   fontFamily: 'inherit',
                   transition: 'border-color 0.15s ease, background-color 0.15s ease',
                 }}
-                onFocus={(e) => {
-                  e.currentTarget.style.backgroundColor = '#FFFFFF';
-                  e.currentTarget.style.borderColor = '#1E3A8A';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.backgroundColor = '#F1F4F9';
-                  e.currentTarget.style.borderColor = 'rgba(196, 198, 207, 0.6)';
-                }}
               />
-              <CheckCircleIcon sx={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#1E3A8A', fontSize: 18 }} />
+              {isEditing ? (
+                <LockIcon sx={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#94A3B8', fontSize: 17 }} />
+              ) : (
+                <SearchIcon sx={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', color: '#74777F', fontSize: 18 }} />
+              )}
             </Box>
+
+            {isEditing && (
+              <Typography sx={{ fontSize: '11px', color: '#64748B', mt: 0.25, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <LockIcon sx={{ fontSize: 12, color: '#94A3B8' }} />
+                Este orçamento está fixado a este cliente e não pode ser transferido.
+              </Typography>
+            )}
+
+            {/* Dropdown de Clientes Cadastrados / Opção de Criar Novo */}
+            {!isEditing && dropdownOpen && (
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  right: 0,
+                  mt: 0.75,
+                  bgcolor: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(196, 198, 207, 0.6)',
+                  boxShadow: '0 12px 32px rgba(15, 23, 42, 0.18)',
+                  zIndex: 999,
+                  overflow: 'hidden',
+                  maxHeight: 300,
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                {/* Cabeçalho da Lista */}
+                <Box sx={{ p: 1.25, px: 2, bgcolor: '#F8F9FD', borderBottom: '1px solid rgba(196, 198, 207, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography sx={{ fontSize: '11px', fontWeight: 700, color: '#74777F', textTransform: 'uppercase' }}>
+                    Clientes Cadastrados ({matchingClients.length})
+                  </Typography>
+                  {onOpenNovoClienteModal && (
+                    <Typography
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        onOpenNovoClienteModal(clienteNome);
+                      }}
+                      sx={{ fontSize: '11px', fontWeight: 700, color: '#1E3A8A', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                    >
+                      + Cadastrar Novo
+                    </Typography>
+                  )}
+                </Box>
+
+                {/* Lista de Clientes */}
+                <Box sx={{ overflowY: 'auto', maxHeight: 200 }}>
+                  {matchingClients.length > 0 ? (
+                    matchingClients.map((cli) => {
+                      const isPj = (cli.tipo || '').toUpperCase() === 'PJ';
+                      return (
+                        <Box
+                          key={cli.id}
+                          onClick={() => handleSelectOne(cli)}
+                          sx={{
+                            p: 1.25,
+                            px: 2,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            cursor: 'pointer',
+                            transition: 'background-color 0.15s ease',
+                            borderBottom: '1px solid rgba(196, 198, 207, 0.2)',
+                            '&:hover': { bgcolor: '#F1F4F9' },
+                          }}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                            <Box
+                              sx={{
+                                width: 30,
+                                height: 30,
+                                borderRadius: '50%',
+                                bgcolor: isPj ? '#E0E7FF' : '#DBEAFE',
+                                color: isPj ? '#3730A3' : '#1E3A8A',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '11px',
+                                fontWeight: 800,
+                              }}
+                            >
+                              {getInitials(cli.nome)}
+                            </Box>
+                            <Box>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                                <Typography sx={{ fontSize: '13px', fontWeight: 700, color: '#1A1B20' }}>
+                                  {cli.nome}
+                                </Typography>
+                                <Box sx={{ px: 0.75, py: 0.1, borderRadius: '4px', bgcolor: isPj ? '#EEF2FF' : '#F1F4F9', color: isPj ? '#3730A3' : '#74777F', fontSize: '9px', fontWeight: 700 }}>
+                                  {cli.tipo || 'PF'}
+                                </Box>
+                              </Box>
+                              <Typography sx={{ fontSize: '11px', color: '#74777F' }}>
+                                {cli.telefone || 'Sem telefone'} {cli.cidade ? `• ${cli.cidade}` : ''}
+                              </Typography>
+                            </Box>
+                          </Box>
+                          <Typography sx={{ fontSize: '11px', color: '#1E3A8A', fontWeight: 600 }}>
+                            Selecionar
+                          </Typography>
+                        </Box>
+                      );
+                    })
+                  ) : (
+                    <Box sx={{ p: 2, textAlign: 'center' }}>
+                      <Typography sx={{ fontSize: '13px', color: '#74777F' }}>
+                        Nenhum cliente encontrado com este nome.
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+
+                {/* Botão de Criação se não existir ou para cadastrar novo */}
+                {onOpenNovoClienteModal && (
+                  <Box
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      onOpenNovoClienteModal(clienteNome);
+                    }}
+                    sx={{
+                      p: 1.5,
+                      px: 2,
+                      bgcolor: '#EFF6FF',
+                      borderTop: '1px solid #BFDBFE',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      color: '#1E3A8A',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      transition: 'background-color 0.15s ease',
+                      '&:hover': { bgcolor: '#DBEAFE' },
+                    }}
+                  >
+                    <PersonAddIcon sx={{ fontSize: 18 }} />
+                    <span>
+                      {clienteNome.trim()
+                        ? `Cadastrar "${clienteNome.trim()}" como novo cliente`
+                        : 'Cadastrar novo cliente agora'}
+                    </span>
+                  </Box>
+                )}
+              </Box>
+            )}
           </Box>
+
 
           {/* Grid 2 colunas: WhatsApp + Localização */}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 1.5 }}>
@@ -196,25 +461,30 @@ export default function OrcamentoLeftForm({
                 <input
                   type="text"
                   value={clienteTelefone}
+                  disabled={isLocked}
+                  readOnly={isLocked}
                   onChange={(e) => onClienteTelefoneChange(e.target.value)}
                   placeholder="(00) 00000-0000"
                   style={{
                     width: '100%',
                     padding: '11px 16px 11px 38px',
-                    backgroundColor: '#F1F4F9',
+                    backgroundColor: isLocked ? '#F8F9FD' : '#F1F4F9',
                     border: '1px solid rgba(196, 198, 207, 0.6)',
                     borderRadius: '12px',
                     fontSize: '14px',
-                    color: '#1A1B20',
+                    color: isLocked ? '#64748B' : '#1A1B20',
                     outline: 'none',
+                    cursor: isLocked ? 'not-allowed' : 'text',
                     boxSizing: 'border-box',
                     fontFamily: 'inherit',
                   }}
                   onFocus={(e) => {
+                    if (isLocked) return;
                     e.currentTarget.style.backgroundColor = '#FFFFFF';
                     e.currentTarget.style.borderColor = '#1E3A8A';
                   }}
                   onBlur={(e) => {
+                    if (isLocked) return;
                     e.currentTarget.style.backgroundColor = '#F1F4F9';
                     e.currentTarget.style.borderColor = 'rgba(196, 198, 207, 0.6)';
                   }}
@@ -231,17 +501,20 @@ export default function OrcamentoLeftForm({
                 <input
                   type="text"
                   value={clienteLocalizacao}
+                  disabled={isLocked}
+                  readOnly={isLocked}
                   onChange={(e) => onClienteLocalizacaoChange(e.target.value)}
                   placeholder="Cidade - UF"
                   style={{
                     width: '100%',
                     padding: '11px 16px 11px 38px',
-                    backgroundColor: '#F1F4F9',
+                    backgroundColor: isLocked ? '#F8F9FD' : '#F1F4F9',
                     border: '1px solid rgba(196, 198, 207, 0.6)',
                     borderRadius: '12px',
                     fontSize: '14px',
-                    color: '#1A1B20',
+                    color: isLocked ? '#64748B' : '#1A1B20',
                     outline: 'none',
+                    cursor: isLocked ? 'not-allowed' : 'text',
                     boxSizing: 'border-box',
                     fontFamily: 'inherit',
                   }}

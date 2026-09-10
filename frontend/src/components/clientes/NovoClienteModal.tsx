@@ -11,25 +11,27 @@ import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import PersonIcon from '@mui/icons-material/Person';
+import BusinessIcon from '@mui/icons-material/Business';
 import Grid from '@mui/material/Grid';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import AppButton from '@/components/common/AppButton';
 import { createCliente } from '@/lib/api';
 
 interface NovoClienteModalProps {
   open: boolean;
+  initialNome?: string;
   onClose: () => void;
   onClienteCreated: (newClient: any) => void;
 }
 
 export default function NovoClienteModal({
   open,
+  initialNome = '',
   onClose,
   onClienteCreated,
 }: NovoClienteModalProps) {
   const [tipo, setTipo] = useState<'PF' | 'PJ'>('PF');
-  const [nome, setNome] = useState('');
+  const [nome, setNome] = useState(initialNome);
   const [documento, setDocumento] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
@@ -38,6 +40,12 @@ export default function NovoClienteModal({
   const [tag, setTag] = useState('Novo Cliente');
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
+
+  React.useEffect(() => {
+    if (open && initialNome) {
+      setNome(initialNome);
+    }
+  }, [open, initialNome]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -143,38 +151,72 @@ export default function NovoClienteModal({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: { xs: 2.5, sm: 3 } }}>
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
-          {/* Tipo Selector */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
-            <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#43474E', textTransform: 'uppercase' }}>
+      <DialogContent sx={{ p: { xs: 2.5, sm: 3.5 }, pt: '32px !important' }}>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 0.5 }}>
+          {/* Tipo Selector com espaçamento generoso entre opções */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+            <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#43474E', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Tipo de Pessoa
             </Typography>
-            <ToggleButtonGroup
-              value={tipo}
-              exclusive
-              onChange={(_, val) => val && setTipo(val)}
-              size="small"
-              sx={{
-                '& .MuiToggleButton-root': {
-                  borderRadius: '12px !important',
-                  px: 3,
-                  py: 0.75,
-                  fontSize: '0.8125rem',
-                  fontWeight: 700,
-                  textTransform: 'none',
-                  borderColor: 'rgba(196, 198, 207, 0.6)',
-                  '&.Mui-selected': {
-                    bgcolor: '#1E3A8A',
-                    color: '#FFFFFF',
-                    '&:hover': { bgcolor: '#1D4ED8' },
+            <Box sx={{ display: 'flex', gap: 2, width: '100%' }}>
+              <Box
+                onClick={() => setTipo('PF')}
+                sx={{
+                  flex: 1,
+                  py: 1.5,
+                  px: 2,
+                  borderRadius: '16px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 1.25,
+                  border: tipo === 'PF' ? '2px solid #1E3A8A' : '1px solid rgba(196, 198, 207, 0.6)',
+                  bgcolor: tipo === 'PF' ? '#EFF6FF' : '#F8F9FD',
+                  color: tipo === 'PF' ? '#1E3A8A' : '#43474E',
+                  fontWeight: tipo === 'PF' ? 700 : 500,
+                  fontSize: '0.875rem',
+                  boxShadow: tipo === 'PF' ? '0 2px 8px rgba(30, 58, 138, 0.12)' : 'none',
+                  transition: 'all 0.15s ease',
+                  '&:hover': {
+                    bgcolor: tipo === 'PF' ? '#DBEAFE' : '#F1F4F9',
+                    borderColor: '#1E3A8A',
                   },
-                },
-              }}
-            >
-              <ToggleButton value="PF">Pessoa Física (PF)</ToggleButton>
-              <ToggleButton value="PJ">Pessoa Jurídica (PJ)</ToggleButton>
-            </ToggleButtonGroup>
+                }}
+              >
+                <PersonIcon sx={{ fontSize: 20 }} />
+                <span>Pessoa Física (PF)</span>
+              </Box>
+
+              <Box
+                onClick={() => setTipo('PJ')}
+                sx={{
+                  flex: 1,
+                  py: 1.5,
+                  px: 2,
+                  borderRadius: '16px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 1.25,
+                  border: tipo === 'PJ' ? '2px solid #1E3A8A' : '1px solid rgba(196, 198, 207, 0.6)',
+                  bgcolor: tipo === 'PJ' ? '#EFF6FF' : '#F8F9FD',
+                  color: tipo === 'PJ' ? '#1E3A8A' : '#43474E',
+                  fontWeight: tipo === 'PJ' ? 700 : 500,
+                  fontSize: '0.875rem',
+                  boxShadow: tipo === 'PJ' ? '0 2px 8px rgba(30, 58, 138, 0.12)' : 'none',
+                  transition: 'all 0.15s ease',
+                  '&:hover': {
+                    bgcolor: tipo === 'PJ' ? '#DBEAFE' : '#F1F4F9',
+                    borderColor: '#1E3A8A',
+                  },
+                }}
+              >
+                <BusinessIcon sx={{ fontSize: 20 }} />
+                <span>Pessoa Jurídica (PJ)</span>
+              </Box>
+            </Box>
           </Box>
 
           {/* Nome / Razão Social */}

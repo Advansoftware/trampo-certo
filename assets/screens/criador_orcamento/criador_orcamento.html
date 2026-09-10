@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>TrampoCerto - Gestão Ágil para MEI e Autônomos</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#1E3A8A",
+        "primary-container": "#DBEAFE",
+        "on-primary": "#FFFFFF",
+        "on-primary-container": "#172554",
+        "primary-hover": "#1D4ED8",
+        "secondary": "#2563EB",
+        "secondary-container": "#EFF6FF",
+        "on-secondary": "#FFFFFF",
+        "on-secondary-container": "#1E40AF",
+        "tertiary": "#4338CA",
+        "tertiary-container": "#EEF2FF",
+        "on-tertiary": "#FFFFFF",
+        "surface": "#F8F9FD",
+        "surface-container-lowest": "#FFFFFF",
+        "surface-container-low": "#F1F4F9",
+        "surface-container": "#E9EEF5",
+        "surface-container-high": "#E2E8F0",
+        "surface-container-highest": "#CBD5E1",
+        "background": "#F8F9FD",
+        "on-surface": "#1E293B",
+        "on-surface-variant": "#64748B",
+        "outline": "#94A3B8",
+        "outline-variant": "#E2E8F0",
+        "border-hairline": "#E2E8F0",
+        "error": "#BA1A1A",
+        "error-container": "#FFDAD6",
+        "on-error-container": "#93000A"
+      },
+      borderRadius: {
+        "DEFAULT": "0.75rem",
+        "lg": "1rem",
+        "xl": "1.25rem",
+        "2xl": "1.5rem",
+        "full": "9999px"
+      },
+      spacing: {
+        "space-2xs": "0.25rem",
+        "space-xs": "0.5rem",
+        "space-sm": "0.75rem",
+        "space-md": "1rem",
+        "space-lg": "1.5rem",
+        "space-xl": "2rem",
+        "space-2xl": "3rem",
+        "space-3xl": "4rem"
+      },
+      fontFamily: {
+        "headline-lg": ["Plus Jakarta Sans", "Roboto", "sans-serif"],
+        "headline-md": ["Plus Jakarta Sans", "Roboto", "sans-serif"],
+        "headline-sm": ["Plus Jakarta Sans", "Roboto", "sans-serif"],
+        "label-lg": ["Plus Jakarta Sans", "Roboto", "sans-serif"],
+        "label-md": ["Plus Jakarta Sans", "Roboto", "sans-serif"],
+        "label-sm": ["Plus Jakarta Sans", "Roboto", "sans-serif"],
+        "body-lg": ["Plus Jakarta Sans", "Roboto", "sans-serif"],
+        "body-md": ["Plus Jakarta Sans", "Roboto", "sans-serif"],
+        "body-sm": ["Plus Jakarta Sans", "Roboto", "sans-serif"]
+      }
+    }
+  }
+};</script></head><body class="bg-background font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-primary"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest border-r border-border-hairline shadow-[0_1px_8px_rgba(30,41,59,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-20 px-space-lg flex items-center gap-space-sm border-b border-border-hairline/70"><img alt="TrampoCerto" class="h-9 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VWrpMcoCyuC2rFhBdxhIMAQU_P6IeiHy8mssxBAw5f-tPD55i3dgzaDsEtW_TBO70Mmuwd5yvwM85C2QjTTjcwzW1HVgetK2YF_wVjIvH_IEm8fG-y4As-zruS0XxQ05UwKoiHeCeGupAuPtg6YqtwTzQzpMHXsuuf9yDFFniqyEpbY56wvRgNewsa8Dky7qoNFMrylSezCKDajqy27Hu9LE_SHbuOpelG-qYt7w9lzQadkwGz3ToBUK9J"/></div><div class="px-space-md mt-space-md"><nav class="flex flex-col gap-1.5"><a class="flex items-center gap-space-sm px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all font-label-md text-[14px]" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px]">dashboard</span><span>Dashboard</span></a><a class="flex items-center gap-space-sm px-4 py-3 rounded-full bg-primary-container text-on-primary-container font-semibold shadow-xs transition-all font-label-md text-[14px]" data-path="orcamentos-e-propostas" href="#"><span class="material-symbols-outlined text-[20px] text-primary">request_quote</span><span>Orçamentos &amp; Propostas</span></a><a class="flex items-center gap-space-sm px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all font-label-md text-[14px]" data-path="recibos-emitidos" href="#"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span>Recibos Emitidos</span></a><a class="flex items-center gap-space-sm px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all font-label-md text-[14px]" data-path="faturamento-e-das-mei" href="#"><span class="material-symbols-outlined text-[20px]">account_balance</span><span>Faturamento &amp; DAS MEI</span></a><a class="flex items-center gap-space-sm px-4 py-3 rounded-full text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all font-label-md text-[14px]" data-path="clientes" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span>Clientes</span></a></nav></div></div><div class="p-space-md flex flex-col gap-space-sm"><div class="bg-surface-container-low border border-border-hairline rounded-2xl p-space-md flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-[11px] text-on-surface-variant font-medium">Teto Anual MEI</span><span class="font-label-sm text-[11px] text-primary font-bold">52%</span></div><div class="w-full h-2 bg-surface-container-highest/60 rounded-full overflow-hidden"><div class="h-full bg-primary rounded-full w-[52%]"></div></div><div class="flex justify-between font-label-sm text-[11px] text-on-surface-variant mt-1"><span>R$ 42.120</span><span class="text-on-surface font-semibold">R$ 81.000</span></div></div><div class="flex items-center justify-between px-space-xs py-1"><span class="font-label-sm text-[11px] text-on-surface-variant">© 2025 TrampoCerto</span><span class="font-label-sm text-[11px] text-primary font-semibold">Material You M3</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-20 bg-surface/90 backdrop-blur-md border-b border-border-hairline shadow-[0_1px_6px_rgba(30,41,59,0.03)] z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-md"><div class="relative hidden lg:block w-80"><span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[19px]">search</span><input class="w-full pl-10 pr-space-md py-2 bg-surface-container-lowest border border-outline-variant rounded-full font-body-sm text-[13px] text-on-surface placeholder:text-on-surface-variant/70 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" placeholder="Buscar orçamento, cliente ou recibo..." type="text"/></div></div><div class="flex items-center gap-space-md"><a class="inline-flex items-center gap-space-xs px-5 py-2.5 bg-primary hover:bg-primary-hover text-on-primary rounded-full font-label-md text-[13px] font-semibold transition-all shadow-[0_2px_6px_rgba(30,58,138,0.25)] hover:shadow-md" data-path="novo-orcamento" href="#"><span class="material-symbols-outlined text-[18px]">add</span><span>Novo Orçamento</span></a><div class="relative cursor-pointer"><button class="w-10 h-10 rounded-full bg-surface-container-lowest border border-border-hairline flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors relative" type="button"><span class="material-symbols-outlined text-[19px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-error ring-2 ring-surface-container-lowest"></span></button></div><div class="flex items-center gap-space-sm pl-space-xs border-l border-border-hairline ml-1"><div class="flex flex-col text-right"><span class="font-label-md text-[13px] font-semibold text-on-surface leading-tight">Rodrigo Silva (MEI)</span><span class="inline-flex items-center gap-1 justify-end font-label-sm text-[10px] text-primary uppercase font-bold tracking-wider"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span>Regular</span></div><img alt="Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-primary/20" src="https://lh3.googleusercontent.com/aida/AEtjO1XzEB6UinNFXNFZfxahKmw_0CZ_S2TVSjYcTd7jGbxzv0NX1vgdHhd-Efkp6toa26CQzW5nP9e1augAG3and1cOsmarmwEKs2pVhTarI9N7mxdNAeBEc8334gYSBE81kWQNugB4oIa6BMUIG8wotNZVRkuGeBy6czdxM4dSfbeZ7vA9PVbCMAvpaUNswN07flUBjBuNo_fhfQbKV8d0jv7AY7Kz7NQKgvccPR_JoH8E3crkcGPnsUvDl2v8"/></div></div></header><main class="w-full pt-20 px-space-xl pb-space-2xl bg-background min-h-screen"><div class="flex flex-col w-full max-w-[1440px] mx-auto pt-space-lg">
+<!-- Breadcrumb & Instant Status Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm mb-space-lg">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-[12px]">
+<span class="hover:text-primary cursor-pointer transition-colors">Orçamentos</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-on-surface font-semibold">Novo Orçamento #042</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<div class="flex items-center gap-1.5 px-3 py-1 bg-primary-container text-on-primary-container border border-primary/10 rounded-full shadow-xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-[10px] uppercase font-bold tracking-widest">Salvamento Automático Ativo</span>
+</div>
+<span class="font-body-sm text-[12px] text-on-surface-variant">Modificado há 12 segundos</span>
+</div>
+</div>
+<!-- Main 2-Column Split Interface -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-xl items-start pb-space-3xl">
+<!-- LEFT COLUMN: Form & Config (50% equivalent -> 6 cols in 12-grid) -->
+<div class="xl:col-span-6 flex flex-col gap-space-lg">
+<!-- Card: Header Title & Guidance -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg border border-border-hairline shadow-[0_2px_12px_rgba(30,41,59,0.03)] flex flex-col gap-space-2xs relative overflow-hidden">
+<div class="flex items-center gap-1.5 text-primary font-label-sm text-[11px] uppercase tracking-widest font-bold">
+<span class="material-symbols-outlined text-[16px]">edit_document</span>
+<span>Emissão Instantânea MEI</span>
+</div>
+<h1 class="font-headline-lg text-[26px] leading-tight text-on-surface tracking-tight font-bold">Criar Novo Orçamento #042</h1>
+<p class="font-body-md text-[14px] text-on-surface-variant leading-relaxed">Preencha os dados em 2 minutos. O documento técnico A4 é formatado automaticamente em tempo real.</p>
+</div>
+<!-- Card: Dados do Cliente -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg border border-border-hairline shadow-[0_2px_12px_rgba(30,41,59,0.03)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-2xs border-b border-border-hairline/70">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</span>
+<h2 class="font-headline-sm text-[17px] font-bold text-on-surface">1. Dados do Cliente</h2>
+</div>
+<span class="font-label-sm text-[11px] text-primary font-semibold bg-primary-container/70 px-3 py-0.5 rounded-full border border-primary/20">Passo 1 de 3</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="md:col-span-2 flex flex-col gap-1.5">
+<label class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold tracking-wider">Nome ou Empresa do Cliente</label>
+<div class="relative">
+<input class="w-full px-space-md py-3 bg-surface-container-low border border-outline-variant focus:bg-surface-container-lowest rounded-xl font-body-md text-[14px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs transition-all" id="clientNameInput" placeholder="Ex: Juliana Mendes" type="text" value="Juliana Mendes"/>
+<span class="material-symbols-outlined absolute right-space-sm top-1/2 -translate-y-1/2 text-primary text-[18px]">check_circle</span>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold tracking-wider">WhatsApp com DDD</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[17px]">chat</span>
+<input class="w-full pl-10 pr-space-md py-3 bg-surface-container-low border border-outline-variant focus:bg-surface-container-lowest rounded-xl font-body-md text-[14px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs transition-all" id="clientPhoneInput" placeholder="(00) 00000-0000" type="text" value="(11) 98765-4321"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold tracking-wider">Cidade / Bairro</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[17px]">location_on</span>
+<input class="w-full pl-10 pr-space-md py-3 bg-surface-container-low border border-outline-variant focus:bg-surface-container-lowest rounded-xl font-body-md text-[14px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs transition-all" id="clientLocationInput" placeholder="Cidade - UF" type="text" value="São Paulo - SP (Pinheiros)"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Card: Itens do Serviço / Produtos -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg border border-border-hairline shadow-[0_2px_12px_rgba(30,41,59,0.03)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-2xs border-b border-border-hairline/70">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">format_list_bulleted</span>
+</span>
+<h2 class="font-headline-sm text-[17px] font-bold text-on-surface">2. Serviços e Materiais</h2>
+</div>
+<span class="font-label-sm text-[11px] text-on-surface-variant font-semibold">Tabela Dinâmica</span>
+</div>
+<!-- Dynamic Items Container -->
+<div class="flex flex-col gap-space-sm" id="itemsList">
+<!-- Item Row 1 -->
+<div class="item-row p-space-sm bg-surface-container-low border border-border-hairline rounded-2xl flex flex-col md:flex-row items-center gap-space-sm group transition-all hover:border-primary/40 hover:bg-surface-container/60">
+<div class="w-full flex-grow flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Descrição Técnica</label>
+<input class="item-desc w-full bg-surface-container-lowest border border-outline-variant px-space-sm py-2 rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" type="text" value="Instalação de rede elétrica e 8 pontos de tomada"/>
+</div>
+<div class="flex items-center gap-space-xs w-full md:w-auto">
+<div class="w-16 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Qtd</label>
+<input class="item-qty w-full bg-surface-container-lowest border border-outline-variant px-space-xs py-2 rounded-xl font-body-md text-[13px] text-center text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" min="1" type="number" value="1"/>
+</div>
+<div class="w-24 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Unidade</label>
+<select class="item-unit w-full bg-surface-container-lowest border border-outline-variant px-space-xs py-2 rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs">
+<option selected="" value="un">un</option>
+<option value="h">h</option>
+<option value="m²">m²</option>
+<option value="metros">m</option>
+</select>
+</div>
+<div class="w-28 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Unitário</label>
+<div class="relative">
+<span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-sm text-[11px]">R$</span>
+<input class="item-price w-full bg-surface-container-lowest border border-outline-variant pl-7 pr-space-xs py-2 rounded-xl font-body-md text-[13px] text-right text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" step="10" type="number" value="850"/>
+</div>
+</div>
+<div class="pt-5">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/50 transition-colors" title="Remover item" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item Row 2 -->
+<div class="item-row p-space-sm bg-surface-container-low border border-border-hairline rounded-2xl flex flex-col md:flex-row items-center gap-space-sm group transition-all hover:border-primary/40 hover:bg-surface-container/60">
+<div class="w-full flex-grow flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Descrição Técnica</label>
+<input class="item-desc w-full bg-surface-container-lowest border border-outline-variant px-space-sm py-2 rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" type="text" value="Quadro de distribuição trifásico com disjuntores DIN"/>
+</div>
+<div class="flex items-center gap-space-xs w-full md:w-auto">
+<div class="w-16 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Qtd</label>
+<input class="item-qty w-full bg-surface-container-lowest border border-outline-variant px-space-xs py-2 rounded-xl font-body-md text-[13px] text-center text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" min="1" type="number" value="1"/>
+</div>
+<div class="w-24 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Unidade</label>
+<select class="item-unit w-full bg-surface-container-lowest border border-outline-variant px-space-xs py-2 rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs">
+<option selected="" value="un">un</option>
+<option value="h">h</option>
+<option value="m²">m²</option>
+<option value="metros">m</option>
+</select>
+</div>
+<div class="w-28 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Unitário</label>
+<div class="relative">
+<span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-sm text-[11px]">R$</span>
+<input class="item-price w-full bg-surface-container-lowest border border-outline-variant pl-7 pr-space-xs py-2 rounded-xl font-body-md text-[13px] text-right text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" step="10" type="number" value="650"/>
+</div>
+</div>
+<div class="pt-5">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/50 transition-colors" title="Remover item" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Item Row 3 -->
+<div class="item-row p-space-sm bg-surface-container-low border border-border-hairline rounded-2xl flex flex-col md:flex-row items-center gap-space-sm group transition-all hover:border-primary/40 hover:bg-surface-container/60">
+<div class="w-full flex-grow flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Descrição Técnica</label>
+<input class="item-desc w-full bg-surface-container-lowest border border-outline-variant px-space-sm py-2 rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" type="text" value="Passagem de cabos de rede estruturada Cat6"/>
+</div>
+<div class="flex items-center gap-space-xs w-full md:w-auto">
+<div class="w-16 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Qtd</label>
+<input class="item-qty w-full bg-surface-container-lowest border border-outline-variant px-space-xs py-2 rounded-xl font-body-md text-[13px] text-center text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" min="1" type="number" value="50"/>
+</div>
+<div class="w-24 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Unidade</label>
+<select class="item-unit w-full bg-surface-container-lowest border border-outline-variant px-space-xs py-2 rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs">
+<option value="un">un</option>
+<option value="h">h</option>
+<option value="m²">m²</option>
+<option selected="" value="metros">metros</option>
+</select>
+</div>
+<div class="w-28 flex flex-col gap-1">
+<label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Unitário</label>
+<div class="relative">
+<span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-sm text-[11px]">R$</span>
+<input class="item-price w-full bg-surface-container-lowest border border-outline-variant pl-7 pr-space-xs py-2 rounded-xl font-body-md text-[13px] text-right text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" step="0.5" type="number" value="7"/>
+</div>
+</div>
+<div class="pt-5">
+<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/50 transition-colors" title="Remover item" type="button">
+<span class="material-symbols-outlined text-[18px]">delete</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Add Item Trigger -->
+<button class="flex items-center justify-center gap-space-xs py-3 px-space-md bg-surface-container-low hover:bg-surface-container text-primary border border-border-hairline rounded-full font-label-md text-[13px] font-semibold transition-all shadow-xs" id="addItemBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Adicionar outro serviço ou item</span>
+</button>
+<!-- Subtotal / Discount / Total Widget -->
+<div class="p-space-md bg-surface-container-low border border-border-hairline rounded-2xl flex flex-col gap-2">
+<div class="flex items-center justify-between font-body-md text-[13px] text-on-surface-variant">
+<span>Subtotal Bruto</span>
+<span class="font-semibold text-on-surface" id="formSubtotalDisplay">R$ 1.850,00</span>
+</div>
+<div class="flex items-center justify-between py-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[17px]">sell</span>
+<span class="font-body-md text-[13px] text-on-surface-variant">Desconto Especial</span>
+</div>
+<div class="relative w-32">
+<span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-sm text-[11px]">R$</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant pl-7 pr-2.5 py-1 rounded-xl font-label-md text-[13px] text-right text-secondary font-semibold focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" id="discountInput" type="number" value="50"/>
+</div>
+</div>
+<div class="h-px bg-border-hairline my-1"></div>
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-[16px] text-on-surface font-bold">Total do Orçamento</span>
+<div class="flex items-baseline gap-1.5">
+<span class="font-label-sm text-[11px] text-primary font-bold">BRL</span>
+<span class="font-headline-lg text-[24px] text-primary font-extrabold tracking-tight" id="formTotalDisplay">R$ 1.800,00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card: Condições de Pagamento, Prazos & Observações -->
+<div class="bg-surface-container-lowest rounded-2xl p-space-lg border border-border-hairline shadow-[0_2px_12px_rgba(30,41,59,0.03)] flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-2xs border-b border-border-hairline/70">
+<div class="flex items-center gap-2.5">
+<span class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+</span>
+<h2 class="font-headline-sm text-[17px] font-bold text-on-surface">3. Pagamento &amp; Garantia</h2>
+</div>
+<span class="font-label-sm text-[11px] text-primary font-semibold bg-primary-container/70 px-3 py-0.5 rounded-full border border-primary/20">Finalização</span>
+</div>
+<div class="flex flex-col gap-space-md">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold tracking-wider">Condições de Pagamento</label>
+<input class="w-full px-space-md py-3 bg-surface-container-low border border-outline-variant focus:bg-surface-container-lowest rounded-xl font-body-md text-[14px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs transition-all" id="paymentTermsInput" type="text" value="50% de entrada no aceite + 50% na conclusão da entrega"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold tracking-wider">Chave PIX Cadastrada</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-primary text-[17px]">qr_code_2</span>
+<input class="w-full pl-10 pr-space-md py-3 bg-surface-container-low border border-outline-variant focus:bg-surface-container-lowest rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs transition-all" id="pixKeyInput" type="text" value="rodrigo.silva@email.com (Banco Inter)"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold tracking-wider">Validade da Proposta</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-space-sm top-1/2 -translate-y-1/2 text-on-surface-variant text-[17px]">event</span>
+<input class="w-full pl-10 pr-space-md py-3 bg-surface-container-low border border-outline-variant focus:bg-surface-container-lowest rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs transition-all" id="validityInput" type="text" value="Válido por 10 dias (até 28/10/2024)"/>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-[11px] text-on-surface-variant uppercase font-semibold tracking-wider">Termos de Garantia &amp; Observações</label>
+<textarea class="w-full px-space-md py-3 bg-surface-container-low border border-outline-variant focus:bg-surface-container-lowest rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs transition-all resize-none leading-relaxed" id="warrantyInput" rows="2">Garantia técnica de 90 dias após conclusão do serviço. Materiais inclusos de 1ª linha com certificação INMETRO.</textarea>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Realistic Sheet Preview / Live Paper Document (50% equivalent -> 6 cols in 12-grid) -->
+<div class="xl:col-span-6 sticky top-24">
+<!-- Preview Header Control -->
+<div class="flex items-center justify-between mb-space-sm px-1">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[19px]">description</span>
+<span class="font-label-lg text-[14px] text-on-surface font-bold">Pré-visualização do Documento A4</span>
+<span class="font-label-sm text-[11px] bg-primary-container text-on-primary-container px-3 py-0.5 rounded-full font-semibold">PDF Dinâmico</span>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-sm text-[11px]">
+<span>Zoom: 100%</span>
+<button class="w-8 h-8 rounded-full bg-surface-container-lowest border border-border-hairline flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low shadow-xs" title="Visualizar tela inteira" type="button">
+<span class="material-symbols-outlined text-[15px]">fullscreen</span>
+</button>
+</div>
+</div>
+<!-- Real A4 Sheet Canvas Container -->
+<div class="bg-surface-container-lowest rounded-2xl border border-border-hairline shadow-[0_8px_30px_rgba(30,41,59,0.08)] p-8 lg:p-10 flex flex-col justify-between min-h-[780px] relative overflow-hidden transition-all duration-300">
+<!-- Top Accent Line -->
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-primary"></div>
+<div class="flex flex-col gap-space-lg">
+<!-- Document Header -->
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-space-md pb-space-md border-b border-border-hairline">
+<div class="flex items-start gap-space-sm">
+<div class="w-12 h-12 rounded-2xl bg-primary text-on-primary flex items-center justify-center font-bold font-headline-sm text-[17px] shadow-sm tracking-tight">
+                RS
+              </div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-[18px] text-on-surface leading-tight font-bold">Rodrigo Silva</span>
+<span class="font-label-md text-[12px] text-primary font-semibold">Serviços Elétricos &amp; Instalações</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant mt-0.5">CNPJ MEI: 45.123.789/0001-90</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">(11) 97722-3344 • São Paulo - SP</span>
+</div>
+</div>
+<div class="flex flex-col sm:items-end bg-surface-container-low border border-border-hairline p-space-sm rounded-2xl">
+<span class="font-label-sm text-[10px] text-primary font-bold uppercase tracking-wider">Proposta Comercial</span>
+<span class="font-headline-md text-[18px] text-on-surface font-extrabold tracking-tight">ORÇAMENTO #042</span>
+<div class="flex items-center gap-1 font-body-sm text-[11px] text-on-surface-variant mt-0.5">
+<span class="material-symbols-outlined text-[13px]">calendar_today</span>
+<span>18 de Outubro de 2024</span>
+</div>
+</div>
+</div>
+<!-- Client Card & Meta Row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm p-space-md bg-surface-container-low border border-border-hairline rounded-2xl">
+<div class="flex flex-col">
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-semibold tracking-wider">Cliente Destinatário</span>
+<span class="font-headline-sm text-[15px] text-on-surface font-bold mt-0.5" id="previewClientName">Juliana Mendes</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant" id="previewClientLocation">São Paulo - SP (Pinheiros)</span>
+</div>
+<div class="flex flex-col sm:items-end justify-center">
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-semibold tracking-wider">Contato do Cliente</span>
+<span class="font-body-md text-[13px] text-on-surface font-semibold mt-0.5" id="previewClientPhone">(11) 98765-4321</span>
+<span class="font-body-sm text-[11px] text-primary flex items-center gap-1 font-medium mt-0.5">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> WhatsApp Confirmado
+              </span>
+</div>
+</div>
+<!-- Items Table -->
+<div class="flex flex-col overflow-hidden rounded-xl border border-border-hairline">
+<div class="grid grid-cols-12 px-4 py-2.5 bg-surface-container font-label-sm text-[11px] text-on-surface-variant uppercase font-bold tracking-wider">
+<span class="col-span-6">Descrição dos Serviços / Materiais</span>
+<span class="col-span-2 text-center">Qtd</span>
+<span class="col-span-2 text-right">Unitário</span>
+<span class="col-span-2 text-right">Subtotal</span>
+</div>
+<div class="flex flex-col divide-y divide-border-hairline/70 bg-surface-container-lowest" id="previewItemsContainer">
+<!-- Preview Item 1 -->
+<div class="grid grid-cols-12 px-4 py-3 font-body-sm text-[12px] items-center hover:bg-surface-container-low/60 transition-colors">
+<div class="col-span-6 pr-2">
+<span class="font-semibold text-on-surface block">Instalação de rede elétrica e 8 pontos de tomada</span>
+<span class="text-on-surface-variant text-[11px]">Mão de obra técnica qualificada</span>
+</div>
+<span class="col-span-2 text-center text-on-surface font-medium">1 un</span>
+<span class="col-span-2 text-right text-on-surface-variant">R$ 850,00</span>
+<span class="col-span-2 text-right font-semibold text-on-surface">R$ 850,00</span>
+</div>
+<!-- Preview Item 2 -->
+<div class="grid grid-cols-12 px-4 py-3 font-body-sm text-[12px] items-center hover:bg-surface-container-low/60 transition-colors">
+<div class="col-span-6 pr-2">
+<span class="font-semibold text-on-surface block">Quadro de distribuição trifásico com disjuntores DIN</span>
+<span class="text-on-surface-variant text-[11px]">Montagem, barramentos e identificação de circuitos</span>
+</div>
+<span class="col-span-2 text-center text-on-surface font-medium">1 un</span>
+<span class="col-span-2 text-right text-on-surface-variant">R$ 650,00</span>
+<span class="col-span-2 text-right font-semibold text-on-surface">R$ 650,00</span>
+</div>
+<!-- Preview Item 3 -->
+<div class="grid grid-cols-12 px-4 py-3 font-body-sm text-[12px] items-center hover:bg-surface-container-low/60 transition-colors">
+<div class="col-span-6 pr-2">
+<span class="font-semibold text-on-surface block">Passagem de cabos de rede estruturada Cat6</span>
+<span class="text-on-surface-variant text-[11px]">Conectorização RJ45 e testes de continuidade</span>
+</div>
+<span class="col-span-2 text-center text-on-surface font-medium">50 m</span>
+<span class="col-span-2 text-right text-on-surface-variant">R$ 7,00</span>
+<span class="col-span-2 text-right font-semibold text-on-surface">R$ 350,00</span>
+</div>
+</div>
+</div>
+<!-- Total Calculation Ledger & Financial Summary -->
+<div class="flex flex-col sm:flex-row justify-between gap-space-md pt-space-xs">
+<div class="flex-1 flex flex-col gap-space-xs">
+<div class="p-space-sm bg-surface-container-low border border-border-hairline rounded-2xl flex flex-col gap-1">
+<div class="flex items-center gap-1.5 text-primary font-label-sm text-[11px] font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[15px]">verified</span>
+<span>Condições e Acordos</span>
+</div>
+<p class="font-body-sm text-[12px] text-on-surface" id="previewPaymentTerms">50% de entrada no aceite + 50% na conclusão da entrega</p>
+<div class="mt-1 pt-1 border-t border-border-hairline/70 flex flex-col gap-0.5">
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-semibold">Chave PIX para Depósito / Sinal:</span>
+<span class="font-label-md text-[12px] text-primary font-mono font-bold" id="previewPixKey">rodrigo.silva@email.com (Banco Inter)</span>
+</div>
+<span class="font-body-sm text-[11px] text-on-surface-variant mt-0.5" id="previewValidity">Válido por 10 dias (até 28/10/2024)</span>
+</div>
+</div>
+<!-- Totals Box -->
+<div class="w-full sm:w-64 p-space-md bg-surface-container-low border border-border-hairline rounded-2xl flex flex-col gap-1.5">
+<div class="flex justify-between font-body-sm text-[12px] text-on-surface-variant">
+<span>Subtotal Itens:</span>
+<span class="font-semibold text-on-surface" id="previewSubtotal">R$ 1.850,00</span>
+</div>
+<div class="flex justify-between font-body-sm text-[12px] text-secondary">
+<span>Desconto Aplicado:</span>
+<span class="font-semibold" id="previewDiscount">- R$ 50,00</span>
+</div>
+<div class="h-px bg-border-hairline my-0.5"></div>
+<div class="flex justify-between items-baseline">
+<span class="font-headline-sm text-[14px] text-on-surface font-bold">Total Geral:</span>
+<span class="font-headline-lg text-[20px] text-primary font-extrabold tracking-tight" id="previewTotal">R$ 1.800,00</span>
+</div>
+</div>
+</div>
+<!-- Warranty & Policy Guarantee Note -->
+<div class="p-3 bg-surface-container/60 border border-border-hairline rounded-xl flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[17px]">security</span>
+<span class="font-body-sm text-[12px] text-on-surface" id="previewWarranty">Garantia técnica de 90 dias após conclusão do serviço. Materiais inclusos de 1ª linha com certificação INMETRO.</span>
+</div>
+</div>
+<!-- Document Footer with Platform Trust -->
+<div class="pt-space-md mt-space-md border-t border-border-hairline flex flex-col sm:flex-row items-center justify-between gap-space-xs text-on-surface-variant">
+<div class="flex items-center gap-2">
+<div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[12px]">handshake</span>
+</div>
+<span class="font-label-sm text-[11px]">Documento gerado profissionalmente via <strong class="text-primary font-bold">TrampoCerto</strong></span>
+</div>
+<span class="font-label-sm text-[11px] text-on-surface-variant hover:text-primary transition-colors cursor-pointer">
+            Crie orçamentos gratuitos você também • trampocerto.com.br
+          </span>
+</div>
+</div>
+</div>
+</div>
+<!-- FIXED BOTTOM FLOATING ACTION DOCK (High Salience Quick Triggers) -->
+<div class="fixed bottom-0 left-72 right-0 bg-surface-container-lowest/95 backdrop-blur-md border-t border-border-hairline shadow-[0_-4px_24px_rgba(30,41,59,0.06)] z-30 px-space-xl py-3.5 flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="flex flex-col">
+<span class="font-label-sm text-[10px] text-on-surface-variant uppercase font-semibold tracking-wider">Total do Documento</span>
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-[20px] font-extrabold text-on-surface tracking-tight" id="dockTotal">R$ 1.800,00</span>
+<span class="px-3 py-0.5 rounded-full bg-primary-container text-on-primary-container font-label-sm text-[11px] font-semibold">Orçamento #042</span>
+</div>
+</div>
+<div class="hidden md:flex items-center gap-space-xs pl-space-md border-l border-border-hairline text-on-surface-variant font-body-sm text-[12px]">
+<span class="material-symbols-outlined text-[17px] text-primary">schedule</span>
+<span>Prazo sugerido: 2 dias úteis</span>
+</div>
+</div>
+<!-- Interactive Buttons -->
+<div class="flex flex-wrap items-center gap-2.5">
+<button class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface border border-border-hairline rounded-full font-label-md text-[13px] font-semibold transition-all shadow-xs" id="btnSaveTemplate" type="button">
+<span class="material-symbols-outlined text-[17px]">bookmark_add</span>
+<span class="hidden sm:inline">Salvar como Modelo</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-surface-container-low hover:bg-surface-container text-on-surface border border-border-hairline rounded-full font-label-md text-[13px] font-semibold transition-all shadow-xs" id="btnCopyLink" type="button">
+<span class="material-symbols-outlined text-[17px]">link</span>
+<span>Copiar Link Público</span>
+</button>
+<button class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-secondary text-on-secondary hover:bg-primary-hover rounded-full font-label-md text-[13px] font-semibold transition-all shadow-sm" id="btnDownloadPdf" type="button">
+<span class="material-symbols-outlined text-[17px]">picture_as_pdf</span>
+<span>Baixar PDF</span>
+</button>
+<!-- Primary High-Impact CTA: WhatsApp -->
+<button class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-on-primary rounded-full font-label-md text-[14px] font-bold transition-all shadow-[0_2px_10px_rgba(30,58,138,0.35)] transform active:scale-95" id="btnSendWhatsApp" type="button">
+<span class="material-symbols-outlined text-[19px]">send</span>
+<span>Enviar por WhatsApp</span>
+</button>
+</div>
+</div>
+<!-- Notification Toast Modal Simulator -->
+<div class="fixed top-24 right-space-xl bg-surface-container-lowest text-on-surface border border-border-hairline px-space-md py-space-sm rounded-2xl shadow-xl flex items-center gap-space-sm translate-y-[-100px] opacity-0 transition-all duration-300 z-50 pointer-events-none" id="toastNotification">
+<div class="w-8 h-8 rounded-full bg-primary-container text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]" id="toastIcon">check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-[13px] font-bold" id="toastTitle">Sucesso!</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant" id="toastMessage">Ação executada com sucesso.</span>
+</div>
+</div>
+</div>
+<script>
+  // Simple reactive DOM synchronization for preview
+  const clientNameInput = document.getElementById('clientNameInput');
+  const clientPhoneInput = document.getElementById('clientPhoneInput');
+  const clientLocationInput = document.getElementById('clientLocationInput');
+  const discountInput = document.getElementById('discountInput');
+  const paymentTermsInput = document.getElementById('paymentTermsInput');
+  const pixKeyInput = document.getElementById('pixKeyInput');
+  const validityInput = document.getElementById('validityInput');
+  const warrantyInput = document.getElementById('warrantyInput');
+
+  // Preview elements
+  const previewClientName = document.getElementById('previewClientName');
+  const previewClientPhone = document.getElementById('previewClientPhone');
+  const previewClientLocation = document.getElementById('previewClientLocation');
+  const previewPaymentTerms = document.getElementById('previewPaymentTerms');
+  const previewPixKey = document.getElementById('previewPixKey');
+  const previewValidity = document.getElementById('previewValidity');
+  const previewWarranty = document.getElementById('previewWarranty');
+
+  const formSubtotalDisplay = document.getElementById('formSubtotalDisplay');
+  const formTotalDisplay = document.getElementById('formTotalDisplay');
+  const previewSubtotal = document.getElementById('previewSubtotal');
+  const previewDiscount = document.getElementById('previewDiscount');
+  const previewTotal = document.getElementById('previewTotal');
+  const dockTotal = document.getElementById('dockTotal');
+
+  // Real-time Text Sync
+  clientNameInput.addEventListener('input', (e) => {
+    previewClientName.textContent = e.target.value || 'Nome do Cliente';
+  });
+  clientPhoneInput.addEventListener('input', (e) => {
+    previewClientPhone.textContent = e.target.value || '(00) 00000-0000';
+  });
+  clientLocationInput.addEventListener('input', (e) => {
+    previewClientLocation.textContent = e.target.value || 'Localidade';
+  });
+  paymentTermsInput.addEventListener('input', (e) => {
+    previewPaymentTerms.textContent = e.target.value || 'Condições a combinar';
+  });
+  pixKeyInput.addEventListener('input', (e) => {
+    previewPixKey.textContent = e.target.value || 'Não informado';
+  });
+  validityInput.addEventListener('input', (e) => {
+    previewValidity.textContent = e.target.value || 'Consulte validade';
+  });
+  warrantyInput.addEventListener('input', (e) => {
+    previewWarranty.textContent = e.target.value || 'Termos padrão TrampoCerto';
+  });
+
+  // Calculate & Refresh Totals
+  function updateFinancials() {
+    let subtotal = 0;
+    const rows = document.querySelectorAll('.item-row');
+    
+    rows.forEach(row => {
+      const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+      const price = parseFloat(row.querySelector('.item-price').value) || 0;
+      subtotal += (qty * price);
+    });
+
+    const discount = parseFloat(discountInput.value) || 0;
+    const total = Math.max(0, subtotal - discount);
+
+    const formatBRL = (val) => val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    formSubtotalDisplay.textContent = formatBRL(subtotal);
+    previewSubtotal.textContent = formatBRL(subtotal);
+    
+    previewDiscount.textContent = `- ${formatBRL(discount)}`;
+    
+    formTotalDisplay.textContent = formatBRL(total);
+    previewTotal.textContent = formatBRL(total);
+    dockTotal.textContent = formatBRL(total);
+  }
+
+  // Bind item inputs
+  function bindRowEvents() {
+    document.querySelectorAll('.item-qty, .item-price').forEach(input => {
+      input.removeEventListener('input', updateFinancials);
+      input.addEventListener('input', updateFinancials);
+    });
+  }
+  bindRowEvents();
+  discountInput.addEventListener('input', updateFinancials);
+
+  // Add Item Micro-Action
+  const addItemBtn = document.getElementById('addItemBtn');
+  const itemsList = document.getElementById('itemsList');
+  const previewItemsContainer = document.getElementById('previewItemsContainer');
+
+  addItemBtn.addEventListener('click', () => {
+    const newRow = document.createElement('div');
+    newRow.className = "item-row p-space-sm bg-surface-container-low border border-border-hairline rounded-2xl flex flex-col md:flex-row items-center gap-space-sm group transition-all hover:border-primary/40 hover:bg-surface-container/60";
+    newRow.innerHTML = `
+      <div class="w-full flex-grow flex flex-col gap-1">
+        <label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Descrição Técnica</label>
+        <input type="text" value="Novo Serviço Técnico MEI" class="item-desc w-full bg-surface-container-lowest border border-outline-variant px-space-sm py-2 rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" />
+      </div>
+      <div class="flex items-center gap-space-xs w-full md:w-auto">
+        <div class="w-16 flex flex-col gap-1">
+          <label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Qtd</label>
+          <input type="number" min="1" value="1" class="item-qty w-full bg-surface-container-lowest border border-outline-variant px-space-xs py-2 rounded-xl font-body-md text-[13px] text-center text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" />
+        </div>
+        <div class="w-24 flex flex-col gap-1">
+          <label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Unidade</label>
+          <select class="item-unit w-full bg-surface-container-lowest border border-outline-variant px-space-xs py-2 rounded-xl font-body-md text-[13px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs">
+            <option value="un">un</option>
+            <option value="h">h</option>
+            <option value="m²">m²</option>
+            <option value="metros">m</option>
+          </select>
+        </div>
+        <div class="w-28 flex flex-col gap-1">
+          <label class="font-label-sm text-[10px] uppercase font-semibold text-on-surface-variant">Unitário</label>
+          <div class="relative">
+            <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant font-label-sm text-[11px]">R$</span>
+            <input type="number" step="10" value="150" class="item-price w-full bg-surface-container-lowest border border-outline-variant pl-7 pr-space-xs py-2 rounded-xl font-body-md text-[13px] text-right text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 shadow-xs" />
+          </div>
+        </div>
+        <div class="pt-5">
+          <button type="button" class="btn-remove w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error-container/50 transition-colors" title="Remover item">
+            <span class="material-symbols-outlined text-[18px]">delete</span>
+          </button>
+        </div>
+      </div>
+    `;
+    itemsList.appendChild(newRow);
+
+    // Sync preview line
+    const newPreviewLine = document.createElement('div');
+    newPreviewLine.className = "grid grid-cols-12 px-4 py-3 font-body-sm text-[12px] items-center hover:bg-surface-container-low/60 transition-colors";
+    newPreviewLine.innerHTML = `
+      <div class="col-span-6 pr-2">
+        <span class="font-semibold text-on-surface block">Novo Serviço Técnico MEI</span>
+        <span class="text-on-surface-variant text-[11px]">Serviço adicional incluso na proposta</span>
+      </div>
+      <span class="col-span-2 text-center text-on-surface font-medium">1 un</span>
+      <span class="col-span-2 text-right text-on-surface-variant">R$ 150,00</span>
+      <span class="col-span-2 text-right font-semibold text-on-surface">R$ 150,00</span>
+    `;
+    previewItemsContainer.appendChild(newPreviewLine);
+
+    // Bind remove event
+    newRow.querySelector('.btn-remove').addEventListener('click', () => {
+      newRow.remove();
+      newPreviewLine.remove();
+      updateFinancials();
+    });
+
+    bindRowEvents();
+    updateFinancials();
+    showToast("Item Adicionado", "Novo item inserido no orçamento.");
+  });
+
+  // Attach delete buttons to existing rows
+  document.querySelectorAll('.item-row button').forEach((btn, idx) => {
+    btn.addEventListener('click', () => {
+      const rows = document.querySelectorAll('.item-row');
+      if (rows.length > 1) {
+        btn.closest('.item-row').remove();
+        const previewRows = previewItemsContainer.children;
+        if (previewRows[idx]) {
+          previewRows[idx].remove();
+        }
+        updateFinancials();
+        showToast("Item Removido", "O cálculo foi recalculado instantaneamente.");
+      } else {
+        showToast("Aviso", "O orçamento deve conter pelo menos 1 serviço.");
+      }
+    });
+  });
+
+  // Feedback Toast Simulator
+  const toast = document.getElementById('toastNotification');
+  const toastTitle = document.getElementById('toastTitle');
+  const toastMessage = document.getElementById('toastMessage');
+
+  function showToast(title, msg) {
+    toastTitle.textContent = title;
+    toastMessage.textContent = msg;
+    toast.classList.remove('translate-y-[-100px]', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+    setTimeout(() => {
+      toast.classList.add('translate-y-[-100px]', 'opacity-0');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 3200);
+  }
+
+  // Quick Action Triggers
+  document.getElementById('btnSendWhatsApp').addEventListener('click', () => {
+    showToast("WhatsApp Aberto", "Mensagem de proposta pronta criada para Juliana Mendes!");
+  });
+
+  document.getElementById('btnDownloadPdf').addEventListener('click', () => {
+    showToast("Gerando PDF Oficial", "Seu arquivo A4 de alta resolução foi baixado.");
+  });
+
+  document.getElementById('btnCopyLink').addEventListener('click', () => {
+    navigator.clipboard?.writeText("https://trampocerto.com.br/p/orc-042-rodrigo");
+    showToast("Link Copiado!", "Link público com validade até 28/10/2024 na área de transferência.");
+  });
+
+  document.getElementById('btnSaveTemplate').addEventListener('click', () => {
+    showToast("Modelo Salvo!", "Este padrão de orçamento já está disponível nos seus atalhos.");
+  });
+</script></main></div></body></html>

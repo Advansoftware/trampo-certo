@@ -1,0 +1,11 @@
+{
+  "id": "demo-mei-user-01",
+  "name": "Rodrigo Silva",
+  "email": "rodrigo@trampocerto.com.br",
+  "ocupacao": "Eletricista MEI e Reparos Residenciais",
+  "cnpj": "45.123.789/0001-90",
+  "telefone": "(11) 98765-4321",
+  "cidade": "São Paulo - SP",
+  "chavePix": "45.123.789/0001-90",
+  "avatarInitials": "RS"
+}

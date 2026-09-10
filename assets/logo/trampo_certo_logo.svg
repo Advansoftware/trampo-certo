@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+  <defs>
+    <linearGradient id="m3Grad" x1="8" y1="10" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#1E3A8A" />
+    </linearGradient>
+  </defs>
+  <!-- Material 3 Rounded Square Badge -->
+  <rect x="8" y="10" width="40" height="40" rx="14" fill="url(#m3Grad)"/>
+  
+  <!-- Stylized Letter 'T' merging with precision checkmark -->
+  <path d="M17 21C17 19.8954 17.8954 19 19 19H37C38.1046 19 39 19.8954 39 21C39 22.1046 38.1046 23 37 23H19C17.8954 23 17 22.1046 17 21Z" fill="#FFFFFF"/>
+  <path d="M28 21V35C28 36.8 29.2 38.5 31.2 38.5C32.6 38.5 34 37.3 34 35.8C34 35.2 33.5 34.6 32.5 34.6" stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- M3 Brand Typography -->
+  <text x="58" y="37" font-family="Plus Jakarta Sans, Roboto, sans-serif" font-size="22" font-weight="700" fill="#1E293B" letter-spacing="-0.4px">Trampo<tspan fill="#2563EB" font-weight="800">Certo</tspan></text>
+</svg>

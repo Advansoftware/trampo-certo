@@ -1,0 +1,67 @@
+services:
+  db:
+    image: mysql:8.4
+    container_name: trampocerto-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-trampocerto}
+      MYSQL_USER: ${MYSQL_USER:-trampo_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-trampo_password}
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: trampocerto-backend
+    restart: always
+    ports:
+      - "4005:4000"
+    environment:
+      PORT: 4000
+      DATABASE_HOST: db
+      DATABASE_PORT: 3306
+      DATABASE_NAME: ${MYSQL_DATABASE:-trampocerto}
+      DATABASE_USER: ${MYSQL_USER:-trampo_user}
+      DATABASE_PASSWORD: ${MYSQL_PASSWORD:-trampo_password}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-trampo_certo_jwt_secret_dev_key_987654321}
+      BETTER_AUTH_URL: http://localhost:4005
+      FRONTEND_URL: http://localhost:3000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: trampocerto-frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      NEXT_PUBLIC_API_URL: http://localhost:4005
+      NEXT_PUBLIC_BETTER_AUTH_URL: http://localhost:4005
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

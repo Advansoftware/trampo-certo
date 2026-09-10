@@ -1,0 +1,44 @@
+[
+  {
+    "id": "orc-001",
+    "codigo": "ORC-2026-042",
+    "clienteNome": "Marcos Oliveira",
+    "clienteTelefone": "(11) 98765-4321",
+    "servicoDescricao": "Manutenção elétrica completa e troca de disjuntores",
+    "valorTotal": 1450.00,
+    "status": "aprovado",
+    "dataEnvio": "Hoje, 10:42",
+    "itens": [
+      { "descricao": "Substituição de disjuntor geral e cabeamento 10mm", "qtd": 1, "unitario": 850.00, "total": 850.00 },
+      { "descricao": "Instalação de 8 luminárias LED embutidas", "qtd": 8, "unitario": 75.00, "total": 600.00 }
+    ]
+  },
+  {
+    "id": "orc-002",
+    "codigo": "ORC-2026-041",
+    "clienteNome": "Camila Duarte",
+    "clienteTelefone": "(11) 97766-5544",
+    "servicoDescricao": "Instalação de tomadas 20A para ar-condicionado",
+    "valorTotal": 890.00,
+    "status": "pendente",
+    "dataEnvio": "Ontem, 16:15",
+    "itens": [
+      { "descricao": "Ponto de força 220V dedicado com disjuntor bipolar", "qtd": 2, "unitario": 350.00, "total": 700.00 },
+      { "descricao": "Canaletas e fixação aparente reforçada", "qtd": 1, "unitario": 190.00, "total": 190.00 }
+    ]
+  },
+  {
+    "id": "orc-003",
+    "codigo": "ORC-2026-039",
+    "clienteNome": "TechSolutions Escritório",
+    "clienteTelefone": "(11) 96655-4433",
+    "servicoDescricao": "Adequação de quadro de distribuição e iluminação comercial",
+    "valorTotal": 3200.00,
+    "status": "aprovado",
+    "dataEnvio": "05/09/2026",
+    "itens": [
+      { "descricao": "Quadro de distribuição trifásico 24 disjuntores", "qtd": 1, "unitario": 1800.00, "total": 1800.00 },
+      { "descricao": "Passagem de cabeamento de rede e eletrocalha", "qtd": 1, "unitario": 1400.00, "total": 1400.00 }
+    ]
+  }
+]

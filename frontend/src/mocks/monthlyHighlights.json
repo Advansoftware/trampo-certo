@@ -1,0 +1,34 @@
+[
+  {
+    "id": "faturamento_mes",
+    "titulo": "Faturamento do Mês",
+    "valor": "R$ 6.420,00",
+    "badge": "+12% vs mês anterior",
+    "badgeTipo": "success",
+    "detalhe": "4 orçamentos fechados e recebidos"
+  },
+  {
+    "id": "a_receber",
+    "titulo": "A Receber (Pix Pendente)",
+    "valor": "R$ 1.850,00",
+    "badge": "2 pendentes",
+    "badgeTipo": "warning",
+    "detalhe": "Serviços concluídos aguardando Pix"
+  },
+  {
+    "id": "ticket_medio",
+    "titulo": "Ticket Médio por Trampo",
+    "valor": "R$ 1.280,00",
+    "badge": "+8%",
+    "badgeTipo": "success",
+    "detalhe": "Média de valor por orçamento fechado"
+  },
+  {
+    "id": "recibos_emitidos",
+    "titulo": "Recibos Emitidos no Mês",
+    "valor": "8 Recibos",
+    "badge": "100% validados",
+    "badgeTipo": "info",
+    "detalhe": "Sem burocracia de emissor fiscal"
+  }
+]

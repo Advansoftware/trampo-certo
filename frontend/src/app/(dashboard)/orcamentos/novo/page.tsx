@@ -185,26 +185,31 @@ export default function CriadorOrcamentoPage() {
         <Grid
           size={{ xs: 12, lg: 6 }}
           sx={{
-            position: { lg: 'sticky' },
-            top: 96,
-            alignSelf: 'flex-start',
-            zIndex: 10,
+            alignSelf: 'stretch',
           }}
         >
-          <OrcamentoA4Preview
-            codigo="042"
-            clienteNome={clienteNome}
-            clienteTelefone={clienteTelefone}
-            clienteLocalizacao={clienteLocalizacao}
-            itens={itens}
-            subtotal={subtotal}
-            desconto={desconto}
-            total={total}
-            condicoesPagamento={condicoesPagamento}
-            chavePix={chavePix}
-            validade={validade}
-            observacoes={observacoes}
-          />
+          <Box
+            sx={{
+              position: { lg: 'sticky' },
+              top: 96,
+              zIndex: 10,
+            }}
+          >
+            <OrcamentoA4Preview
+              codigo="042"
+              clienteNome={clienteNome}
+              clienteTelefone={clienteTelefone}
+              clienteLocalizacao={clienteLocalizacao}
+              itens={itens}
+              subtotal={subtotal}
+              desconto={desconto}
+              total={total}
+              condicoesPagamento={condicoesPagamento}
+              chavePix={chavePix}
+              validade={validade}
+              observacoes={observacoes}
+            />
+          </Box>
         </Grid>
       </Grid>
 

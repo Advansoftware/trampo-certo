@@ -20,20 +20,18 @@ import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import GroupIcon from '@mui/icons-material/Group';
-import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
 import Logo from '@/components/Logo';
-import AppButton from '@/components/common/AppButton';
 import { signOut } from '@/lib/auth-client';
 
 const DRAWER_WIDTH = 288;
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/dashboard', icon: DashboardIcon },
-  { label: 'Orçamentos & Propostas', path: '/orcamentos/novo', icon: RequestQuoteIcon },
+  { label: 'Orçamentos & Propostas', path: '/orcamentos', icon: RequestQuoteIcon },
   { label: 'Recibos Emitidos', path: '/recibos', icon: ReceiptLongIcon },
   { label: 'Faturamento & DAS MEI', path: '/faturamento', icon: AccountBalanceIcon },
   { label: 'Clientes', path: '/clientes', icon: GroupIcon },
@@ -293,16 +291,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* Right actions */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, ml: 'auto' }}>
-            <AppButton
-              variant="primary"
-              size="small"
-              startIcon={<AddIcon sx={{ fontSize: 18 }} />}
-              onClick={() => router.push('/orcamentos/novo')}
-              sx={{ bgcolor: '#1E3A8A', '&:hover': { bgcolor: '#1D4ED8' } }}
-            >
-              Novo Orçamento
-            </AppButton>
-
             {/* Notification button */}
             <IconButton
               size="small"

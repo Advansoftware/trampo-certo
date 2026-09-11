@@ -13,24 +13,17 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import AppButton from '@/components/common/AppButton';
+import { formatCompetencia } from '@/lib/format';
+import { ReceitaMensal } from '@/types';
 
-export interface MonthlyRevenueItem {
-  mes: string;
-  competencia: string;
-  servicosSemNf: number;
-  servicosComNf: number;
-  total: number;
-  dasStatus: string; // 'pago' | 'pendente' | 'a_vencer'
-  dasValor: number;
-  dasPagoEm?: string | null;
-}
 
 interface RelatorioMensalTableProps {
-  months: MonthlyRevenueItem[];
-  onPayDas: (item: MonthlyRevenueItem) => void;
+  months: ReceitaMensal[];
+  limiteAnual: number;
+  onPayDas: (item: ReceitaMensal) => void;
 }
 
-export default function RelatorioMensalTable({ months, onPayDas }: RelatorioMensalTableProps) {
+export default function RelatorioMensalTable({ months, limiteAnual, onPayDas }: RelatorioMensalTableProps) {
   const formatMoney = (val: number) =>
     `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -194,7 +187,7 @@ export default function RelatorioMensalTable({ months, onPayDas }: RelatorioMens
                       {row.mes}
                     </Typography>
                     <Typography sx={{ fontSize: '0.6875rem', color: '#74777F' }}>
-                      {row.competencia}
+                      {formatCompetencia(row.competencia)}
                     </Typography>
                   </TableCell>
 
@@ -270,7 +263,9 @@ export default function RelatorioMensalTable({ months, onPayDas }: RelatorioMens
               </TableCell>
               <TableCell colSpan={2} sx={{ pr: 3, py: 2.5, textAlign: 'right' }}>
                 <Typography sx={{ fontSize: '0.75rem', color: '#166534', fontWeight: 700 }}>
-                  52% do Limite Anual (R$ 81.000)
+                  {limiteAnual > 0
+                    ? `${Math.round((totalGeral / limiteAnual) * 100)}% do limite anual (${formatMoney(limiteAnual)})`
+                    : 'Limite anual não configurado'}
                 </Typography>
               </TableCell>
             </TableRow>

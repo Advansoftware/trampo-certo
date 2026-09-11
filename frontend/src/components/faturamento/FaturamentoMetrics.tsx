@@ -52,7 +52,7 @@ export default function FaturamentoMetrics({
     {
       title: 'Saldo até o Limite MEI',
       value: formatBrl(saldo),
-      subtext: 'Valor livre para faturar em 2026',
+      subtext: `Valor livre para faturar em ${new Date().getFullYear()}`,
       badge: 'Disponível',
       badgeBg: '#EFF6FF',
       badgeColor: '#1E40AF',
@@ -63,7 +63,7 @@ export default function FaturamentoMetrics({
     {
       title: 'Média Mensal Realizada',
       value: formatBrl(media),
-      subtext: 'Teto recomendado: R$ 6.750/mês',
+      subtext: `Ritmo médio para o teto: ${formatBrl(limite / 12)}/mês`,
       badge: 'Estável',
       badgeBg: '#F1F4F9',
       badgeColor: '#43474E',

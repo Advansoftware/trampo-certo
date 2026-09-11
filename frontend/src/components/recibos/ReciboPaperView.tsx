@@ -6,30 +6,17 @@ import Typography from '@mui/material/Typography';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
-
-export interface ReciboData {
-  id: string;
-  codigo: string;
-  clienteNome: string;
-  clienteDocumento?: string;
-  clienteTelefone?: string;
-  servicoDescricao: string;
-  valor: number;
-  valorExtenso?: string;
-  formaPagamento: string;
-  formaPagamentoLabel: string;
-  dataPagamento: string;
-  propostaCodigo?: string;
-  autenticacao: string;
-}
+import { useEmissor } from '@/components/providers/PerfilProvider';
+import { formatDataHora, formatNumero } from '@/lib/format';
+import { Recibo } from '@/types';
 
 interface ReciboPaperViewProps {
-  recibo: ReciboData;
+  recibo: Recibo;
 }
 
 export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
-  const formatMoney = (val: number) =>
-    val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const emissor = useEmissor();
+  const formatMoney = formatNumero;
 
   return (
     <Box
@@ -95,10 +82,10 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
           </Box>
           <Box>
             <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#1A1B20', lineHeight: 1.2 }}>
-              Rodrigo Silva (MEI)
+              {emissor.nome} (MEI)
             </Typography>
             <Typography sx={{ fontSize: '0.75rem', color: '#43474E', mt: 0.25 }}>
-              CNPJ: 45.123.789/0001-90 • Eletricista e Reformas
+              {[emissor.cnpj && `CNPJ: ${emissor.cnpj}`, emissor.ocupacao].filter(Boolean).join(' • ')}
             </Typography>
             <Typography sx={{ fontSize: '0.6875rem', color: '#74777F' }}>
               São Paulo - SP • (11) 98765-4321
@@ -170,7 +157,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
             {recibo.formaPagamentoLabel}
           </Typography>
           <Typography sx={{ fontSize: '0.75rem', color: '#74777F', mt: 0.25 }}>
-            Pago em {recibo.dataPagamento}
+            Pago em {formatDataHora(recibo.dataPagamento)}
           </Typography>
         </Box>
       </Box>

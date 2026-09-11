@@ -5,15 +5,19 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import Link from 'next/link';
+import { formatDataHora } from '@/lib/format';
 
 interface OrcamentoBreadcrumbHeaderProps {
   codigo?: string;
   isEditing?: boolean;
+  /** Momento do último salvamento (ISO), quando já existe registro gravado. */
+  atualizadoEm?: string;
 }
 
 export default function OrcamentoBreadcrumbHeader({
-  codigo = '042',
+  codigo = '',
   isEditing = false,
+  atualizadoEm,
 }: OrcamentoBreadcrumbHeaderProps) {
   return (
     <Box
@@ -37,11 +41,12 @@ export default function OrcamentoBreadcrumbHeader({
         </Link>
         <ChevronRightIcon sx={{ fontSize: 16, color: '#74777F' }} />
         <Typography component="span" sx={{ fontSize: '13px', fontWeight: 600, color: '#1A1B20' }}>
-          {isEditing ? `Editar Orçamento #${codigo}` : `Novo Orçamento #${codigo}`}
+          {isEditing ? `Editar Orçamento ${codigo}` : 'Novo Orçamento'}
         </Typography>
       </Box>
 
-      {/* Auto-save Status */}
+      {/* Situação do documento — não existe salvamento automático: o registro
+          só é gravado quando o usuário salva. */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <Box
           sx={{
@@ -50,8 +55,8 @@ export default function OrcamentoBreadcrumbHeader({
             gap: 1,
             px: 1.5,
             py: 0.5,
-            bgcolor: '#DBEAFE',
-            color: '#172554',
+            bgcolor: isEditing ? '#DBEAFE' : '#FEF3C7',
+            color: isEditing ? '#172554' : '#92400E',
             borderRadius: '9999px',
             border: '1px solid rgba(30, 58, 138, 0.12)',
             fontSize: '10px',
@@ -65,7 +70,7 @@ export default function OrcamentoBreadcrumbHeader({
               width: 6,
               height: 6,
               borderRadius: '50%',
-              bgcolor: '#1E3A8A',
+              bgcolor: isEditing ? '#1E3A8A' : '#D97706',
               animation: 'pulse 1.5s infinite',
               '@keyframes pulse': {
                 '0%': { opacity: 0.4, transform: 'scale(0.8)' },
@@ -74,10 +79,12 @@ export default function OrcamentoBreadcrumbHeader({
               },
             }}
           />
-          Salvamento Automático Ativo
+          {isEditing ? 'Documento salvo' : 'Rascunho não salvo'}
         </Box>
         <Typography sx={{ fontSize: '12px', color: '#74777F' }}>
-          Modificado há 12 segundos
+          {atualizadoEm
+            ? `Última alteração em ${formatDataHora(atualizadoEm)}`
+            : 'Use "Salvar" para gravar a proposta.'}
         </Typography>
       </Box>
     </Box>

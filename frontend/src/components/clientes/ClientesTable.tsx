@@ -20,11 +20,12 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import Tooltip from '@mui/material/Tooltip';
 import AppButton from '@/components/common/AppButton';
-import { ClienteItemData } from './ClientesMetrics';
+import { formatMoeda, iniciais, linkWhatsApp } from '@/lib/format';
+import { Cliente } from '@/types';
 
 interface ClientesTableProps {
-  clientes: ClienteItemData[];
-  onSelectCliente: (cliente: ClienteItemData) => void;
+  clientes: Cliente[];
+  onSelectCliente: (cliente: Cliente) => void;
 }
 
 export default function ClientesTable({
@@ -70,40 +71,19 @@ export default function ClientesTable({
     return { total, pf, pj, recorrentes };
   }, [clientes]);
 
-  const formatMoney = (val: number) => {
-    const safe = typeof val === 'number' && !isNaN(val) ? val : 0;
-    return `R$ ${safe.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatMoney = formatMoeda;
+  const getInitials = iniciais;
+
+  const handleWhatsApp = (cliente: Cliente) => {
+    const mensagem =
+      `Olá ${cliente.nome}! 👋 Tudo bem? Aqui é da TrampoCerto. ` +
+      'Passando para conferir como estão os serviços e se precisa de algum novo orçamento!';
+    window.open(linkWhatsApp(cliente.telefone, mensagem), '_blank');
   };
 
-  const getInitials = (name: string) => {
-    const parts = (name || '').trim().split(' ');
-    if (parts.length > 1) {
-      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-    }
-    return (name || 'CL').substring(0, 2).toUpperCase();
-  };
-
-  const handleWhatsApp = (cliente: ClienteItemData) => {
-    const tel = (cliente.telefone || '').replace(/\D/g, '');
-    const texto = encodeURIComponent(
-      `Olá ${cliente.nome}! 👋 Tudo bem? Aqui é da TrampoCerto. Passando para conferir como estão os serviços e se precisa de algum novo suporte ou orçamento!`,
-    );
-    const url = tel ? `https://wa.me/55${tel}?text=${texto}` : `https://wa.me/?text=${texto}`;
-    window.open(url, '_blank');
-  };
-
-  const handleNovoOrcamentoParaCliente = (cliente: ClienteItemData) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(
-        'trampo_novo_orcamento_cliente',
-        JSON.stringify({
-          clienteNome: cliente.nome,
-          clienteTelefone: cliente.telefone,
-          clienteLocalizacao: `${cliente.bairro ? cliente.bairro + ', ' : ''}${cliente.cidade || 'São Paulo - SP'}`,
-        })
-      );
-    }
-    router.push('/orcamentos/novo');
+  /** O cliente segue na URL: a tela de orçamento carrega o cadastro pela API. */
+  const handleNovoOrcamentoParaCliente = (cliente: Cliente) => {
+    router.push(`/orcamentos/novo?clienteId=${cliente.id}`);
   };
 
   return (
@@ -164,17 +144,17 @@ export default function ClientesTable({
             pb: { xs: 1, md: 0 },
           }}
         >
-          {[
+          {([
             { key: 'todos', label: 'Todos', count: counts.total },
             { key: 'PF', label: 'Pessoa Física', count: counts.pf },
             { key: 'PJ', label: 'Pessoa Jurídica', count: counts.pj },
             { key: 'recorrente', label: 'Recorrentes', count: counts.recorrentes },
-          ].map((tab) => {
+          ] as const).map((tab) => {
             const isSelected = activeFilter === tab.key;
             return (
               <Box
                 key={tab.key}
-                onClick={() => setActiveFilter(tab.key as any)}
+                onClick={() => setActiveFilter(tab.key)}
                 sx={{
                   display: 'inline-flex',
                   alignItems: 'center',

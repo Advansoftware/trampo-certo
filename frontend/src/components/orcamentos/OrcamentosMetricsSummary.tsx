@@ -8,51 +8,26 @@ import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-
-interface ProposalItem {
-  id?: string;
-  status?: string;
-  valorTotal?: number | string;
-  value?: string;
-  [key: string]: any;
-}
+import { formatMoeda } from '@/lib/format';
+import { Orcamento } from '@/types';
 
 interface OrcamentosMetricsSummaryProps {
-  proposals: ProposalItem[];
+  orcamentos: Orcamento[];
 }
 
-export default function OrcamentosMetricsSummary({ proposals }: OrcamentosMetricsSummaryProps) {
-  const parseVal = (p: ProposalItem): number => {
-    if (typeof p.valorTotal === 'number') return p.valorTotal;
-    if (typeof p.valorTotal === 'string') {
-      const parsed = parseFloat(p.valorTotal.replace(/[^\d.,]/g, '').replace(',', '.'));
-      return isNaN(parsed) ? 0 : parsed;
-    }
-    if (p.value) {
-      const parsed = parseFloat(p.value.replace(/[^\d.,]/g, '').replace(',', '.'));
-      return isNaN(parsed) ? 0 : parsed;
-    }
-    return 0;
-  };
+export default function OrcamentosMetricsSummary({ orcamentos }: OrcamentosMetricsSummaryProps) {
+  const totalPropostas = orcamentos.length;
+  const aprovadas = orcamentos.filter((item) => item.status === 'aprovado');
+  const pendentes = orcamentos.filter((item) => item.status === 'pendente' || item.status === 'rascunho');
 
-  const totalPropostas = proposals.length;
-  const aprovadas = proposals.filter((p) => {
-    const s = (p.status || '').toLowerCase();
-    return s === 'aprovado' || s.includes('recibo') || s === 'concluido';
-  });
-  const pendentes = proposals.filter((p) => {
-    const s = (p.status || '').toLowerCase();
-    return s !== 'aprovado' && !s.includes('recibo') && s !== 'concluido' && s !== 'recusado';
-  });
-
-  const valorTotalGeral = proposals.reduce((acc, cur) => acc + parseVal(cur), 0);
-  const valorAprovado = aprovadas.reduce((acc, cur) => acc + parseVal(cur), 0);
-  const valorPendente = pendentes.reduce((acc, cur) => acc + parseVal(cur), 0);
+  const somar = (lista: Orcamento[]) => lista.reduce((acc, item) => acc + item.valorTotal, 0);
+  const valorTotalGeral = somar(orcamentos);
+  const valorAprovado = somar(aprovadas);
+  const valorPendente = somar(pendentes);
   const ticketMedio = totalPropostas > 0 ? valorTotalGeral / totalPropostas : 0;
   const taxaAprovacao = totalPropostas > 0 ? Math.round((aprovadas.length / totalPropostas) * 100) : 0;
 
-  const formatBrl = (num: number) =>
-    `R$ ${num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formatBrl = formatMoeda;
 
   const cards = [
     {

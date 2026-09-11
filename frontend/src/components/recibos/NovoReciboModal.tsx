@@ -16,59 +16,64 @@ import CloseIcon from '@mui/icons-material/Close';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AppButton from '@/components/common/AppButton';
-import { ReciboData } from './ReciboPaperView';
+import { ApiError } from '@/lib/api';
+import { parseValor } from '@/lib/format';
+import { FORMAS_PAGAMENTO, FormaPagamento, Recibo, ReciboInput } from '@/types';
 
 interface NovoReciboModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (recibo: ReciboData) => void;
+  /** Emite o recibo na API — código, valor por extenso e autenticação vêm de lá. */
+  onEmitir: (input: ReciboInput) => Promise<Recibo>;
+  onEmitido?: (recibo: Recibo) => void;
 }
 
-export default function NovoReciboModal({ open, onClose, onSave }: NovoReciboModalProps) {
+export default function NovoReciboModal({ open, onClose, onEmitir, onEmitido }: NovoReciboModalProps) {
   const [clienteNome, setClienteNome] = useState('');
   const [clienteDocumento, setClienteDocumento] = useState('');
   const [clienteTelefone, setClienteTelefone] = useState('');
   const [servicoDescricao, setServicoDescricao] = useState('');
   const [valor, setValor] = useState('');
-  const [formaPagamento, setFormaPagamento] = useState('pix');
+  const [formaPagamento, setFormaPagamento] = useState<FormaPagamento>('pix');
+  const [salvando, setSalvando] = useState(false);
+  const [erro, setErro] = useState('');
 
-  const formas = [
-    { value: 'pix', label: 'Pix (Chave CNPJ / Telefone)' },
-    { value: 'cartao', label: 'Cartão de Débito / Crédito' },
-    { value: 'transferencia', label: 'Transferência Bancária (TED)' },
-    { value: 'dinheiro', label: 'Dinheiro em Espécie' },
-  ];
+  const formas = FORMAS_PAGAMENTO;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const numVal = parseFloat(valor.replace(/[^\d.,]/g, '').replace(',', '.')) || 0;
-    if (!clienteNome || numVal <= 0 || !servicoDescricao) return;
+    const valorNumerico = parseValor(valor);
 
-    const formaObj = formas.find((f) => f.value === formaPagamento);
-    const novoRecibo: ReciboData = {
-      id: `rec-${Date.now()}`,
-      codigo: `REC-2026-0${Math.floor(20 + Math.random() * 80)}`,
-      clienteNome,
-      clienteDocumento,
-      clienteTelefone,
-      servicoDescricao,
-      valor: numVal,
-      valorExtenso: `${numVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} reais`,
-      formaPagamento,
-      formaPagamentoLabel: formaObj ? formaObj.label : 'Pix',
-      dataPagamento: `${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
-      autenticacao: `TC-MEI-${Math.random().toString(36).substring(2, 9).toUpperCase()}`,
-    };
+    if (!clienteNome.trim() || !servicoDescricao.trim() || valorNumerico <= 0) {
+      setErro('Preencha cliente, descrição do serviço e um valor maior que zero.');
+      return;
+    }
 
-    onSave(novoRecibo);
-    // Reset form
-    setClienteNome('');
-    setClienteDocumento('');
-    setClienteTelefone('');
-    setServicoDescricao('');
-    setValor('');
-    setFormaPagamento('pix');
-    onClose();
+    setSalvando(true);
+    setErro('');
+    try {
+      const recibo = await onEmitir({
+        clienteNome: clienteNome.trim(),
+        clienteDocumento: clienteDocumento.trim(),
+        clienteTelefone: clienteTelefone.trim(),
+        servicoDescricao: servicoDescricao.trim(),
+        valor: valorNumerico,
+        formaPagamento,
+      });
+
+      onEmitido?.(recibo);
+      setClienteNome('');
+      setClienteDocumento('');
+      setClienteTelefone('');
+      setServicoDescricao('');
+      setValor('');
+      setFormaPagamento('pix');
+      onClose();
+    } catch (err) {
+      setErro(err instanceof ApiError ? err.message : 'Não foi possível emitir o recibo.');
+    } finally {
+      setSalvando(false);
+    }
   };
 
   return (
@@ -198,7 +203,7 @@ export default function NovoReciboModal({ open, onClose, onSave }: NovoReciboMod
                 label="Forma de Pagamento"
                 select
                 value={formaPagamento}
-                onChange={(e) => setFormaPagamento(e.target.value)}
+                onChange={(e) => setFormaPagamento(e.target.value as FormaPagamento)}
                 fullWidth
                 size="small"
               >
@@ -210,19 +215,24 @@ export default function NovoReciboModal({ open, onClose, onSave }: NovoReciboMod
               </TextField>
             </Grid>
           </Grid>
+
+          {erro && (
+            <Typography sx={{ fontSize: '0.8125rem', color: '#B91C1C', fontWeight: 600 }}>{erro}</Typography>
+          )}
         </DialogContent>
 
         <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(196, 198, 207, 0.4)' }}>
-          <AppButton variant="surface" size="small" onClick={onClose}>
+          <AppButton variant="surface" size="small" onClick={onClose} disabled={salvando}>
             Cancelar
           </AppButton>
           <AppButton
             variant="primary"
             size="medium"
             type="submit"
+            disabled={salvando}
             startIcon={<CheckCircleIcon sx={{ fontSize: 18 }} />}
           >
-            Emitir & Visualizar Recibo
+            {salvando ? 'Emitindo...' : 'Emitir & visualizar recibo'}
           </AppButton>
         </DialogActions>
       </Box>

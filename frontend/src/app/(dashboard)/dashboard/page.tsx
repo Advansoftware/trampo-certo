@@ -1,79 +1,97 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import MeiThermometer from '@/components/dashboard/MeiThermometer';
 import MonthlyMetricsGrid from '@/components/dashboard/MonthlyMetricsGrid';
 import RecentProposalsTable from '@/components/dashboard/RecentProposalsTable';
 import ReferralBanner from '@/components/dashboard/ReferralBanner';
-import { fetchMeiMetrics, fetchMonthlyHighlights, fetchOrcamentos, getUserData } from '@/lib/api';
+import EstadoCarregamento from '@/components/common/EstadoCarregamento';
+import Toast from '@/components/common/Toast';
+import { usePerfilMei } from '@/components/providers/PerfilProvider';
+import { useDestaquesMensais, useMeiMetrics } from '@/hooks/useMei';
+import { useOrcamentos } from '@/hooks/useOrcamentos';
+import { useToast } from '@/hooks/useToast';
+import { primeiroNome } from '@/lib/format';
 
 export default function DashboardPage() {
-  const user = getUserData();
-  const [metrics, setMetrics] = useState({
-    faturamentoAcumulado: 42350.0,
-    limiteAnual: 81000.0,
-    percentualUtilizado: 52,
-    saldoRestante: 38650.0,
-    mediaMensal: 5293.0,
-    dasMei: {
-      competencia: 'Setembro/2026',
-      valor: 75.6,
-      vencimento: '20/09/2026',
-      status: 'pendente',
-    },
-  });
-  const [highlights, setHighlights] = useState<any[]>([]);
-  const [proposals, setProposals] = useState<any[]>([]);
+  const perfil = usePerfilMei();
+  const metricas = useMeiMetrics();
+  const destaques = useDestaquesMensais();
+  const orcamentos = useOrcamentos();
+  const { toast, showToast, showError, hideToast } = useToast();
 
-  useEffect(() => {
-    async function load() {
-      const [m, h, p] = await Promise.all([
-        fetchMeiMetrics(),
-        fetchMonthlyHighlights(),
-        fetchOrcamentos(),
-      ]);
-      if (m) setMetrics(m);
-      if (h) setHighlights(h);
-      if (p) setProposals(p);
+  const copiarChavePix = async (chave: string) => {
+    if (!chave) {
+      showToast('Cadastre sua chave Pix no perfil para copiá-la aqui.', 'warning');
+      return;
     }
-    load();
-  }, []);
-
-  const handleCobrarPix = () => {
-    const text = encodeURIComponent(
-      'Olá! Passando para enviar a chave Pix para acertarmos o serviço concluído: 45.123.789/0001-90 (CNPJ TrampoCerto). Qualquer dúvida estou à disposição!',
-    );
-    window.open(`https://wa.me/?text=${text}`, '_blank');
+    await navigator.clipboard.writeText(chave);
+    showToast('Chave Pix copiada com sucesso!');
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2.5, sm: 3.5 } }}>
-      {/* 1. Header with Greetings and Instant Actions */}
-      <DashboardHeader userName={user.name.split(' ')[0]} />
+      <DashboardHeader userName={primeiroNome(perfil?.name || '')} />
 
-      {/* 2. Hero: Termômetro do Limite MEI */}
-      <MeiThermometer
-        faturamentoAcumulado={metrics.faturamentoAcumulado}
-        limiteAnual={metrics.limiteAnual}
-        percentualUtilizado={metrics.percentualUtilizado}
-        saldoRestante={metrics.saldoRestante || metrics.limiteAnual - metrics.faturamentoAcumulado}
-        mediaMensal={metrics.mediaMensal || 5293.0}
-      />
+      <EstadoCarregamento
+        loading={metricas.loading}
+        error={metricas.error}
+        onRetry={metricas.reload}
+        minHeight={220}
+      >
+        {metricas.metrics && (
+          <MeiThermometer
+            faturamentoAcumulado={metricas.metrics.faturamentoAcumulado}
+            limiteAnual={metricas.metrics.limiteAnual}
+            percentualUtilizado={metricas.metrics.percentualUtilizado}
+            saldoRestante={metricas.metrics.saldoRestante}
+            mediaMensal={metricas.metrics.mediaMensal}
+            ano={metricas.metrics.ano}
+          />
+        )}
+      </EstadoCarregamento>
 
-      {/* 3. DAS MEI Attention Card + Monthly Metric Highlights */}
-      <MonthlyMetricsGrid
-        dasMei={metrics.dasMei}
-        highlights={highlights}
-        onCobrarPix={handleCobrarPix}
-      />
+      <EstadoCarregamento
+        loading={metricas.loading || destaques.loading}
+        error={metricas.error || destaques.error}
+        onRetry={() => {
+          void metricas.reload();
+          void destaques.reload();
+        }}
+        minHeight={260}
+      >
+        {metricas.metrics && destaques.destaques && (
+          <MonthlyMetricsGrid
+            das={metricas.metrics.dasMei}
+            destaques={destaques.destaques}
+            onCopiarPix={(chave) => void copiarChavePix(chave)}
+          />
+        )}
+      </EstadoCarregamento>
 
-      {/* 4. Recent Quotes & Proposals */}
-      <RecentProposalsTable proposals={proposals} />
+      <EstadoCarregamento
+        loading={orcamentos.loading}
+        error={orcamentos.error}
+        onRetry={orcamentos.reload}
+        minHeight={300}
+      >
+        <RecentProposalsTable
+          orcamentos={orcamentos.orcamentos}
+          onAlterarStatus={orcamentos.alterarStatus}
+          onSucesso={(mensagem) => {
+            showToast(mensagem);
+            void metricas.reload();
+            void destaques.reload();
+          }}
+          onErro={showError}
+        />
+      </EstadoCarregamento>
 
-      {/* 5. Referral Banner */}
       <ReferralBanner />
+
+      <Toast message={toast.message} severity={toast.severity} onClose={hideToast} />
     </Box>
   );
 }

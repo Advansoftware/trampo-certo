@@ -24,7 +24,7 @@ interface OrcamentoBottomDockProps {
 
 export default function OrcamentoBottomDock({
   total,
-  codigo = '042',
+  codigo = '',
   prazo = '2 dias úteis',
   isEditing = false,
   isLocked = false,
@@ -96,7 +96,7 @@ export default function OrcamentoBottomDock({
                 fontWeight: 600,
               }}
             >
-              Orçamento #{codigo}
+              {codigo || 'Nova proposta'}
             </Box>
           </Box>
         </Box>

@@ -10,6 +10,8 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SecurityIcon from '@mui/icons-material/Security';
 import HandshakeIcon from '@mui/icons-material/Handshake';
+import { useEmissor } from '@/components/providers/PerfilProvider';
+import { formatData } from '@/lib/format';
 
 export interface OrcamentoPreviewItem {
   id: string;
@@ -22,6 +24,8 @@ export interface OrcamentoPreviewItem {
 
 interface OrcamentoA4PreviewProps {
   codigo?: string;
+  /** Data de emissão exibida no documento; hoje quando não informada. */
+  dataEmissao?: string;
   clienteNome: string;
   clienteTelefone: string;
   clienteLocalizacao?: string;
@@ -36,10 +40,11 @@ interface OrcamentoA4PreviewProps {
 }
 
 export default function OrcamentoA4Preview({
-  codigo = '042',
+  codigo = '',
+  dataEmissao,
   clienteNome,
   clienteTelefone,
-  clienteLocalizacao = 'São Paulo - SP',
+  clienteLocalizacao = '',
   itens,
   subtotal,
   desconto,
@@ -49,6 +54,8 @@ export default function OrcamentoA4Preview({
   validade,
   observacoes,
 }: OrcamentoA4PreviewProps) {
+  const emissor = useEmissor();
+
   const formatMoney = (val: number) =>
     val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -156,20 +163,22 @@ export default function OrcamentoA4Preview({
                   flexShrink: 0,
                 }}
               >
-                RS
+                {emissor.iniciais}
               </Box>
               <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                 <Typography sx={{ fontSize: '18px', fontWeight: 800, color: '#1A1B20', lineHeight: 1.2 }}>
-                  Rodrigo Silva
+                  {emissor.nome}
                 </Typography>
                 <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#1E3A8A' }}>
-                  Serviços Elétricos & Instalações
+                  {emissor.ocupacao}
                 </Typography>
-                <Typography sx={{ fontSize: '11px', color: '#74777F', mt: 0.5 }}>
-                  CNPJ MEI: 45.123.789/0001-90
-                </Typography>
+                {emissor.cnpj && (
+                  <Typography sx={{ fontSize: '11px', color: '#74777F', mt: 0.5 }}>
+                    CNPJ MEI: {emissor.cnpj}
+                  </Typography>
+                )}
                 <Typography sx={{ fontSize: '11px', color: '#74777F' }}>
-                  (11) 97722-3344 • São Paulo - SP
+                  {[emissor.telefone, emissor.cidade].filter(Boolean).join(' • ')}
                 </Typography>
               </Box>
             </Box>
@@ -187,11 +196,11 @@ export default function OrcamentoA4Preview({
                 Proposta Comercial
               </Typography>
               <Typography sx={{ fontSize: '17px', fontWeight: 800, color: '#1A1B20', letterSpacing: '-0.01em' }}>
-                ORÇAMENTO #{codigo}
+                {codigo || 'NOVO ORÇAMENTO'}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, fontSize: '11px', color: '#74777F', mt: 0.5, justifyContent: { xs: 'flex-start', sm: 'flex-end' } }}>
                 <CalendarTodayIcon sx={{ fontSize: 13 }} />
-                <span>18 de Outubro de 2024</span>
+                <span>{formatData(dataEmissao || new Date())}</span>
               </Box>
             </Box>
           </Box>

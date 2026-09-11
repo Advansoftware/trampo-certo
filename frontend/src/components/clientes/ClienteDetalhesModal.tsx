@@ -14,79 +14,69 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PostAddIcon from '@mui/icons-material/PostAdd';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 import TextField from '@mui/material/TextField';
-import InputAdornment from '@mui/material/InputAdornment';
 import AppButton from '@/components/common/AppButton';
-import { ClienteItemData } from './ClientesMetrics';
-import { updateCliente } from '@/lib/api';
+import { formatMoeda, iniciais, linkWhatsApp } from '@/lib/format';
+import { Cliente } from '@/types';
 
 interface ClienteDetalhesModalProps {
   open: boolean;
   onClose: () => void;
-  cliente: ClienteItemData | null;
-  onUpdateCliente?: (cliente: ClienteItemData) => void;
+  cliente: Cliente | null;
+  /** Persiste as tags e devolve o cliente atualizado (hook useClientes). */
+  onAtualizarTags?: (id: string, tags: string[]) => Promise<Cliente>;
+  onErro?: (erro: unknown) => void;
 }
 
 export default function ClienteDetalhesModal({
   open,
   onClose,
   cliente,
-  onUpdateCliente,
+  onAtualizarTags,
+  onErro,
 }: ClienteDetalhesModalProps) {
   const router = useRouter();
-  const [tags, setTags] = React.useState<string[]>([]);
   const [newTagInput, setNewTagInput] = React.useState('');
-  const [isSavingTag, setIsSavingTag] = React.useState(false);
+  const [salvandoTag, setSalvandoTag] = React.useState(false);
 
-  React.useEffect(() => {
-    if (cliente) {
-      setTags(cliente.tags || ['Cliente Ativo']);
-    }
-  }, [cliente]);
+  // As tags exibidas vêm sempre do cliente recebido por prop: a página repassa
+  // o registro atualizado pela API, então a lista e o modal nunca divergem.
+  const tags = cliente?.tags ?? [];
+
+  const salvarTags = React.useCallback(
+    async (proximas: string[]) => {
+      if (!cliente || !onAtualizarTags) return;
+      setSalvandoTag(true);
+      try {
+        await onAtualizarTags(cliente.id, proximas);
+      } catch (erro) {
+        onErro?.(erro);
+      } finally {
+        setSalvandoTag(false);
+      }
+    },
+    [cliente, onAtualizarTags, onErro],
+  );
 
   if (!cliente) return null;
 
-  const isPj = (cliente.tipo || '').toUpperCase() === 'PJ';
+  const isPj = cliente.tipo === 'PJ';
+  const formatMoney = formatMoeda;
 
-  const formatMoney = (val: number) => {
-    const safe = typeof val === 'number' && !isNaN(val) ? val : 0;
-    return `R$ ${safe.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-  };
-
-  const getInitials = (name: string) => {
-    const parts = (name || '').trim().split(' ');
-    if (parts.length > 1) {
-      return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
-    }
-    return (name || 'CL').substring(0, 2).toUpperCase();
-  };
+  const getInitials = iniciais;
 
   const handleWhatsApp = () => {
-    const tel = (cliente.telefone || '').replace(/\D/g, '');
-    const texto = encodeURIComponent(
-      `Olá ${cliente.nome}! 👋 Aqui é da TrampoCerto. Estou à disposição caso precise de um novo orçamento ou suporte!`,
-    );
-    const url = tel ? `https://wa.me/55${tel}?text=${texto}` : `https://wa.me/?text=${texto}`;
-    window.open(url, '_blank');
+    const mensagem =
+      `Olá ${cliente.nome}! 👋 Aqui é da TrampoCerto. ` +
+      'Estou à disposição caso precise de um novo orçamento ou suporte!';
+    window.open(linkWhatsApp(cliente.telefone, mensagem), '_blank');
   };
 
   const handleGerarOrcamento = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(
-        'trampo_novo_orcamento_cliente',
-        JSON.stringify({
-          clienteNome: cliente.nome,
-          clienteTelefone: cliente.telefone,
-          clienteLocalizacao: `${cliente.bairro ? cliente.bairro + ', ' : ''}${cliente.cidade || 'São Paulo - SP'}`,
-        })
-      );
-    }
     onClose();
-    router.push('/orcamentos/novo');
+    router.push(`/orcamentos/novo?clienteId=${cliente.id}`);
   };
 
   return (
@@ -295,12 +285,7 @@ export default function ClienteDetalhesModal({
               >
                 <span>{tag}</span>
                 <CloseIcon
-                  onClick={() => {
-                    const next = tags.filter((t) => t !== tag);
-                    setTags(next);
-                    updateCliente(cliente.id, { tags: next });
-                    if (onUpdateCliente) onUpdateCliente({ ...cliente, tags: next });
-                  }}
+                  onClick={() => void salvarTags(tags.filter((atual) => atual !== tag))}
                   sx={{
                     fontSize: 14,
                     cursor: 'pointer',
@@ -323,13 +308,10 @@ export default function ClienteDetalhesModal({
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  const val = newTagInput.trim();
-                  if (val && !tags.includes(val)) {
-                    const next = [...tags, val];
-                    setTags(next);
+                  const nova = newTagInput.trim();
+                  if (nova && !tags.includes(nova)) {
                     setNewTagInput('');
-                    updateCliente(cliente.id, { tags: next });
-                    if (onUpdateCliente) onUpdateCliente({ ...cliente, tags: next });
+                    void salvarTags([...tags, nova]);
                   }
                 }
               }}
@@ -348,14 +330,12 @@ export default function ClienteDetalhesModal({
               variant="outlined"
               size="small"
               startIcon={<AddIcon sx={{ fontSize: 16 }} />}
+              disabled={salvandoTag}
               onClick={() => {
-                const val = newTagInput.trim();
-                if (val && !tags.includes(val)) {
-                  const next = [...tags, val];
-                  setTags(next);
+                const nova = newTagInput.trim();
+                if (nova && !tags.includes(nova)) {
                   setNewTagInput('');
-                  updateCliente(cliente.id, { tags: next });
-                  if (onUpdateCliente) onUpdateCliente({ ...cliente, tags: next });
+                  void salvarTags([...tags, nova]);
                 }
               }}
             >
@@ -374,12 +354,7 @@ export default function ClienteDetalhesModal({
               return (
                 <Box
                   key={sug}
-                  onClick={() => {
-                    const next = [...tags, sug];
-                    setTags(next);
-                    updateCliente(cliente.id, { tags: next });
-                    if (onUpdateCliente) onUpdateCliente({ ...cliente, tags: next });
-                  }}
+                  onClick={() => void salvarTags([...tags, sug])}
                   sx={{
                     px: 1,
                     py: 0.2,

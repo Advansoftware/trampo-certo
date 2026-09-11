@@ -15,37 +15,37 @@ import PersonIcon from '@mui/icons-material/Person';
 import BusinessIcon from '@mui/icons-material/Business';
 import Grid from '@mui/material/Grid';
 import AppButton from '@/components/common/AppButton';
-import { createCliente } from '@/lib/api';
+import { ApiError } from '@/lib/api';
+import { Cliente, ClienteInput, ClienteTipo } from '@/types';
 
 interface NovoClienteModalProps {
   open: boolean;
   initialNome?: string;
   onClose: () => void;
-  onClienteCreated: (newClient: any) => void;
+  /** Persiste o cliente (vem do hook useClientes, que atualiza a lista). */
+  onCriarCliente: (input: ClienteInput) => Promise<Cliente>;
+  onClienteCriado?: (cliente: Cliente) => void;
 }
 
 export default function NovoClienteModal({
   open,
   initialNome = '',
   onClose,
-  onClienteCreated,
+  onCriarCliente,
+  onClienteCriado,
 }: NovoClienteModalProps) {
-  const [tipo, setTipo] = useState<'PF' | 'PJ'>('PF');
-  const [nome, setNome] = useState(initialNome);
+  const [tipo, setTipo] = useState<ClienteTipo>('PF');
+  // null = o usuário ainda não digitou: usa o nome sugerido por quem abriu o modal.
+  const [nomeEditado, setNomeEditado] = useState<string | null>(null);
+  const nome = nomeEditado ?? initialNome;
   const [documento, setDocumento] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
-  const [cidade, setCidade] = useState('São Paulo - SP');
+  const [cidade, setCidade] = useState('');
   const [bairro, setBairro] = useState('');
   const [tag, setTag] = useState('Novo Cliente');
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState('');
-
-  React.useEffect(() => {
-    if (open && initialNome) {
-      setNome(initialNome);
-    }
-  }, [open, initialNome]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -55,31 +55,32 @@ export default function NovoClienteModal({
     }
 
     setLoading(true);
+    setErro('');
     try {
-      const created = await createCliente({
+      const criado = await onCriarCliente({
         nome: nome.trim(),
         tipo,
         documento: documento.trim(),
         telefone: telefone.trim(),
         email: email.trim(),
-        cidade: cidade.trim() || 'São Paulo - SP',
+        cidade: cidade.trim(),
         bairro: bairro.trim(),
-        tags: [tag],
+        tags: tag ? [tag] : [],
       });
 
-      onClienteCreated(created);
+      onClienteCriado?.(criado);
       handleReset();
       onClose();
     } catch (err) {
-      console.error(err);
-      setErro('Erro ao cadastrar cliente.');
+      // Documento duplicado e validações do servidor chegam como ApiError.
+      setErro(err instanceof ApiError ? err.message : 'Não foi possível cadastrar o cliente.');
     } finally {
       setLoading(false);
     }
   };
 
   const handleReset = () => {
-    setNome('');
+    setNomeEditado(null);
     setDocumento('');
     setTelefone('');
     setEmail('');
@@ -228,7 +229,7 @@ export default function NovoClienteModal({
             required
             value={nome}
             onChange={(e) => {
-              setNome(e.target.value);
+              setNomeEditado(e.target.value);
               if (erro) setErro('');
             }}
             error={Boolean(erro)}

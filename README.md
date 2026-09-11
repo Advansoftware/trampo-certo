@@ -9,16 +9,18 @@ Desenvolvido com foco em alta conversão, responsividade mobile-first e conformi
 ## 🚀 Tecnologias
 
 - **Frontend:**
-  - Next.js 15+ (App Router, Turbopack)
+  - Next.js 16 (App Router, Turbopack)
   - React 19
-  - Material UI (MUI v6) com tema customizado e tokens de design oficiais
+  - Material UI (MUI v9) com tema customizado e tokens de design oficiais
   - Tipografia: Plus Jakarta Sans & Inter
-  - Suporte completo a autenticação (Better Auth / Gov.br / Google)
+  - Autenticação de sessão com Better Auth (e-mail e senha)
+  - Camadas separadas: `types/` (modelo de domínio), `lib/api/` (cliente HTTP por recurso),
+    `hooks/` (carregamento e mutação) e `components/` (apresentação)
 - **Backend:**
-  - NestJS 11
-  - MySQL 8.4
-  - Pool assíncrono de conexões MySQL
-  - Módulos modulares: Autenticação, Métricas MEI e Emissão de Orçamentos
+  - NestJS 11 em arquitetura de camadas: `controller` → `service` → `repository`
+  - MySQL 8.4 com pool assíncrono e schema versionado em código
+  - Better Auth com sessão em cookie e rotas de negócio protegidas por guard
+  - Módulos: auth, users, clientes, orçamentos, recibos e MEI (métricas/DAS)
 - **DevOps & Containers:**
   - Docker & Docker Compose
   - Hot-reload ativado para desenvolvimento full-stack sem rebuilds manuais
@@ -26,6 +28,11 @@ Desenvolvido com foco em alta conversão, responsividade mobile-first e conformi
 ---
 
 ## 🖥️ Telas e Recursos Implementados
+
+> **Sem dados fictícios.** Todo número exibido no app vem do MySQL: faturamento,
+> termômetro do teto, DAS, agregados por cliente e relatório de receitas brutas são
+> calculados a partir dos orçamentos e recibos reais do usuário logado. Uma conta nova
+> começa zerada, com estados vazios em vez de valores de exemplo.
 
 1. **Acesso Seguro MEI (Login Split-Screen):**
    - Header com logo oficial TrampoCerto e badge *Ambiente Seguro MEI*.
@@ -44,8 +51,15 @@ Desenvolvido com foco em alta conversão, responsividade mobile-first e conformi
 3. **Criador de Orçamentos:**
    - Formulário de cliente com preenchimento rápido (Nome, WhatsApp, Endereço, Validade).
    - Tabela de itens/serviços com adição/remoção dinâmica e recálculo automático de subtotais.
-   - Condições comerciais: Desconto percentual, entrada, parcelamento via Pix/Cartão/Boleto e notas personalizadas.
-   - Pré-visualização ao vivo em formato de proposta formal A4 para envio direto ao cliente.
+   - Condições comerciais: desconto, chave Pix, validade e termos de garantia.
+   - Pré-visualização ao vivo em formato de proposta formal A4, já com os dados do emissor.
+   - Códigos sequenciais por ano e usuário (`ORC-2026-001`), gerados no servidor.
+   - Propostas aprovadas ou recusadas ficam somente leitura — no formulário e na API.
+
+4. **Clientes, Recibos e Faturamento:**
+   - Carteira de clientes com faturamento, propostas e último serviço calculados no SQL.
+   - Recibos com código sequencial, valor por extenso e código de autenticação gerados no servidor.
+   - Relatório Mensal de Receitas Brutas do ano corrente e baixa da guia DAS por competência.
 
 ---
 
@@ -80,12 +94,32 @@ docker compose up -d --build
 
 ---
 
-## 🔐 Credenciais Padrão (Seed)
+## 🔐 Autenticação
 
-Para realizar testes imediatos de acesso e visualização:
-- **E-mail:** `rodrigo@trampocerto.com.br`
-- **Senha:** `123456`
-- **Atalho Gov.br:** O botão *Entrar com Gov.br* realiza a autenticação imediata e redireciona para o painel principal.
+A autenticação é real: as rotas `/api/*` de negócio exigem sessão válida do Better Auth
+(cookie enviado em toda chamada) e respondem `401` sem ela. O layout do painel redireciona
+para `/login` quando não há sessão.
+
+- **Criar conta:** `/cadastro` — nome, e-mail, senha (mínimo 8 caracteres) e os dados MEI
+  que aparecem nos orçamentos e recibos (ocupação, CNPJ, telefone, cidade e chave Pix).
+- **Conta inicial:** no primeiro boot, se `DEMO_USER_EMAIL` e `DEMO_USER_PASSWORD` estiverem
+  definidos no `.env`, a API cria essa conta pelo próprio Better Auth (senha com hash real).
+  Os valores padrão do `.env.example` são:
+
+  | Campo | Valor |
+  | --- | --- |
+  | E-mail | `rodrigo@trampocerto.com.br` |
+  | Senha | `trampocerto123` |
+
+  Deixe as duas variáveis em branco para subir o ambiente sem nenhuma conta pré-criada.
+- **Gov.br e Google:** os provedores sociais ainda não estão configurados; os botões avisam
+  isso em vez de simular um login.
+
+### Banco de dados
+
+O schema vive em `backend/src/database/schema.ts` e é aplicado pelo `SchemaService` a cada
+boot da API — idempotente, funciona tanto em banco novo quanto em banco já existente.
+O `init.sql` cuida apenas da criação do banco e do charset `utf8mb4`.
 
 ---
 
@@ -96,19 +130,25 @@ trampo-certo/
 ├── assets/                  # Protótipos de tela, logos e design system do Stitch
 ├── backend/                 # API NestJS com MySQL e Better Auth
 │   ├── src/
-│   │   ├── auth/            # Módulo e rotas de autenticação
-│   │   ├── database/        # Serviço e conexão com MySQL
-│   │   ├── mei/             # Métricas e cálculos fiscais do MEI
-│   │   └── orcamentos/      # Criação e listagem de orçamentos
-│   ├── init.sql             # Script de criação de tabelas e dados seed
+│   │   ├── common/          # Guard de sessão, decorators e utilitários
+│   │   ├── database/        # Pool MySQL, schema declarativo e sincronização
+│   │   ├── auth/            # Better Auth + criação da conta inicial
+│   │   ├── users/           # Perfil MEI do usuário logado
+│   │   ├── clientes/        # Carteira de clientes e agregados
+│   │   ├── orcamentos/      # Propostas, itens e regras de bloqueio
+│   │   ├── recibos/         # Emissão de recibos e valor por extenso
+│   │   └── mei/             # Métricas, receitas mensais e guia DAS
+│   ├── init.sql             # Criação do banco e charset
 │   └── Dockerfile.dev
-├── frontend/                # Aplicação Next.js 15 com Material UI
+├── frontend/                # Aplicação Next.js 16 com Material UI
 │   ├── public/              # Imagens e assets estáticos
 │   ├── src/
-│   │   ├── app/             # Rotas do App Router (/login, /dashboard, /orcamentos)
-│   │   ├── components/      # Componentes modulares e reutilizáveis
-│   │   ├── lib/             # Cliente de API e autenticação
-│   │   ├── mocks/           # Dados mock isolados (sem poluir componentes)
+│   │   ├── app/             # Rotas do App Router (/login, /cadastro, painel)
+│   │   ├── components/      # Componentes por domínio + comuns e providers
+│   │   ├── hooks/           # Carregamento de dados, sessão e feedback
+│   │   ├── lib/api/         # Cliente HTTP tipado, um módulo por recurso
+│   │   ├── lib/format/      # Moeda, datas, CSV e texto
+│   │   ├── types/           # Modelo de domínio compartilhado
 │   │   └── theme/           # Design tokens e tema Material 3
 │   └── Dockerfile.dev
 ├── docker-compose.yml       # Orquestração dos serviços para desenvolvimento

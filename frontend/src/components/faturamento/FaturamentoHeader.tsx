@@ -7,13 +7,15 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import AppButton from '@/components/common/AppButton';
+import { formatMoeda } from '@/lib/format';
 
 interface FaturamentoHeaderProps {
+  limiteAnual: number;
   onExport: () => void;
   onPayDas: () => void;
 }
 
-export default function FaturamentoHeader({ onExport, onPayDas }: FaturamentoHeaderProps) {
+export default function FaturamentoHeader({ limiteAnual, onExport, onPayDas }: FaturamentoHeaderProps) {
   return (
     <Box
       sx={{
@@ -94,7 +96,7 @@ export default function FaturamentoHeader({ onExport, onPayDas }: FaturamentoHea
             lineHeight: 1.5,
           }}
         >
-          Monitore o teto anual de R$ 81.000,00 da Receita Federal, pague a guia DAS mensal e emita o Relatório Obrigatório de Receitas Brutas.
+          Monitore o teto anual de {formatMoeda(limiteAnual)} da Receita Federal, pague a guia DAS mensal e emita o Relatório Obrigatório de Receitas Brutas.
         </Typography>
       </Box>
 

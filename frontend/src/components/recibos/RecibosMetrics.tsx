@@ -8,10 +8,10 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import PaymentsIcon from '@mui/icons-material/Payments';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { ReciboData } from './ReciboPaperView';
+import { Recibo } from '@/types';
 
 interface RecibosMetricsProps {
-  recibos: ReciboData[];
+  recibos: Recibo[];
 }
 
 export default function RecibosMetrics({ recibos }: RecibosMetricsProps) {

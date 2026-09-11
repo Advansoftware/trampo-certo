@@ -15,15 +15,26 @@ interface MeiThermometerProps {
   percentualUtilizado: number;
   saldoRestante: number;
   mediaMensal: number;
+  /** Ano-calendário das métricas; o corrente quando não informado. */
+  ano?: number;
 }
 
 export default function MeiThermometer({
-  faturamentoAcumulado = 52450.0,
-  limiteAnual = 81000.0,
-  percentualUtilizado = 64.7,
-  saldoRestante = 28550.0,
-  mediaMensal = 7137.5,
+  faturamentoAcumulado,
+  limiteAnual,
+  percentualUtilizado,
+  saldoRestante,
+  mediaMensal,
+  ano = new Date().getFullYear(),
 }: MeiThermometerProps) {
+  const formatBrl = (valor: number) =>
+    valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Faixa de alerta e ritmo sugerido saem do teto real e dos meses que faltam.
+  const valorAlerta = limiteAnual * 0.8;
+  const mesesRestantes = Math.max(1, 12 - new Date().getMonth());
+  const sugestaoMensal = saldoRestante / mesesRestantes;
+
   return (
     <Box
       sx={{
@@ -67,7 +78,7 @@ export default function MeiThermometer({
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
               <Typography variant="h6" sx={{ fontWeight: 800, color: '#1A1B20', fontSize: '1.1rem' }}>
-                Termômetro do Teto MEI 2024
+                Termômetro do Teto MEI {ano}
               </Typography>
               <Box
                 sx={{
@@ -140,7 +151,7 @@ export default function MeiThermometer({
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1, fontSize: '0.75rem', color: '#74777F' }}>
           <span>R$ 0,00</span>
-          <span style={{ color: '#D97706', fontWeight: 600 }}>Alerta 80% (R$ 64.800)</span>
+          <span style={{ color: '#D97706', fontWeight: 600 }}>Alerta 80% (R$ {formatBrl(valorAlerta)})</span>
           <span style={{ color: '#1A1B20', fontWeight: 600 }}>Teto Legal R$ 81.000,00</span>
         </Box>
       </Box>
@@ -189,7 +200,7 @@ export default function MeiThermometer({
                 Média Sugerida
               </Typography>
               <Typography sx={{ fontSize: '0.8125rem', color: '#43474E', lineHeight: 1.45 }}>
-                Recomendamos faturar no máximo <strong style={{ color: '#1A1B20', fontWeight: 600 }}>R$ {mediaMensal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}/mês</strong> nos próximos 4 meses para fechar o ano 100% regular.
+                Sua média realizada é <strong style={{ color: '#1A1B20', fontWeight: 600 }}>R$ {formatBrl(mediaMensal)}/mês</strong>. Você ainda pode faturar até <strong style={{ color: '#1A1B20', fontWeight: 600 }}>R$ {formatBrl(sugestaoMensal)}/mês</strong> {mesesRestantes === 1 ? 'no mês restante' : `nos ${mesesRestantes} meses restantes`} sem estourar o teto.
               </Typography>
             </Box>
           </Box>

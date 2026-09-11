@@ -17,85 +17,60 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import AppButton from '@/components/common/AppButton';
+import { formatMoeda } from '@/lib/format';
+import { Orcamento } from '@/types';
 import OrcamentoA4Preview from './OrcamentoA4Preview';
-import { OrcamentoItemData } from './OrcamentosTable';
-
+import { abrirWhatsApp, mensagemOrcamento } from './tabela/mensagemWhatsApp';
+import { visualDoStatus } from './tabela/statusOrcamento';
 
 interface OrcamentoPreviewModalProps {
   open: boolean;
   onClose: () => void;
-  orcamento: OrcamentoItemData | null;
+  orcamento: Orcamento | null;
 }
 
-export default function OrcamentoPreviewModal({
-  open,
-  onClose,
-  orcamento,
-}: OrcamentoPreviewModalProps) {
-  if (!orcamento) return null;
-
-  const isApproved =
-    (orcamento.status || '').toLowerCase() === 'aprovado' ||
-    (orcamento.status || '').toLowerCase().includes('recibo') ||
-    (orcamento.status || '').toLowerCase() === 'concluido';
-
-  const isRejected = (orcamento.status || '').toLowerCase() === 'recusado';
-  const isPending = !isApproved && !isRejected;
-
-  const numTotal =
-    typeof orcamento.valorTotal === 'number'
-      ? orcamento.valorTotal
-      : parseFloat(String(orcamento.valorTotal).replace(/[^\d.,]/g, '').replace(',', '.')) || 1450.0;
-
-  // Garantir que haja itens formatados para o A4
-  const itensFormatados =
-    Array.isArray(orcamento.itens) && orcamento.itens.length > 0
-      ? orcamento.itens.map((item, idx) => ({
-          id: item.id || `item-${idx}`,
-          descricao: item.descricao || 'Item do serviço',
-          subDescricao: item.subDescricao,
-          qtd: item.qtd || 1,
-          unidade: item.unidade || 'un',
-          unitario: item.unitario || item.total || numTotal,
-        }))
-      : [
-          {
-            id: 'item-1',
-            descricao: orcamento.servicoDescricao || 'Serviços técnicos e mão de obra especializada MEI',
-            qtd: 1,
-            unidade: 'un',
-            unitario: numTotal,
-          },
-        ];
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const handleWhatsApp = () => {
-    const valFormatted = numTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    const texto = encodeURIComponent(
-      `Olá ${orcamento.clienteNome}! 👋 Segue a proposta comercial da TrampoCerto (${orcamento.codigo || 'Orçamento'}):\n\n` +
-      `🛠️ *Serviço:* ${orcamento.servicoDescricao || 'Serviços especializados'}\n` +
-      `💰 *Valor Total:* R$ ${valFormatted}\n` +
-      `📌 *Status:* ${isApproved ? '✅ Aprovado' : '⏳ Aguardando Aprovação'}\n\n` +
-      `🔗 Visualize a folha original completa: https://trampocerto.com.br/proposta/${orcamento.id}\n\n` +
-      `Fico à disposição!`,
-    );
-
-    const tel = (orcamento.clienteTelefone || '').replace(/\D/g, '');
-    const url = tel ? `https://wa.me/55${tel}?text=${texto}` : `https://wa.me/?text=${texto}`;
-    window.open(url, '_blank');
-  };
-
+export default function OrcamentoPreviewModal({ open, onClose, orcamento }: OrcamentoPreviewModalProps) {
+  // Todos os hooks antes de qualquer retorno: a contagem precisa ser estável
+  // entre o render sem orçamento (modal fechado) e o render com orçamento.
   const router = useRouter();
 
-  const handleEdit = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('trampo_edit_orcamento', JSON.stringify(orcamento));
-    }
+  const aprovado = orcamento?.status === 'aprovado';
+  const recusado = orcamento?.status === 'recusado';
+  const editavel = Boolean(orcamento) && !aprovado && !recusado;
+
+  const handlePrint = React.useCallback(() => window.print(), []);
+
+  const handleWhatsApp = React.useCallback(() => {
+    if (!orcamento) return;
+    abrirWhatsApp(orcamento.clienteTelefone, mensagemOrcamento(orcamento));
+  }, [orcamento]);
+
+  const handleEdit = React.useCallback(() => {
+    if (!orcamento) return;
     router.push(`/orcamentos/novo?id=${orcamento.id}`);
-  };
+  }, [orcamento, router]);
+
+  if (!orcamento) return null;
+
+  const status = visualDoStatus(orcamento.status);
+  const itens = orcamento.itens.length > 0
+    ? orcamento.itens.map((item) => ({
+        id: item.id,
+        descricao: item.descricao,
+        subDescricao: item.subDescricao ?? undefined,
+        qtd: item.qtd,
+        unidade: item.unidade,
+        unitario: item.unitario,
+      }))
+    : [
+        {
+          id: 'item-1',
+          descricao: orcamento.servicoDescricao || 'Serviços técnicos especializados',
+          qtd: 1,
+          unidade: 'un',
+          unitario: orcamento.valorTotal,
+        },
+      ];
 
   return (
     <Dialog
@@ -104,12 +79,7 @@ export default function OrcamentoPreviewModal({
       maxWidth="md"
       fullWidth
       slotProps={{
-        backdrop: {
-          sx: {
-            bgcolor: 'rgba(15, 23, 42, 0.65)',
-            backdropFilter: 'blur(8px)',
-          },
-        },
+        backdrop: { sx: { bgcolor: 'rgba(15, 23, 42, 0.65)', backdropFilter: 'blur(8px)' } },
         paper: {
           sx: {
             borderRadius: '24px',
@@ -118,254 +88,139 @@ export default function OrcamentoPreviewModal({
             boxShadow: '0 24px 48px -12px rgba(15, 23, 42, 0.25)',
             overflow: 'hidden',
             m: { xs: 1.5, sm: 3 },
-            maxHeight: '92vh',
           },
         },
       }}
     >
-      {/* Modal Top Bar */}
       <DialogTitle
-        data-print-hide="true"
         sx={{
-          p: { xs: 2, sm: 2.5 },
+          p: 2.5,
           bgcolor: '#FFFFFF',
           borderBottom: '1px solid rgba(196, 198, 207, 0.4)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 1.5,
+          gap: 2,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          {/* Proposal Code Badge */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: 0 }}>
           <Box
             sx={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              px: 1.5,
-              py: 0.5,
+              px: 1.25,
+              py: 0.35,
               borderRadius: '8px',
-              bgcolor: '#DBEAFE',
-              color: '#172554',
+              bgcolor: '#F1F4F9',
+              color: '#1E3A8A',
               fontFamily: 'monospace',
-              fontSize: '0.8125rem',
-              fontWeight: 800,
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              border: '1px solid rgba(30, 58, 138, 0.15)',
+              flexShrink: 0,
             }}
           >
-            {orcamento.codigo || `#042`}
+            {orcamento.codigo}
           </Box>
-
-          {/* Status Badge */}
-          {isApproved ? (
-            <Box
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.75,
-                px: 1.5,
-                py: 0.5,
-                borderRadius: '9999px',
-                bgcolor: '#DCFCE7',
-                color: '#166534',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-              }}
-            >
-              <CheckCircleIcon sx={{ fontSize: 15 }} />
-              Aprovado
-            </Box>
-          ) : isRejected ? (
-            <Box
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.75,
-                px: 1.5,
-                py: 0.5,
-                borderRadius: '9999px',
-                bgcolor: '#FEE2E2',
-                color: '#991B1B',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-              }}
-            >
-              <CloseIcon sx={{ fontSize: 14 }} />
-              Recusado
-            </Box>
-          ) : (
-            <Box
-              sx={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 0.75,
-                px: 1.5,
-                py: 0.5,
-                borderRadius: '9999px',
-                bgcolor: '#FEF3C7',
-                color: '#92400E',
-                fontSize: '0.75rem',
-                fontWeight: 700,
-              }}
-            >
-              <AccessTimeIcon sx={{ fontSize: 14 }} />
-              Pendente de Aprovação
-            </Box>
-          )}
+          <Box sx={{ minWidth: 0 }}>
+            <Typography sx={{ fontSize: '1rem', fontWeight: 800, color: '#1A1B20', lineHeight: 1.2 }}>
+              {orcamento.clienteNome}
+            </Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: '#74777F' }}>
+              {formatMoeda(orcamento.valorTotal)} · {status.label}
+            </Typography>
+          </Box>
         </Box>
 
-        {/* Action Controls & Close */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <IconButton
-            onClick={handlePrint}
-            title="Imprimir / Baixar PDF"
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexShrink: 0 }}>
+          <Box
             sx={{
-              bgcolor: '#F1F4F9',
-              color: '#1A1B20',
-              '&:hover': { bgcolor: '#E2E8F0', color: '#1E3A8A' },
+              display: { xs: 'none', sm: 'inline-flex' },
+              alignItems: 'center',
+              gap: 0.75,
+              px: 1.5,
+              py: 0.4,
+              borderRadius: '9999px',
+              bgcolor: status.bg,
+              color: status.color,
+              fontSize: '0.6875rem',
+              fontWeight: 700,
             }}
           >
-            <PrintIcon sx={{ fontSize: 19 }} />
-          </IconButton>
+            {aprovado ? <CheckCircleIcon sx={{ fontSize: 14 }} /> : <AccessTimeIcon sx={{ fontSize: 14 }} />}
+            {status.label}
+          </Box>
 
-          <IconButton
-            onClick={handleWhatsApp}
-            title="Compartilhar no WhatsApp"
-            sx={{
-              bgcolor: '#DCFCE7',
-              color: '#15803D',
-              '&:hover': { bgcolor: '#BBF7D0' },
-            }}
-          >
-            <WhatsAppIcon sx={{ fontSize: 19 }} />
+          <IconButton onClick={handlePrint} size="small" sx={{ color: '#43474E' }} title="Imprimir / PDF">
+            <PrintIcon sx={{ fontSize: 20 }} />
           </IconButton>
-
-          <IconButton
-            onClick={onClose}
-            title="Fechar visualização"
-            sx={{
-              bgcolor: '#F1F4F9',
-              color: '#74777F',
-              '&:hover': { bgcolor: '#E2E8F0', color: '#1A1B20' },
-            }}
-          >
+          <IconButton onClick={handleWhatsApp} size="small" sx={{ color: '#15803D' }} title="Enviar no WhatsApp">
+            <WhatsAppIcon sx={{ fontSize: 20 }} />
+          </IconButton>
+          <IconButton onClick={onClose} size="small" sx={{ color: '#43474E' }} title="Fechar">
             <CloseIcon sx={{ fontSize: 20 }} />
           </IconButton>
         </Box>
       </DialogTitle>
 
-      {/* Warning Alert if Document is Locked (Approved or Rejected) */}
-      {isApproved && (
-        <Box
-          data-print-hide="true"
-          sx={{
-            px: 3,
-            py: 1.25,
-            bgcolor: '#EFF6FF',
-            borderBottom: '1px solid rgba(191, 219, 254, 0.6)',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-          }}
-        >
-          <LockIcon sx={{ fontSize: 17, color: '#1E3A8A' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#1E40AF', fontWeight: 600 }}>
-            <strong>Orçamento Concluído & Aprovado:</strong> Este documento está protegido contra modificações para garantir conformidade fiscal e jurídica com o cliente.
-          </Typography>
-        </Box>
-      )}
-
-      {isRejected && (
-        <Box
-          data-print-hide="true"
-          sx={{
-            px: 3,
-            py: 1.25,
-            bgcolor: '#FEF2F2',
-            borderBottom: '1px solid #FECACA',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-          }}
-        >
-          <LockIcon sx={{ fontSize: 17, color: '#DC2626' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#991B1B', fontWeight: 600 }}>
-            <strong>Orçamento Recusado:</strong> Esta proposta foi recusada pelo cliente e está bloqueada para modificações.
-          </Typography>
-        </Box>
-      )}
-
-      {/* Main Document Body */}
-      <DialogContent sx={{ p: { xs: 2, sm: 3, md: 4 }, bgcolor: '#F8F9FD' }}>
-        <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-          <OrcamentoA4Preview
-            codigo={orcamento.codigo?.replace(/\D/g, '') || '042'}
-            clienteNome={orcamento.clienteNome}
-            clienteTelefone={orcamento.clienteTelefone || '(11) 98765-4321'}
-            clienteLocalizacao="São Paulo - SP"
-            itens={itensFormatados}
-            subtotal={numTotal}
-            desconto={0}
-            total={numTotal}
-            condicoesPagamento={orcamento.condicoesPagamento || '50% sinal + 50% na entrega (Pix)'}
-            chavePix="45.123.789/0001-90 (CNPJ MEI)"
-            validade="Válido por 10 dias"
-            observacoes={
-              isApproved
-                ? 'Proposta aceita e aprovada pelo cliente. Garantia legal MEI de 90 dias a contar da data de conclusão dos serviços.'
-                : 'Orçamento sujeito a aprovação. Materiais e mão de obra inclusos com garantia de 90 dias.'
-            }
-          />
-        </Box>
+      <DialogContent sx={{ p: { xs: 2, sm: 3 }, bgcolor: '#F8F9FD' }}>
+        <OrcamentoA4Preview
+          codigo={orcamento.codigo}
+          clienteNome={orcamento.clienteNome}
+          clienteTelefone={orcamento.clienteTelefone}
+          clienteLocalizacao={orcamento.clienteLocalizacao}
+          itens={itens}
+          subtotal={orcamento.subtotal}
+          desconto={orcamento.desconto}
+          total={orcamento.valorTotal}
+          condicoesPagamento={orcamento.condicoesPagamento}
+          chavePix={orcamento.chavePix}
+          validade={orcamento.validade}
+          observacoes={orcamento.observacoes}
+        />
       </DialogContent>
 
-      {/* Modal Footer */}
       <DialogActions
-        data-print-hide="true"
         sx={{
-          p: { xs: 2, sm: 2.5 },
+          p: 2,
           bgcolor: '#FFFFFF',
           borderTop: '1px solid rgba(196, 198, 207, 0.4)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
+          gap: 1,
+          flexWrap: 'wrap',
         }}
       >
-        <Typography sx={{ fontSize: '0.75rem', color: '#74777F', display: { xs: 'none', sm: 'block' } }}>
-          TrampoCerto MEI • Proposta Comercial Oficial
-        </Typography>
+        {!editavel && (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mr: 'auto', color: '#74777F' }}>
+            <LockIcon sx={{ fontSize: 16 }} />
+            <Typography sx={{ fontSize: '0.75rem', fontWeight: 600 }}>
+              {aprovado
+                ? 'Proposta aprovada — protegida contra edições.'
+                : 'Proposta recusada — somente leitura.'}
+            </Typography>
+          </Box>
+        )}
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: { xs: '100%', sm: 'auto' }, justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-          <AppButton variant="surface" size="small" onClick={onClose}>
-            Fechar
-          </AppButton>
-          {isPending && (
-            <AppButton
-              variant="outlined"
-              size="small"
-              startIcon={<EditIcon sx={{ fontSize: 16 }} />}
-              onClick={handleEdit}
-            >
-              Editar Orçamento
-            </AppButton>
-          )}
+        {editavel && (
           <AppButton
-            variant="secondary"
+            variant="outlined"
             size="small"
-            startIcon={<WhatsAppIcon sx={{ fontSize: 16 }} />}
-            onClick={handleWhatsApp}
+            startIcon={<EditIcon sx={{ fontSize: 16 }} />}
+            onClick={handleEdit}
           >
-            WhatsApp
+            Editar proposta
           </AppButton>
-          <AppButton
-            variant="primary"
-            size="small"
-            startIcon={<PrintIcon sx={{ fontSize: 16 }} />}
-            onClick={handlePrint}
-          >
-            Imprimir / Baixar PDF
-          </AppButton>
-        </Box>
+        )}
+
+        <AppButton
+          variant="outlined"
+          size="small"
+          startIcon={<WhatsAppIcon sx={{ fontSize: 16 }} />}
+          onClick={handleWhatsApp}
+        >
+          Enviar no WhatsApp
+        </AppButton>
+
+        <AppButton size="small" startIcon={<PrintIcon sx={{ fontSize: 16 }} />} onClick={handlePrint}>
+          Imprimir / PDF
+        </AppButton>
       </DialogActions>
     </Dialog>
   );

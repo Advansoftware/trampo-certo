@@ -22,16 +22,17 @@ import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AppButton from '@/components/common/AppButton';
 import ReciboModal from './ReciboModal';
-import { ReciboData } from './ReciboPaperView';
+import { formatDataHora } from '@/lib/format';
+import { Recibo } from '@/types';
 
 interface RecibosTableProps {
-  recibos: ReciboData[];
+  recibos: Recibo[];
 }
 
 export default function RecibosTable({ recibos }: RecibosTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState<'todos' | 'pix' | 'cartao' | 'transferencia' | 'dinheiro'>('todos');
-  const [selectedRecibo, setSelectedRecibo] = useState<ReciboData | null>(null);
+  const [selectedRecibo, setSelectedRecibo] = useState<Recibo | null>(null);
 
   const filteredRecibos = useMemo(() => {
     return recibos.filter((r) => {
@@ -60,13 +61,13 @@ export default function RecibosTable({ recibos }: RecibosTableProps) {
     return { total, pix, cartao, transferencia, dinheiro };
   }, [recibos]);
 
-  const handleSendWhatsApp = (item: ReciboData) => {
+  const handleSendWhatsApp = (item: Recibo) => {
     const valFormatted = item.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const texto = encodeURIComponent(
       `Olá ${item.clienteNome}! 👋 Segue seu comprovante de recibo quitado da TrampoCerto (${item.codigo}):\n\n` +
       `🛠️ *Serviço:* ${item.servicoDescricao}\n` +
       `💰 *Valor Quitado:* R$ ${valFormatted}\n` +
-      `📅 *Data de Pagamento:* ${item.dataPagamento}\n` +
+      `📅 *Data de Pagamento:* ${formatDataHora(item.dataPagamento)}\n` +
       `💳 *Forma:* ${item.formaPagamentoLabel}\n` +
       `🔐 *Autenticação Digital:* ${item.autenticacao}\n\n` +
       `Agradeço a preferência! Qualquer necessidade estou à disposição.`,
@@ -157,18 +158,18 @@ export default function RecibosTable({ recibos }: RecibosTableProps) {
             pb: { xs: 1, md: 0 },
           }}
         >
-          {[
+          {([
             { key: 'todos', label: 'Todos', count: counts.total },
             { key: 'pix', label: 'Pix', count: counts.pix },
             { key: 'cartao', label: 'Cartão', count: counts.cartao },
             { key: 'transferencia', label: 'Transferência', count: counts.transferencia },
             { key: 'dinheiro', label: 'Dinheiro', count: counts.dinheiro },
-          ].map((tab) => {
+          ] as const).map((tab) => {
             const isSelected = activeFilter === tab.key;
             return (
               <Box
                 key={tab.key}
-                onClick={() => setActiveFilter(tab.key as any)}
+                onClick={() => setActiveFilter(tab.key)}
                 sx={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -359,7 +360,7 @@ export default function RecibosTable({ recibos }: RecibosTableProps) {
                   {/* Data */}
                   <TableCell sx={{ py: 2, whiteSpace: 'nowrap' }}>
                     <Typography sx={{ fontSize: '0.8125rem', color: '#43474E' }}>
-                      {row.dataPagamento}
+                      {formatDataHora(row.dataPagamento)}
                     </Typography>
                   </TableCell>
 

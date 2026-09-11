@@ -317,7 +317,7 @@ export default function ReferralBenefits({ referrerName }: ReferralBenefitsProps
                       ))}
                     </Box>
                     <Typography sx={{ fontSize: '0.875rem', color: '#43474E', fontStyle: 'italic', mb: 2, lineHeight: 1.6 }}>
-                      "{t.text}"
+                      &ldquo;{t.text}&rdquo;
                     </Typography>
                   </Box>
                   <Box>

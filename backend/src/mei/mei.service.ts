@@ -1,91 +1,177 @@
-import { Injectable } from '@nestjs/common';
-import { DbService } from '../database/db.service';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  competenciaExtenso,
+  competenciaOf,
+  formatBrDate,
+  nomeDoMes,
+  vencimentoDas,
+} from '../common/utils/date.util';
+import { percent, round2 } from '../common/utils/number.util';
+import {
+  DasCompetencia,
+  DestaquesMensais,
+  MeiConfig,
+  MeiMetrics,
+  ReceitaMensal,
+  StatusDas,
+  StatusTermometro,
+} from './mei.entity';
+import { MeiRepository, TotalMensal } from './mei.repository';
 
-export interface MeiMetrics {
-  faturamentoAcumulado: number;
-  limiteAnual: number;
-  percentualUtilizado: number;
-  faturamentoMes: number;
-  aReceber: number;
-  dasMeiValor: number;
-  dasMeiVencimento: string;
-  dasMeiStatus: string;
-  dasMei: {
-    competencia: string;
-    valor: number;
-    vencimento: string;
-    status: string;
-    chavePix?: string;
-  };
-}
+const COMPETENCIA_REGEX = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 @Injectable()
 export class MeiService {
-  constructor(private readonly db: DbService) {}
+  constructor(private readonly repository: MeiRepository) {}
 
-  async getMetrics(): Promise<MeiMetrics> {
-    try {
-      const rows = await this.db.query<any>(
-        'SELECT * FROM mei_metrics ORDER BY updatedAt DESC LIMIT 1',
-      );
+  getConfig(userId: string): Promise<MeiConfig> {
+    return this.repository.getConfig(userId);
+  }
 
-      if (rows && rows.length > 0) {
-        const row = rows[0];
-        const faturamentoAcumulado = Number(row.faturamentoAcumulado) || 42350.0;
-        const limiteAnual = Number(row.limiteAnual) || 81000.0;
-        const percentualUtilizado = Math.round((faturamentoAcumulado / limiteAnual) * 100);
-        const valor = Number(row.dasMeiValor) || 75.6;
-        let vencimento = '20/09/2026';
-        if (row.dasMeiVencimento) {
-          const d = new Date(row.dasMeiVencimento);
-          if (!isNaN(d.getTime())) {
-            const dia = String(d.getUTCDate()).padStart(2, '0');
-            const mes = String(d.getUTCMonth() + 1).padStart(2, '0');
-            const ano = d.getUTCFullYear();
-            vencimento = `${dia}/${mes}/${ano}`;
-          }
-        }
-        const status = row.dasMeiStatus || 'pendente';
+  /**
+   * Todos os números saem de recibos e orçamentos reais do usuário.
+   * Do banco vêm apenas os parâmetros do MEI (teto, valor do DAS, vencimento).
+   */
+  async getMetrics(userId: string, ano = new Date().getFullYear()): Promise<MeiMetrics> {
+    const [config, totais, aReceber] = await Promise.all([
+      this.repository.getConfig(userId),
+      this.repository.totaisPorMes(userId, ano),
+      this.repository.aReceber(userId),
+    ]);
 
-        return {
-          faturamentoAcumulado,
-          limiteAnual,
-          percentualUtilizado,
-          faturamentoMes: Number(row.faturamentoMes) || 6420.0,
-          aReceber: Number(row.aReceber) || 1850.0,
-          dasMeiValor: valor,
-          dasMeiVencimento: vencimento,
-          dasMeiStatus: status,
-          dasMei: {
-            competencia: 'Setembro/2026',
-            valor,
-            vencimento,
-            status,
-            chavePix: '00020126580014br.gov.bcb.pix0136451237890001905204000053039865802BR5913RODRIGO SILVA6009SAO PAULO62070503***6304E2A1',
-          },
-        };
-      }
-    } catch {
-      // Fallback seguro caso o banco ainda esteja inicializando
-    }
+    const hoje = new Date();
+    const competenciaAtual = competenciaOf(hoje);
+    const faturamentoAcumulado = round2(totais.reduce((acc, item) => acc + item.total, 0));
+    const faturamentoMes = round2(totais.find((item) => item.competencia === competenciaAtual)?.total ?? 0);
 
-    // Default mock data aligned with Stitch Design
+    const mesesDecorridos = ano === hoje.getFullYear() ? hoje.getMonth() + 1 : 12;
+    const mediaMensal = round2(faturamentoAcumulado / mesesDecorridos);
+    const percentualUtilizado = percent(faturamentoAcumulado, config.limiteAnual);
+
     return {
-      faturamentoAcumulado: 42350.0,
-      limiteAnual: 81000.0,
-      percentualUtilizado: 52,
-      faturamentoMes: 6420.0,
-      aReceber: 1850.0,
-      dasMeiValor: 75.6,
-      dasMeiVencimento: '20/09/2026',
-      dasMeiStatus: 'pendente',
-      dasMei: {
-        competencia: 'Setembro/2026',
-        valor: 75.6,
-        vencimento: '20/09/2026',
-        status: 'pendente',
-        chavePix: '00020126580014br.gov.bcb.pix0136451237890001905204000053039865802BR5913RODRIGO SILVA6009SAO PAULO62070503***6304E2A1',
-      },
+      ano,
+      faturamentoAcumulado,
+      limiteAnual: config.limiteAnual,
+      percentualUtilizado,
+      saldoRestante: round2(Math.max(0, config.limiteAnual - faturamentoAcumulado)),
+      faturamentoMes,
+      aReceber: round2(aReceber.valor),
+      mediaMensal,
+      projecaoAnual: round2(mediaMensal * 12),
+      statusTermometro: classificarTermometro(percentualUtilizado),
+      dasMei: await this.dasDaCompetencia(userId, competenciaAtual, config, ano),
     };
   }
+
+  async getReceitasMensais(userId: string, ano = new Date().getFullYear()): Promise<ReceitaMensal[]> {
+    const [config, totais, pagamentos] = await Promise.all([
+      this.repository.getConfig(userId),
+      this.repository.totaisPorMes(userId, ano),
+      this.repository.listarDas(userId, ano),
+    ]);
+
+    const competenciaAtual = competenciaOf(new Date());
+
+    return Array.from({ length: 12 }, (_, indice) => {
+      const competencia = `${ano}-${String(indice + 1).padStart(2, '0')}`;
+      const total = totais.find((item) => item.competencia === competencia);
+      const das = pagamentos.find((item) => item.competencia === competencia);
+
+      return {
+        mes: nomeDoMes(indice),
+        competencia,
+        servicosSemNf: round2(total?.semNf ?? 0),
+        servicosComNf: round2(total?.comNf ?? 0),
+        total: round2(total?.total ?? 0),
+        dasStatus: das?.status ?? statusPadraoDas(competencia, competenciaAtual),
+        dasValor: das ? round2(Number(das.valor)) : config.dasValor,
+        dasPagoEm: formatBrDate(das?.pagoEm ?? null),
+      };
+    });
+  }
+
+  async getDestaques(userId: string): Promise<DestaquesMensais> {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const competenciaAtual = competenciaOf(hoje);
+    const competenciaAnterior = competenciaOf(new Date(ano, hoje.getMonth() - 1, 1));
+
+    const [totaisAno, totaisAnoAnterior, aReceber, orcamentosFechados] = await Promise.all([
+      this.repository.totaisPorMes(userId, ano),
+      competenciaAnterior.startsWith(String(ano))
+        ? Promise.resolve<TotalMensal[]>([])
+        : this.repository.totaisPorMes(userId, ano - 1),
+      this.repository.aReceber(userId),
+      this.repository.orcamentosAprovadosNoMes(userId, competenciaAtual),
+    ]);
+
+    const todos = [...totaisAno, ...totaisAnoAnterior];
+    const atual = todos.find((item) => item.competencia === competenciaAtual);
+    const anterior = todos.find((item) => item.competencia === competenciaAnterior);
+
+    const ticketMedio = atual && atual.quantidade > 0 ? round2(atual.total / atual.quantidade) : 0;
+    const ticketAnterior = anterior && anterior.quantidade > 0 ? round2(anterior.total / anterior.quantidade) : 0;
+
+    return {
+      faturamentoMes: round2(atual?.total ?? 0),
+      faturamentoMesAnterior: round2(anterior?.total ?? 0),
+      variacaoFaturamento: variacao(atual?.total ?? 0, anterior?.total ?? 0),
+      aReceber: round2(aReceber.valor),
+      aReceberQtd: aReceber.quantidade,
+      ticketMedio,
+      ticketMedioAnterior: ticketAnterior,
+      variacaoTicket: variacao(ticketMedio, ticketAnterior),
+      recibosEmitidos: atual?.quantidade ?? 0,
+      orcamentosFechados,
+    };
+  }
+
+  async pagarDas(userId: string, competencia: string): Promise<DasCompetencia> {
+    if (!COMPETENCIA_REGEX.test(competencia)) {
+      throw new BadRequestException('Competência inválida. Use o formato AAAA-MM.');
+    }
+
+    const config = await this.repository.getConfig(userId);
+    await this.repository.registrarPagamentoDas(userId, competencia, config.dasValor);
+
+    const ano = Number(competencia.slice(0, 4));
+    return this.dasDaCompetencia(userId, competencia, config, ano);
+  }
+
+  private async dasDaCompetencia(
+    userId: string,
+    competencia: string,
+    config: MeiConfig,
+    ano: number,
+  ): Promise<DasCompetencia> {
+    const pagamentos = await this.repository.listarDas(userId, ano);
+    const registro = pagamentos.find((item) => item.competencia === competencia);
+    const competenciaAtual = competenciaOf(new Date());
+
+    return {
+      competencia,
+      competenciaLabel: competenciaExtenso(competencia),
+      valor: registro ? round2(Number(registro.valor)) : config.dasValor,
+      vencimento: vencimentoDas(competencia, config.dasDiaVencimento),
+      status: registro?.status ?? statusPadraoDas(competencia, competenciaAtual),
+      pagoEm: formatBrDate(registro?.pagoEm ?? null),
+      chavePix: config.chavePix,
+    };
+  }
+}
+
+function classificarTermometro(percentual: number): StatusTermometro {
+  if (percentual >= 90) return 'CRITICO';
+  if (percentual >= 70) return 'ATENCAO';
+  return 'SEGURO';
+}
+
+/** Sem registro de pagamento: futuro é "a vencer", passado/atual é "pendente". */
+function statusPadraoDas(competencia: string, competenciaAtual: string): StatusDas {
+  return competencia > competenciaAtual ? 'a_vencer' : 'pendente';
+}
+
+function variacao(atual: number, anterior: number): number | null {
+  if (!anterior) return null;
+  return round2(((atual - anterior) / anterior) * 100);
 }

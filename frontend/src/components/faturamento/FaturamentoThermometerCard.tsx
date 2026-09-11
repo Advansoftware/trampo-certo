@@ -20,6 +20,9 @@ export default function FaturamentoThermometerCard({
   saldoRestante,
 }: FaturamentoThermometerCardProps) {
   const percentual = Math.min(100, Math.round((faturamentoAcumulado / limiteAnual) * 100));
+  const ano = new Date().getFullYear();
+  const mesesRestantes = Math.max(1, 12 - new Date().getMonth());
+  const limiteTolerancia = limiteAnual * 1.2;
 
   const formatMoney = (val?: number | null) => {
     const num = typeof val === 'number' && !isNaN(val) ? val : 0;
@@ -109,7 +112,7 @@ export default function FaturamentoThermometerCard({
             {formatMoney(faturamentoAcumulado)} (Atual)
           </span>
           <span style={{ color: '#D97706', fontWeight: 600 }}>
-            80% (R$ 64.800)
+            80% ({formatMoney(limiteAnual * 0.8)})
           </span>
           <strong style={{ color: '#1A1B20' }}>
             {formatMoney(limiteAnual)} (Teto)
@@ -158,7 +161,7 @@ export default function FaturamentoThermometerCard({
               </Typography>
             </Box>
             <Typography sx={{ fontSize: '0.75rem', color: '#43474E', lineHeight: 1.5 }}>
-              Nos próximos meses de 2026, você pode emitir até <strong>R$ 12.960/mês</strong> mantendo o enquadramento simplificado de MEI.
+              {mesesRestantes === 1 ? 'No mês restante' : `Nos ${mesesRestantes} meses restantes`} de {ano}, você pode emitir até <strong>{formatMoney(saldoRestante / mesesRestantes)}/mês</strong> mantendo o enquadramento simplificado de MEI.
             </Typography>
           </Box>
         </Grid>
@@ -180,7 +183,7 @@ export default function FaturamentoThermometerCard({
               </Typography>
             </Box>
             <Typography sx={{ fontSize: '0.75rem', color: '#43474E', lineHeight: 1.5 }}>
-              Se faturar entre R$ 81.000 e R$ 97.200, você apenas recolhe o DAS complementar e migra para ME no ano seguinte, sem multas retroativas.
+              Se faturar entre {formatMoney(limiteAnual)} e {formatMoney(limiteTolerancia)}, você apenas recolhe o DAS complementar e migra para ME no ano seguinte, sem multas retroativas.
             </Typography>
           </Box>
         </Grid>

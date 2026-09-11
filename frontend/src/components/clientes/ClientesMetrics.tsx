@@ -9,25 +9,10 @@ import BusinessIcon from '@mui/icons-material/Business';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import StarIcon from '@mui/icons-material/Star';
 
-export interface ClienteItemData {
-  id: string;
-  nome: string;
-  tipo: 'PF' | 'PJ' | string;
-  documento: string;
-  telefone: string;
-  email: string;
-  cidade: string;
-  bairro?: string;
-  totalFaturado: number;
-  totalPropostas: number;
-  propostasAprovadas: number;
-  ultimoServico: string;
-  status: string;
-  tags?: string[];
-}
+import { Cliente } from '@/types';
 
 interface ClientesMetricsProps {
-  clientes: ClienteItemData[];
+  clientes: Cliente[];
 }
 
 export default function ClientesMetrics({ clientes }: ClientesMetricsProps) {
@@ -40,7 +25,7 @@ export default function ClientesMetrics({ clientes }: ClientesMetricsProps) {
     const ticketMedio = total > 0 ? faturamentoTotal / total : 0;
 
     // Top cliente
-    let topCliente: ClienteItemData | null = null;
+    let topCliente: Cliente | null = null;
     let maxFaturamento = -1;
     for (const c of clientes) {
       const val = Number(c.totalFaturado) || 0;
@@ -96,7 +81,7 @@ export default function ClientesMetrics({ clientes }: ClientesMetricsProps) {
       icon: TrendingUpIcon,
       iconBg: '#DCFCE7',
       iconColor: '#15803D',
-      badge: '+12% histórico',
+      badge: `${metrics.total} ${metrics.total === 1 ? 'cliente' : 'clientes'}`,
       badgeBg: '#DCFCE7',
       badgeColor: '#166534',
     },

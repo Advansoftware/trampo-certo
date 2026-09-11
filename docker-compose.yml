@@ -37,6 +37,9 @@ services:
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-trampo_certo_jwt_secret_dev_key_987654321}
       BETTER_AUTH_URL: http://localhost:4005
       FRONTEND_URL: http://localhost:3000
+      DEMO_USER_NAME: ${DEMO_USER_NAME:-}
+      DEMO_USER_EMAIL: ${DEMO_USER_EMAIL:-}
+      DEMO_USER_PASSWORD: ${DEMO_USER_PASSWORD:-}
     volumes:
       - ./backend:/app
       - /app/node_modules

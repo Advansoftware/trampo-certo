@@ -13,12 +13,14 @@ import PrintIcon from '@mui/icons-material/Print';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AppButton from '@/components/common/AppButton';
-import ReciboPaperView, { ReciboData } from './ReciboPaperView';
+import ReciboPaperView from './ReciboPaperView';
+import { formatDataHora } from '@/lib/format';
+import { Recibo } from '@/types';
 
 interface ReciboModalProps {
   open: boolean;
   onClose: () => void;
-  recibo: ReciboData | null;
+  recibo: Recibo | null;
 }
 
 export default function ReciboModal({ open, onClose, recibo }: ReciboModalProps) {
@@ -34,7 +36,7 @@ export default function ReciboModal({ open, onClose, recibo }: ReciboModalProps)
       `Olá ${recibo.clienteNome}! 👋 Segue seu *Comprovante de Pagamento & Recibo Oficial* da TrampoCerto (${recibo.codigo}):\n\n` +
       `🛠️ *Serviço:* ${recibo.servicoDescricao}\n` +
       `💰 *Valor Quitado:* R$ ${valFormatted}\n` +
-      `📅 *Data:* ${recibo.dataPagamento}\n` +
+      `📅 *Data:* ${formatDataHora(recibo.dataPagamento)}\n` +
       `💳 *Forma:* ${recibo.formaPagamentoLabel}\n` +
       `🔐 *Autenticação:* ${recibo.autenticacao}\n\n` +
       `Muito obrigado pela confiança no meu trabalho! Fico à disposição para futuros serviços.`,

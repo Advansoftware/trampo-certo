@@ -8,70 +8,45 @@ import LoginHeader from '@/components/login/LoginHeader';
 import LoginCard from '@/components/login/LoginCard';
 import LoginShowcaseCard from '@/components/login/LoginShowcaseCard';
 import LoginFooter from '@/components/login/LoginFooter';
-import { signIn } from '@/lib/auth-client';
-import { getUserData } from '@/lib/api';
+import { signIn, traduzirErroAuth } from '@/lib/auth-client';
+
+const AVISO_SOCIAL = 'O login social ainda não está habilitado. Entre com e-mail e senha.';
 
 export default function LoginPage() {
   const router = useRouter();
-  const defaultUser = getUserData();
 
-  const [identifier, setIdentifier] = useState(defaultUser.email);
-  const [password, setPassword] = useState('123456');
+  const [identifier, setIdentifier] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  /** Autenticação real: só navega para o painel quando a sessão é criada. */
+  const handleSubmit = async (evento: React.FormEvent) => {
+    evento.preventDefault();
     setLoading(true);
     setError(null);
 
     try {
-      // Tentativa de login com Better Auth
-      const res = await signIn.email({
-        email: identifier,
-        password: password,
-      });
+      const resposta = await signIn.email({ email: identifier.trim(), password });
 
-      if (res?.error) {
-        console.warn('Better Auth warning:', res.error);
+      if (resposta?.error) {
+        setError(traduzirErroAuth(resposta.error.code, resposta.error.message || 'Não foi possível entrar.'));
+        return;
       }
-      router.push('/dashboard');
+
+      router.replace('/dashboard');
     } catch {
-      // Sucesso / fallback de desenvolvimento
-      router.push('/dashboard');
+      setError('Não foi possível falar com o servidor. Tente novamente em instantes.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGovBrLogin = () => {
-    setLoading(true);
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 500);
-  };
-
-  const handleGoogleLogin = () => {
-    setLoading(true);
-    setTimeout(() => {
-      router.push('/dashboard');
-    }, 500);
-  };
-
   return (
-    <Box
-      sx={{
-        bgcolor: '#F3F3FA',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* 1. Fixed Top Header */}
+    <Box sx={{ bgcolor: '#F3F3FA', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <LoginHeader />
 
-      {/* 2. Main Content Container (Pt-16 to offset fixed header) */}
       <Box
         component="main"
         sx={{
@@ -87,7 +62,6 @@ export default function LoginPage() {
         }}
       >
         <Grid container spacing={{ xs: 3, lg: 5 }} sx={{ alignItems: 'stretch' }}>
-          {/* Left Column: Login Authentication Form */}
           <Grid size={{ xs: 12, lg: 7 }}>
             <LoginCard
               identifier={identifier}
@@ -99,20 +73,18 @@ export default function LoginPage() {
               loading={loading}
               error={error}
               onSubmit={handleSubmit}
-              onGovBrLogin={handleGovBrLogin}
-              onGoogleLogin={handleGoogleLogin}
-              onRegisterClick={() => router.push('/dashboard')}
+              onGovBrLogin={() => setError(AVISO_SOCIAL)}
+              onGoogleLogin={() => setError(AVISO_SOCIAL)}
+              onRegisterClick={() => router.push('/cadastro')}
             />
           </Grid>
 
-          {/* Right Column: Value Proposition & Dynamic MEI Showcase */}
           <Grid size={{ xs: 12, lg: 5 }}>
             <LoginShowcaseCard />
           </Grid>
         </Grid>
       </Box>
 
-      {/* 3. Footer */}
       <LoginFooter />
     </Box>
   );

@@ -1,169 +1,141 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Box from '@mui/material/Box';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import FaturamentoHeader from '@/components/faturamento/FaturamentoHeader';
 import FaturamentoMetrics from '@/components/faturamento/FaturamentoMetrics';
 import FaturamentoThermometerCard from '@/components/faturamento/FaturamentoThermometerCard';
-import RelatorioMensalTable, { MonthlyRevenueItem } from '@/components/faturamento/RelatorioMensalTable';
+import RelatorioMensalTable from '@/components/faturamento/RelatorioMensalTable';
 import DasPixModal from '@/components/faturamento/DasPixModal';
-import { fetchMeiMetrics, fetchMonthlyRevenues } from '@/lib/api';
+import EstadoCarregamento from '@/components/common/EstadoCarregamento';
+import Toast from '@/components/common/Toast';
+import { useMeiMetrics, useReceitasMensais } from '@/hooks/useMei';
+import { useToast } from '@/hooks/useToast';
+import { baixarCsv, formatCompetencia } from '@/lib/format';
+import { ReceitaMensal } from '@/types';
+
+const CABECALHOS_CSV = [
+  'Mês', 'Competência', 'Serviços sem NF (PF)', 'Serviços com NF (PJ)',
+  'Receita Total', 'Status DAS', 'Valor DAS', 'Pago em',
+];
 
 export default function FaturamentoPage() {
-  const [metrics, setMetrics] = useState({
-    faturamentoAcumulado: 42120.00,
-    limiteAnual: 81000.00,
-    percentualUtilizado: 52,
-    saldoRestante: 38880.00,
-    mediaMensal: 4680.00,
-    dasMei: {
-      competencia: 'Outubro/2026',
-      valor: 75.60,
-      vencimento: '20/10/2026',
-      status: 'pendente',
-      chavePix: '00020126580014br.gov.bcb.pix0136451237890001905204000053039865802BR5913RODRIGO SILVA6009SAO PAULO62070503***6304E2A1',
-    },
-  });
-  const [months, setMonths] = useState<MonthlyRevenueItem[]>([]);
-  const [pixModalOpen, setPixModalOpen] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState<MonthlyRevenueItem | null>(null);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const ano = new Date().getFullYear();
+  const metricas = useMeiMetrics(ano);
+  const receitas = useReceitasMensais(ano);
+  const { toast, showToast, showError, hideToast } = useToast();
 
-  useEffect(() => {
-    async function load() {
-      const [m, rev] = await Promise.all([
-        fetchMeiMetrics(),
-        fetchMonthlyRevenues(),
-      ]);
-      if (m) {
-        const faturamento = Number(m.faturamentoAcumulado) || 42120;
-        const limite = Number(m.limiteAnual) || 81000;
-        const saldo = m.saldoRestante !== undefined ? Number(m.saldoRestante) : Math.max(0, limite - faturamento);
-        const media = m.mediaMensal !== undefined ? Number(m.mediaMensal) : Math.round(faturamento / 9);
-        setMetrics({
-          ...m,
-          faturamentoAcumulado: faturamento,
-          limiteAnual: limite,
-          saldoRestante: saldo,
-          mediaMensal: media,
-        });
-      }
-      if (Array.isArray(rev)) setMonths(rev);
+  const [pixModalAberto, setPixModalAberto] = React.useState(false);
+  const [mesSelecionado, setMesSelecionado] = React.useState<ReceitaMensal | null>(null);
+
+  const das = metricas.metrics?.dasMei;
+
+  const exportarCsv = () => {
+    if (receitas.meses.length === 0) {
+      showToast('Nenhuma receita disponível para exportação.', 'warning');
+      return;
     }
-    load();
-  }, []);
 
-  const handleExportCsv = () => {
-    const headers = ['Mês', 'Competência', 'Serviços sem NF (PF)', 'Serviços com NF (PJ)', 'Receita Total', 'Status DAS', 'Valor DAS'];
-    const rows = months.map((m) => [
-      m.mes,
-      m.competencia,
-      m.servicosSemNf.toFixed(2),
-      m.servicosComNf.toFixed(2),
-      m.total.toFixed(2),
-      m.dasStatus,
-      m.dasValor.toFixed(2),
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `relatorio_receitas_brutas_mei_2026.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    setToastMessage('Relatório Mensal de Receitas Brutas exportado com sucesso!');
+    baixarCsv(
+      `relatorio_receitas_brutas_mei_${ano}.csv`,
+      CABECALHOS_CSV,
+      receitas.meses.map((mes) => [
+        mes.mes,
+        formatCompetencia(mes.competencia),
+        mes.servicosSemNf.toFixed(2),
+        mes.servicosComNf.toFixed(2),
+        mes.total.toFixed(2),
+        mes.dasStatus,
+        mes.dasValor.toFixed(2),
+        mes.dasPagoEm || '',
+      ]),
+    );
+    showToast('Relatório mensal de receitas brutas exportado com sucesso!');
   };
 
-  const handleOpenPayDas = (item?: MonthlyRevenueItem) => {
-    setSelectedMonth(item || null);
-    setPixModalOpen(true);
+  const abrirPagamentoDas = (mes?: ReceitaMensal) => {
+    setMesSelecionado(mes ?? receitas.meses.find((item) => item.competencia === das?.competencia) ?? null);
+    setPixModalAberto(true);
   };
 
-  const handleMarkDasPaid = () => {
-    if (selectedMonth) {
-      setMonths((prev) =>
-        prev.map((m) =>
-          m.competencia === selectedMonth.competencia
-            ? { ...m, dasStatus: 'pago', dasPagoEm: new Date().toLocaleDateString('pt-BR') }
-            : m
-        )
-      );
+  const marcarDasPago = async () => {
+    const competencia = mesSelecionado?.competencia || das?.competencia;
+    if (!competencia) return;
+
+    try {
+      await receitas.pagarDas(competencia);
+      await metricas.reload();
+      showToast('Guia DAS marcada como paga! Seu histórico foi atualizado.');
+    } catch (erro) {
+      showError(erro);
     }
-    setToastMessage('Guia DAS marcada como paga! Seu histórico foi atualizado.');
   };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2.5, sm: 3.5 } }}>
-      {/* 1. Header with Export and Pay Actions */}
       <FaturamentoHeader
-        onExport={handleExportCsv}
-        onPayDas={() => handleOpenPayDas()}
+        limiteAnual={metricas.metrics?.limiteAnual ?? 0}
+        onExport={exportarCsv}
+        onPayDas={() => abrirPagamentoDas()}
       />
 
-      {/* 2. Top Metric Cards */}
-      <FaturamentoMetrics
-        faturamentoAcumulado={metrics.faturamentoAcumulado}
-        limiteAnual={metrics.limiteAnual}
-        saldoRestante={metrics.saldoRestante}
-        mediaMensal={metrics.mediaMensal}
-        dasValor={metrics.dasMei?.valor || 75.60}
-        dasVencimento={metrics.dasMei?.vencimento || '20/10/2026'}
-      />
-
-      {/* 3. Visual MEI Thermometer Card with Scale and Diagnostics */}
-      <FaturamentoThermometerCard
-        faturamentoAcumulado={metrics.faturamentoAcumulado}
-        limiteAnual={metrics.limiteAnual}
-        saldoRestante={metrics.saldoRestante}
-      />
-
-      {/* 4. Full 12-Month Table of Monthly Revenues & DAS Status */}
-      <RelatorioMensalTable
-        months={months}
-        onPayDas={(item) => handleOpenPayDas(item)}
-      />
-
-      {/* 5. DAS Pix Payment Modal */}
-      <DasPixModal
-        open={pixModalOpen}
-        onClose={() => setPixModalOpen(false)}
-        competencia={selectedMonth?.competencia || metrics.dasMei?.competencia || 'Outubro/2026'}
-        valor={selectedMonth?.dasValor || metrics.dasMei?.valor || 75.60}
-        vencimento={metrics.dasMei?.vencimento || '20/10/2026'}
-        chavePix={metrics.dasMei?.chavePix}
-        onMarkPaid={handleMarkDasPaid}
-      />
-
-      {/* Toast Feedback */}
-      <Snackbar
-        open={Boolean(toastMessage)}
-        autoHideDuration={3500}
-        onClose={() => setToastMessage(null)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      <EstadoCarregamento
+        loading={metricas.loading}
+        error={metricas.error}
+        onRetry={metricas.reload}
+        minHeight={140}
       >
-        <Alert
-          onClose={() => setToastMessage(null)}
-          severity="success"
-          sx={{
-            width: '100%',
-            borderRadius: '9999px',
-            bgcolor: '#1E3A8A',
-            color: '#FFFFFF',
-            fontWeight: 600,
-            fontSize: '0.8125rem',
-            boxShadow: '0 8px 24px rgba(30, 58, 138, 0.35)',
-            '& .MuiAlert-icon': { color: '#93C5FD' },
-          }}
-        >
-          {toastMessage}
-        </Alert>
-      </Snackbar>
+        {metricas.metrics && das && (
+          <FaturamentoMetrics
+            faturamentoAcumulado={metricas.metrics.faturamentoAcumulado}
+            limiteAnual={metricas.metrics.limiteAnual}
+            saldoRestante={metricas.metrics.saldoRestante}
+            mediaMensal={metricas.metrics.mediaMensal}
+            dasValor={das.valor}
+            dasVencimento={das.vencimento}
+          />
+        )}
+      </EstadoCarregamento>
+
+      <EstadoCarregamento
+        loading={metricas.loading}
+        error={metricas.error}
+        onRetry={metricas.reload}
+        minHeight={220}
+      >
+        {metricas.metrics && (
+          <FaturamentoThermometerCard
+            faturamentoAcumulado={metricas.metrics.faturamentoAcumulado}
+            limiteAnual={metricas.metrics.limiteAnual}
+            saldoRestante={metricas.metrics.saldoRestante}
+          />
+        )}
+      </EstadoCarregamento>
+
+      <EstadoCarregamento
+        loading={receitas.loading}
+        error={receitas.error}
+        onRetry={receitas.reload}
+        minHeight={320}
+      >
+        <RelatorioMensalTable
+          months={receitas.meses}
+          limiteAnual={metricas.metrics?.limiteAnual ?? 0}
+          onPayDas={abrirPagamentoDas}
+        />
+      </EstadoCarregamento>
+
+      <DasPixModal
+        open={pixModalAberto}
+        onClose={() => setPixModalAberto(false)}
+        competencia={formatCompetencia(mesSelecionado?.competencia || das?.competencia || '')}
+        valor={mesSelecionado?.dasValor ?? das?.valor ?? 0}
+        vencimento={das?.vencimento || ''}
+        chavePix={das?.chavePix}
+        onMarkPaid={() => void marcarDasPago()}
+      />
+
+      <Toast message={toast.message} severity={toast.severity} onClose={hideToast} />
     </Box>
   );
 }

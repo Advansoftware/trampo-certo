@@ -106,6 +106,7 @@ export default function OrcamentoA4Preview({
       {/* Real A4 Sheet Canvas */}
       <Box
         id="a4-sheet-canvas"
+        data-print-root="true"
         sx={{
           bgcolor: '#FFFFFF',
           borderRadius: '20px',
@@ -329,17 +330,21 @@ export default function OrcamentoA4Preview({
               <Typography sx={{ fontSize: '12px', color: '#1A1B20' }}>
                 {condicoesPagamento}
               </Typography>
-              <Box sx={{ mt: 0.5, pt: 0.75, borderTop: '1px solid rgba(196, 198, 207, 0.3)', display: 'flex', flexDirection: 'column' }}>
-                <Typography sx={{ fontSize: '10px', color: '#74777F', textTransform: 'uppercase', fontWeight: 600 }}>
-                  Chave PIX para Depósito / Sinal:
+              {chavePix && (
+                <Box sx={{ mt: 0.5, pt: 0.75, borderTop: '1px solid rgba(196, 198, 207, 0.3)', display: 'flex', flexDirection: 'column' }}>
+                  <Typography sx={{ fontSize: '10px', color: '#74777F', textTransform: 'uppercase', fontWeight: 600 }}>
+                    Chave PIX para Depósito / Sinal:
+                  </Typography>
+                  <Typography sx={{ fontSize: '12px', color: '#1E3A8A', fontWeight: 700, fontFamily: 'monospace' }}>
+                    {chavePix}
+                  </Typography>
+                </Box>
+              )}
+              {validade && (
+                <Typography sx={{ fontSize: '11px', color: '#74777F', mt: 0.25 }}>
+                  {validade}
                 </Typography>
-                <Typography sx={{ fontSize: '12px', color: '#1E3A8A', fontWeight: 700, fontFamily: 'monospace' }}>
-                  {chavePix}
-                </Typography>
-              </Box>
-              <Typography sx={{ fontSize: '11px', color: '#74777F', mt: 0.25 }}>
-                {validade}
-              </Typography>
+              )}
             </Box>
 
             {/* Totals Box */}
@@ -377,23 +382,25 @@ export default function OrcamentoA4Preview({
             </Box>
           </Box>
 
-          {/* Warranty Note */}
-          <Box
-            sx={{
-              p: 1.5,
-              bgcolor: 'rgba(241, 244, 249, 0.6)',
-              border: '1px solid rgba(196, 198, 207, 0.4)',
-              borderRadius: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-            }}
-          >
-            <SecurityIcon sx={{ fontSize: 17, color: '#1E3A8A', flexShrink: 0 }} />
-            <Typography sx={{ fontSize: '12px', color: '#1A1B20' }}>
-              {observacoes}
-            </Typography>
-          </Box>
+          {/* Observações: só entra no documento quando há texto. */}
+          {observacoes && (
+            <Box
+              sx={{
+                p: 1.5,
+                bgcolor: 'rgba(241, 244, 249, 0.6)',
+                border: '1px solid rgba(196, 198, 207, 0.4)',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <SecurityIcon sx={{ fontSize: 17, color: '#1E3A8A', flexShrink: 0 }} />
+              <Typography sx={{ fontSize: '12px', color: '#1A1B20' }}>
+                {observacoes}
+              </Typography>
+            </Box>
+          )}
         </Box>
 
         {/* Document Footer with Platform Trust */}

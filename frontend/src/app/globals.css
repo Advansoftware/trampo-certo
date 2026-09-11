@@ -18,11 +18,15 @@ a {
   text-decoration: none;
 }
 
-/* Regras de Impressão e Exportação de PDF (Apenas o Orçamento A4) */
+/* ==========================================================================
+   Impressão / PDF — sai apenas a folha do documento (orçamento ou recibo).
+   O elemento imprimível é marcado com data-print-root; todo o resto da
+   interface (modal, botões, menu, toasts) é descartado.
+   ========================================================================== */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 8mm;
+    margin: 10mm;
   }
 
   html, body {
@@ -36,60 +40,32 @@ a {
     overflow: visible !important;
   }
 
-  /* Oculta sidebar, navbar, botões, drawers e tudo marcado com data-print-hide */
+  /* Cromo da aplicação: nunca vai para o papel. */
   header,
   aside,
   nav,
   footer,
   .MuiDrawer-root,
   .MuiBackdrop-root,
+  .MuiSnackbar-root,
+  .MuiTooltip-popper,
+  nextjs-portal,
   [data-print-hide="true"] {
     display: none !important;
   }
 
-  /* Quando impresso pelo Modal (Dialog), oculta a página de fundo para não gerar páginas vazias */
-  body:has(.MuiDialog-root) > *:not(.MuiDialog-root) {
+  /* Só os ancestrais da folha sobrevivem — inclusive quando ela está
+     dentro de um portal de modal. */
+  body:has([data-print-root]) > *:not(:has([data-print-root])) {
     display: none !important;
   }
 
-  /* Reseta os containers do MUI Dialog para fluxo estático livre e sem cortes de altura/scroll */
-  .MuiDialog-root {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
-    inset: auto !important;
-    overflow: visible !important;
-    z-index: auto !important;
-  }
-
-  .MuiDialog-container {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    height: auto !important;
-    overflow: visible !important;
-    transform: none !important;
-  }
-
+  /* Neutraliza o posicionamento fixo do Dialog e os limites de rolagem,
+     para a folha fluir livremente nas páginas. */
+  .MuiDialog-root,
+  .MuiDialog-container,
   .MuiDialog-paper,
-  .MuiPaper-root {
-    position: static !important;
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
-    min-height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-    overflow: visible !important;
-    transform: none !important;
-  }
-
+  .MuiPaper-root,
   .MuiDialogContent-root {
     position: static !important;
     display: block !important;
@@ -98,10 +74,16 @@ a {
     height: auto !important;
     max-height: none !important;
     min-height: 0 !important;
+    inset: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: visible !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     background: transparent !important;
+    overflow: visible !important;
+    transform: none !important;
+    z-index: auto !important;
   }
 
   main {
@@ -110,9 +92,16 @@ a {
     overflow: visible !important;
   }
 
-  /* No criador de orçamentos, expande a coluna da folha A4 para 100% da largura da folha */
-  .MuiGrid-root,
-  .MuiGrid2-root {
+  /* Fora da folha nada pinta fundo nem ocupa altura: sem isso o cinza do
+     painel e o min-height de 100vh viram um bloco vazio no papel. */
+  body :not([data-print-root]):not([data-print-root] *) {
+    background: transparent !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+  }
+
+  /* No editor, a coluna da pré-visualização ocupa a folha inteira. */
+  .MuiGrid-root {
     width: 100% !important;
     max-width: 100% !important;
     flex-basis: 100% !important;
@@ -120,33 +109,39 @@ a {
     margin: 0 !important;
   }
 
-  /* Desativa sticky no modo de impressão */
-  .MuiBox-root {
+  /* Desativa o sticky da coluna de pré-visualização — sem tocar no interior
+     da folha, onde há elementos ancorados (faixa do topo, selos). */
+  .MuiBox-root:not([data-print-root]):not([data-print-root] *) {
     top: auto !important;
   }
 
-  /* Folha A4 e Recibo completos e estilizados sem cortes */
-  #a4-sheet-canvas,
-  #recibo-sheet-canvas {
+  /* A folha em si: largura total da página, sem moldura de tela.
+     Mantém position: relative para a faixa decorativa do topo continuar
+     ancorada na folha, e não no canto da página. */
+  [data-print-root] {
     position: relative !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
     width: 100% !important;
     max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
-    margin: 0 auto !important;
-    padding: 24px 28px !important;
+    margin: 0 !important;
+    /* Respiro interno da folha; a margem externa vem do @page. */
+    padding: 22px 26px !important;
+    border: none !important;
+    border-radius: 0 !important;
     box-shadow: none !important;
-    border: 1px solid rgba(196, 198, 207, 0.6) !important;
-    border-radius: 12px !important;
     background-color: #FFFFFF !important;
     overflow: visible !important;
-    page-break-inside: avoid;
-    break-inside: avoid;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+  }
+
+  /* Blocos do documento não podem ser partidos no meio de uma página. */
+  [data-print-root] > * {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 

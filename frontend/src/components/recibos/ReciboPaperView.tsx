@@ -21,6 +21,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
   return (
     <Box
       id="recibo-sheet-canvas"
+      data-print-root="true"
       sx={{
         bgcolor: '#FFFFFF',
         borderRadius: '20px',
@@ -88,7 +89,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
               {[emissor.cnpj && `CNPJ: ${emissor.cnpj}`, emissor.ocupacao].filter(Boolean).join(' • ')}
             </Typography>
             <Typography sx={{ fontSize: '0.6875rem', color: '#74777F' }}>
-              São Paulo - SP • (11) 98765-4321
+              {[emissor.cidade, emissor.telefone].filter(Boolean).join(' • ')}
             </Typography>
           </Box>
         </Box>
@@ -225,7 +226,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
             </Typography>
           </Box>
           <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700, color: '#1A1B20' }}>
-            RODRIGO SILVA INSTALACOES ELETRICAS MEI
+            {emissor.nome.toUpperCase()}
           </Typography>
           <Typography sx={{ fontSize: '0.6875rem', color: '#74777F' }}>
             Emissor Autorizado • Lei Complementar nº 123/2006

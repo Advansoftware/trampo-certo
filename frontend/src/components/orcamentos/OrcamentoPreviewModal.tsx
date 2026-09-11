@@ -93,6 +93,7 @@ export default function OrcamentoPreviewModal({ open, onClose, orcamento }: Orca
       }}
     >
       <DialogTitle
+        data-print-hide="true"
         sx={{
           p: 2.5,
           bgcolor: '#FFFFFF',
@@ -179,6 +180,7 @@ export default function OrcamentoPreviewModal({ open, onClose, orcamento }: Orca
       </DialogContent>
 
       <DialogActions
+        data-print-hide="true"
         sx={{
           p: 2,
           bgcolor: '#FFFFFF',

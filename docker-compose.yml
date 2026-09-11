@@ -1,70 +1,99 @@
+# Stack de PRODUÇÃO (usada pelo Coolify).
+#
+# Nenhuma porta é publicada no host: o proxy do Coolify roteia o domínio para a
+# porta interna do serviço. Publique o domínio no serviço `web` — ele já encaminha
+# /api/* para a API na rede interna, então app e API ficam na mesma origem
+# (sem CORS e sem cookie entre domínios).
+#
+# Em desenvolvimento, o docker-compose.override.yml é mesclado automaticamente
+# e devolve as portas, o hot-reload e os nomes fixos de container.
 services:
   db:
     image: mysql:8.4
-    container_name: trampocerto-mysql
-    restart: always
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-trampocerto}
       MYSQL_USER: ${MYSQL_USER:-trampo_user}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-trampo_password}
-    ports:
-      - "3308:3306"
+      TZ: ${TZ:-America/Sao_Paulo}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
-      interval: 5s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 12
+      start_period: 30s
 
-  backend:
+  api:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
-    container_name: trampocerto-backend
-    restart: always
-    ports:
-      - "4005:4000"
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
+      NODE_ENV: production
       PORT: 4000
+      TZ: ${TZ:-America/Sao_Paulo}
       DATABASE_HOST: db
       DATABASE_PORT: 3306
       DATABASE_NAME: ${MYSQL_DATABASE:-trampocerto}
       DATABASE_USER: ${MYSQL_USER:-trampo_user}
       DATABASE_PASSWORD: ${MYSQL_PASSWORD:-trampo_password}
-      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-trampo_certo_jwt_secret_dev_key_987654321}
-      BETTER_AUTH_URL: http://localhost:4005
-      FRONTEND_URL: http://localhost:3000
+      # OBRIGATÓRIO em produção: segredo forte e exclusivo desta instalação.
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?defina um segredo forte}
+      # URL pública pela qual o navegador alcança a API. Com o proxy do Next,
+      # é o mesmo domínio do app (ex.: https://app.seudominio.com).
+      BETTER_AUTH_URL: ${APP_URL:?defina a URL pública do app}
+      # Origens externas liberadas no CORS. Vazio = apenas a mesma origem,
+      # que é o caso quando a API é acessada pelo proxy do app.
+      FRONTEND_URL: ${FRONTEND_URL:-}
+      AUTH_COOKIE_SAMESITE: ${AUTH_COOKIE_SAMESITE:-lax}
+      AUTH_COOKIE_DOMAIN: ${AUTH_COOKIE_DOMAIN:-}
+      # Conta criada no primeiro boot; deixe em branco para não criar nenhuma.
       DEMO_USER_NAME: ${DEMO_USER_NAME:-}
       DEMO_USER_EMAIL: ${DEMO_USER_EMAIL:-}
       DEMO_USER_PASSWORD: ${DEMO_USER_PASSWORD:-}
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    depends_on:
-      db:
-        condition: service_healthy
+    expose:
+      - "4000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
-  frontend:
+  web:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
-    container_name: trampocerto-frontend
-    restart: always
-    ports:
-      - "3000:3000"
-    environment:
-      PORT: 3000
-      NEXT_PUBLIC_API_URL: http://localhost:4005
-      NEXT_PUBLIC_BETTER_AUTH_URL: http://localhost:4005
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
+      args:
+        # Destino interno do proxy /api/* (resolvido no build do Next).
+        API_PROXY_TARGET: http://api:4000
+    restart: unless-stopped
     depends_on:
-      - backend
+      api:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      TZ: ${TZ:-America/Sao_Paulo}
+      # Vazio = navegador usa a mesma origem do app (via proxy acima).
+      # Preencha apenas se a API tiver domínio próprio (ex.: https://api.seudominio.com);
+      # é lido em runtime, trocar o valor não exige rebuild.
+      API_URL: ${API_URL:-}
+    expose:
+      - "3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/login').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   mysql_data:

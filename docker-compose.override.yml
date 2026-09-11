@@ -1,0 +1,47 @@
+# Override de DESENVOLVIMENTO — mesclado automaticamente pelo `docker compose up`.
+# O Coolify usa apenas o docker-compose.yml, então nada daqui afeta produção.
+#
+# Aqui voltam as portas no host, o hot-reload com o código montado em volume e
+# os nomes fixos de container.
+services:
+  db:
+    container_name: trampocerto-mysql
+    ports:
+      - "${MYSQL_PORT:-3308}:3306"
+    volumes:
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+  api:
+    container_name: trampocerto-backend
+    build:
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-trampo_certo_jwt_secret_dev_key_987654321}
+      BETTER_AUTH_URL: http://localhost:4005
+      FRONTEND_URL: http://localhost:3000
+      DEMO_USER_NAME: ${DEMO_USER_NAME:-Rodrigo Silva}
+      DEMO_USER_EMAIL: ${DEMO_USER_EMAIL:-rodrigo@trampocerto.com.br}
+      DEMO_USER_PASSWORD: ${DEMO_USER_PASSWORD:-trampocerto123}
+    ports:
+      - "4005:4000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  web:
+    container_name: trampocerto-frontend
+    build:
+      dockerfile: Dockerfile.dev
+    environment:
+      NODE_ENV: development
+      # Em dev o front fala direto com a API publicada em localhost:4005.
+      API_PROXY_TARGET: ""
+      NEXT_PUBLIC_API_URL: http://localhost:4005
+      NEXT_PUBLIC_BETTER_AUTH_URL: http://localhost:4005
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next

@@ -1,9 +1,15 @@
 import { All, Controller, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { toNodeHandler } from 'better-auth/node';
-import { auth } from './auth.config';
+import { getAuth } from './auth.config';
 
-const handler = toNodeHandler(auth);
+let handler: ReturnType<typeof toNodeHandler> | null = null;
+
+/** Criado no primeiro request, quando o schema do banco já está pronto. */
+function getHandler() {
+  if (!handler) handler = toNodeHandler(getAuth());
+  return handler;
+}
 
 /**
  * Encaminha /api/auth/* para o Better Auth.
@@ -14,6 +20,6 @@ const handler = toNodeHandler(auth);
 export class AuthController {
   @All('*path')
   handle(@Req() req: Request, @Res() res: Response) {
-    return handler(req, res);
+    return getHandler()(req, res);
   }
 }

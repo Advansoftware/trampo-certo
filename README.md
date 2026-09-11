@@ -156,6 +156,79 @@ trampo-certo/
 └── README.md
 ```
 
+
+---
+
+## 🚢 Deploy em produção (Coolify)
+
+O repositório tem dois arquivos de Compose:
+
+| Arquivo | Uso |
+| --- | --- |
+| `docker-compose.yml` | **Produção.** É o que o Coolify executa: imagens buildadas dos `Dockerfile` de cada app, nenhuma porta publicada no host, `restart: unless-stopped` e healthchecks. |
+| `docker-compose.override.yml` | **Desenvolvimento.** Mesclado automaticamente pelo `docker compose up` local: devolve portas, hot-reload e nomes fixos de container. O Coolify ignora este arquivo. |
+
+### Como o tráfego funciona
+
+Publique **um único domínio**, apontado para o serviço `web`. O Next encaminha
+`/api/*` para a API pela rede interna do Compose, então app e API ficam na mesma
+origem — sem CORS e sem cookie entre domínios, que é onde a maioria dos deploys
+quebra. A API não precisa de domínio público.
+
+```
+navegador → https://app.seudominio.com ─┬─ páginas  → web (Next, porta 3000)
+                                        └─ /api/*   → api (NestJS, porta 4000)
+                                                      api → db (MySQL 8.4)
+```
+
+### Passo a passo
+
+1. No Coolify: **New Resource → Docker Compose**, apontando para este repositório
+   (o arquivo `docker-compose.yml` da raiz é o padrão).
+2. Configure as variáveis de ambiente:
+
+   | Variável | Obrigatória | Observação |
+   | --- | --- | --- |
+   | `APP_URL` | ✅ | URL pública com https, ex.: `https://app.seudominio.com`. É a base do Better Auth. |
+   | `BETTER_AUTH_SECRET` | ✅ | Segredo forte e exclusivo (`openssl rand -base64 32`). |
+   | `MYSQL_ROOT_PASSWORD` / `MYSQL_PASSWORD` | ✅ | Senhas do banco. |
+   | `MYSQL_DATABASE` / `MYSQL_USER` | — | Padrão `trampocerto` / `trampo_user`. |
+   | `DEMO_USER_NAME` / `DEMO_USER_EMAIL` / `DEMO_USER_PASSWORD` | — | Conta criada no primeiro boot. Deixe em branco para subir sem conta e usar `/cadastro`. |
+   | `TZ` | — | Padrão `America/Sao_Paulo`. |
+
+   O deploy falha com mensagem explícita se `APP_URL` ou `BETTER_AUTH_SECRET`
+   estiverem faltando — melhor do que subir com um segredo padrão.
+3. Atribua o domínio ao serviço **`web`** (porta 3000).
+4. Deploy. No primeiro boot a API cria o schema, aplica os ajustes de colunas e
+   cria a conta inicial; o volume `mysql_data` mantém os dados entre deploys.
+
+### API em domínio próprio (opcional)
+
+Se preferir expor a API separadamente (ex.: `https://api.seudominio.com`):
+
+```env
+API_URL=https://api.seudominio.com        # lido em runtime, sem rebuild
+FRONTEND_URL=https://app.seudominio.com   # libera o CORS (aceita lista separada por vírgula)
+```
+
+Atribua também um domínio ao serviço `api`. Em subdomínios do mesmo site o cookie
+padrão (`SameSite=Lax`) já funciona; em **domínios diferentes**, acrescente:
+
+```env
+AUTH_COOKIE_SAMESITE=none
+```
+
+### Detalhes que fazem a produção funcionar
+
+- **Schema antes de tudo:** o `main.ts` aplica o schema antes de instanciar a
+  aplicação, porque o Better Auth valida as tabelas ao ser criado — num banco
+  novo isso é o que garante que a conta inicial seja criada.
+- **URL da API em runtime:** o layout injeta `window.__TRAMPO_API_URL__` a partir
+  de `API_URL` a cada requisição, então trocar o endereço da API no Coolify não
+  exige rebuild da imagem.
+- **Imagens enxutas:** o frontend usa `output: 'standalone'` e o backend remove as
+  dependências de desenvolvimento no build.
+
 ---
 
 ## 📄 Licença

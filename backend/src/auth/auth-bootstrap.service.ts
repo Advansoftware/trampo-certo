@@ -1,6 +1,6 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { auth } from './auth.config';
+import { getAuth } from './auth.config';
 
 /** Tabelas de negócio que seguem o dono dos dados numa migração de conta. */
 const TABELAS_DO_USUARIO = ['orcamentos', 'recibos', 'clientes', 'das_pagamentos'];
@@ -70,7 +70,7 @@ export class AuthBootstrapService implements OnModuleInit {
     if (existente) return existente.id;
 
     try {
-      const criado = await auth.api.signUpEmail({
+      const criado = await getAuth().api.signUpEmail({
         body: { email, password, name: process.env.DEMO_USER_NAME || 'Profissional MEI' },
       });
       this.logger.log(`Conta inicial criada para ${email}`);

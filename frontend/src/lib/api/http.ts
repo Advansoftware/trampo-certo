@@ -1,4 +1,4 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4005';
+import { getApiBaseUrl } from '@/lib/runtime-config';
 
 export class ApiError extends Error {
   constructor(
@@ -42,7 +42,7 @@ async function extractError(response: Response): Promise<string> {
  * a tela mostra o erro em vez de exibir número inventado.
  */
 export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...init,
     cache: 'no-store',
     credentials: 'include',
@@ -69,4 +69,4 @@ export const http = {
   delete: <T = void>(path: string) => apiFetch<T>(path, { method: 'DELETE' }),
 };
 
-export { API_BASE };
+export { getApiBaseUrl };

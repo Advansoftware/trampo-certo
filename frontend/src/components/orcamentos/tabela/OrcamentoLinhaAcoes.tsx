@@ -27,6 +27,13 @@ interface Props extends OrcamentoAcoes {
   ocupado?: boolean;
 }
 
+/** Ações são divs clicáveis; role/aria-label dão nome acessível a elas. */
+const comoBotao = (rotulo: string) => ({
+  role: 'button' as const,
+  tabIndex: 0,
+  'aria-label': rotulo,
+});
+
 const botaoIcone = (cor: string, fundo: string, hover: string) => ({
   width: 32,
   height: 32,
@@ -49,20 +56,32 @@ export default function OrcamentoLinhaAcoes({ orcamento, ocupado = false, ...aco
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, opacity: ocupado ? 0.6 : 1 }}>
       <Tooltip title="Enviar proposta no WhatsApp" arrow>
-        <Box onClick={() => acoes.onWhatsApp(orcamento)} sx={botaoIcone('#15803D', '#DCFCE7', '#BBF7D0')}>
+        <Box
+          {...comoBotao(`Enviar ${orcamento.codigo} no WhatsApp`)}
+          onClick={() => acoes.onWhatsApp(orcamento)}
+          sx={botaoIcone('#15803D', '#DCFCE7', '#BBF7D0')}
+        >
           <WhatsAppIcon sx={{ fontSize: 17 }} />
         </Box>
       </Tooltip>
 
       <Tooltip title="Visualizar documento" arrow>
-        <Box onClick={() => acoes.onVisualizar(orcamento)} sx={botaoIcone('#1E3A8A', '#DBEAFE', '#BFDBFE')}>
+        <Box
+          {...comoBotao(`Visualizar ${orcamento.codigo}`)}
+          onClick={() => acoes.onVisualizar(orcamento)}
+          sx={botaoIcone('#1E3A8A', '#DBEAFE', '#BFDBFE')}
+        >
           <VisibilityIcon sx={{ fontSize: 17 }} />
         </Box>
       </Tooltip>
 
       {editavel && (
         <Tooltip title="Editar orçamento" arrow>
-          <Box onClick={() => acoes.onEditar(orcamento)} sx={botaoIcone('#1E3A8A', '#F1F4F9', '#E2E8F0')}>
+          <Box
+            {...comoBotao(`Editar ${orcamento.codigo}`)}
+            onClick={() => acoes.onEditar(orcamento)}
+            sx={botaoIcone('#1E3A8A', '#F1F4F9', '#E2E8F0')}
+          >
             <EditIcon sx={{ fontSize: 16 }} />
           </Box>
         </Tooltip>
@@ -111,6 +130,7 @@ export default function OrcamentoLinhaAcoes({ orcamento, ocupado = false, ...aco
         <>
           <Tooltip title="Reprovar / Recusar proposta" arrow>
             <Box
+              {...comoBotao(`Recusar ${orcamento.codigo}`)}
               onClick={() => !ocupado && acoes.onRecusar(orcamento)}
               sx={{
                 ...botaoIcone('#DC2626', '#FEF2F2', '#FEE2E2'),

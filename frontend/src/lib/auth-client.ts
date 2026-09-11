@@ -1,12 +1,14 @@
 import { createAuthClient } from 'better-auth/react';
 import { inferAdditionalFields } from 'better-auth/client/plugins';
+import { getAuthBaseUrl } from './runtime-config';
 
 /**
  * Cliente do Better Auth. O cookie de sessão é emitido pelo backend em
  * /api/auth e enviado em toda chamada da API (ver lib/api/http.ts).
  */
 export const authClient = createAuthClient({
-  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || 'http://localhost:4005',
+  // Resolvida em runtime: ver lib/runtime-config.ts.
+  baseURL: getAuthBaseUrl(),
   plugins: [
     // Espelha os campos extras declarados no backend (auth/auth.config.ts),
     // para que signUp e a sessão carreguem o perfil MEI completo.

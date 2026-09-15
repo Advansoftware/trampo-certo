@@ -16,7 +16,7 @@ const TEXTOS = {
   aprovado: {
     titulo: 'Orçamento aprovado (modo somente leitura)',
     descricao:
-      'Depois que o cliente aprova, a proposta fica protegida contra edições para garantir a integridade do documento.',
+      'Depois que o cliente aprova, a proposta não aceita mais edições.',
     corTexto: '#1E3A8A',
     corDescricao: '#3B82F6',
     fundo: '#EFF6FF',

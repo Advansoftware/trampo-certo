@@ -24,11 +24,11 @@ export default function DashboardPage() {
 
   const copiarChavePix = async (chave: string) => {
     if (!chave) {
-      showToast('Cadastre sua chave Pix no perfil para copiá-la aqui.', 'warning');
+      showToast('Cadastre sua chave Pix no perfil para copiar por aqui.', 'warning');
       return;
     }
     await navigator.clipboard.writeText(chave);
-    showToast('Chave Pix copiada com sucesso!');
+    showToast('Chave Pix copiada.');
   };
 
   return (
@@ -89,7 +89,7 @@ export default function DashboardPage() {
         />
       </EstadoCarregamento>
 
-      <ReferralBanner />
+      <ReferralBanner onCopiado={(mensagem) => showToast(mensagem)} />
 
       <Toast message={toast.message} severity={toast.severity} onClose={hideToast} />
     </Box>

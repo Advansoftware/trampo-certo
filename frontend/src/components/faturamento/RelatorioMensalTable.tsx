@@ -118,10 +118,10 @@ export default function RelatorioMensalTable({ months, limiteAnual, onPayDas }: 
       >
         <Box>
           <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#1A1B20' }}>
-            Relatório Mensal das Receitas Brutas (MEI)
+            Relatório mensal de receitas brutas
           </Typography>
           <Typography sx={{ fontSize: '0.8125rem', color: '#74777F', mt: 0.25 }}>
-            Documento exigido pela Receita Federal a ser preenchido até o dia 20 do mês subsequente.
+            O MEI precisa preencher este relatório até o dia 20 do mês seguinte e guardar com os comprovantes.
           </Typography>
         </Box>
         <Box
@@ -139,7 +139,7 @@ export default function RelatorioMensalTable({ months, limiteAnual, onPayDas }: 
             fontWeight: 700,
           }}
         >
-          Ano-Calendário: 2026
+          Ano-calendário {new Date().getFullYear()}
         </Box>
       </Box>
 
@@ -149,16 +149,16 @@ export default function RelatorioMensalTable({ months, limiteAnual, onPayDas }: 
           <TableHead>
             <TableRow sx={{ bgcolor: '#F8F9FD' }}>
               <TableCell sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase', py: 1.5, pl: 3 }}>
-                Mês / Competência
+                Mês e competência
               </TableCell>
               <TableCell sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase', py: 1.5, textAlign: 'right' }}>
-                Serviços Sem NF (PF)
+                Serviços sem NF (PF)
               </TableCell>
               <TableCell sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase', py: 1.5, textAlign: 'right' }}>
-                Serviços Com NF (PJ)
+                Serviços com NF (PJ)
               </TableCell>
               <TableCell sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase', py: 1.5, textAlign: 'right' }}>
-                Receita Total Mês
+                Receita do mês
               </TableCell>
               <TableCell sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase', py: 1.5, textAlign: 'center' }}>
                 Guia DAS
@@ -227,7 +227,7 @@ export default function RelatorioMensalTable({ months, limiteAnual, onPayDas }: 
                         onClick={() => onPayDas(row)}
                         sx={{ bgcolor: '#1E3A8A' }}
                       >
-                        Pagar Pix
+                        Pagar com Pix
                       </AppButton>
                     ) : (
                       <Typography sx={{ fontSize: '0.75rem', color: '#A0A3AD' }}>
@@ -243,7 +243,7 @@ export default function RelatorioMensalTable({ months, limiteAnual, onPayDas }: 
             <TableRow sx={{ bgcolor: '#F8F9FD', borderTop: '2px solid rgba(196, 198, 207, 0.4)' }}>
               <TableCell sx={{ pl: 3, py: 2.5 }}>
                 <Typography sx={{ fontSize: '0.875rem', fontWeight: 800, color: '#1A1B20', textTransform: 'uppercase' }}>
-                  Total Acumulado 2026
+                  Total de {new Date().getFullYear()}
                 </Typography>
               </TableCell>
               <TableCell sx={{ py: 2.5, textAlign: 'right' }}>

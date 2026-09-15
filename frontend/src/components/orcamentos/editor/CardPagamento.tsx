@@ -42,7 +42,7 @@ export default function CardPagamento({
     <Box sx={ESTILO_CARD}>
       <CardCabecalho
         icone={<PaymentsIcon sx={{ fontSize: 18 }} />}
-        titulo="3. Pagamento & Garantia"
+        titulo="3. Pagamento e garantia"
         acao={
           <Box
             sx={{

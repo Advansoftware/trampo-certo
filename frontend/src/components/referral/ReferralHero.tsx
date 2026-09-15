@@ -15,7 +15,6 @@ import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import EmailIcon from '@mui/icons-material/Email';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import SpeedIcon from '@mui/icons-material/Speed';
 import AppButton from '@/components/common/AppButton';
 
@@ -94,7 +93,7 @@ export default function ReferralHero({ referrerName, slug }: ReferralHeroProps) 
             }}
           >
             <VerifiedUserIcon sx={{ fontSize: 13 }} />
-            MEI Verificado
+            Convite de indicação
           </Box>
         </Box>
 
@@ -129,7 +128,7 @@ export default function ReferralHero({ referrerName, slug }: ReferralHeroProps) 
                 maxWidth: 620,
               }}
             >
-              A ferramenta feita sob medida para autônomos e MEIs emitirem orçamentos comerciais impecáveis em PDF, receberem via Pix e acompanharem o teto anual da Receita Federal.
+              O TrampoCerto monta o seu orçamento em PDF, deixa a chave Pix dentro da proposta e soma quanto você já faturou no ano.
             </Typography>
 
             {/* Signup Form Card */}
@@ -164,10 +163,10 @@ export default function ReferralHero({ referrerName, slug }: ReferralHeroProps) 
                   <CardGiftcardIcon sx={{ color: '#1E3A8A', fontSize: 22 }} />
                   <Box>
                     <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700, color: '#172554' }}>
-                      Cupom Ativado: {couponCode}
+                      Cupom ativado: {couponCode}
                     </Typography>
                     <Typography sx={{ fontSize: '0.75rem', color: '#1E40AF' }}>
-                      1 mês 100% gratuito liberado por {referrerName}
+                      Um mês grátis liberado por {referrerName}
                     </Typography>
                   </Box>
                 </Box>
@@ -388,7 +387,7 @@ export default function ReferralHero({ referrerName, slug }: ReferralHeroProps) 
                       color: '#1E3A8A',
                     }}
                   >
-                    <span>Total Proposta</span>
+                    <span>Total da proposta</span>
                     <span>R$ 1.800,00</span>
                   </Box>
                 </Box>
@@ -408,9 +407,9 @@ export default function ReferralHero({ referrerName, slug }: ReferralHeroProps) 
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, fontSize: '0.75rem', fontWeight: 700, color: '#1E3A8A' }}>
                       <SpeedIcon sx={{ fontSize: 16 }} />
-                      <span>Termômetro Limite MEI</span>
+                      <span>Termômetro do teto</span>
                     </Box>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1E3A8A' }}>52% seguro</span>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#1E3A8A' }}>52% do teto</span>
                   </Box>
                   <Box sx={{ width: '100%', height: 7, bgcolor: '#E2E8F0', borderRadius: '9999px', overflow: 'hidden' }}>
                     <Box sx={{ width: '52%', height: '100%', bgcolor: '#1E3A8A', borderRadius: '9999px' }} />

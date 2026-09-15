@@ -58,7 +58,7 @@ export default function ClientesHeader({
               letterSpacing: '-0.025em',
             }}
           >
-            Gestão de Clientes
+            Clientes
           </Typography>
           <Box
             sx={{
@@ -76,7 +76,7 @@ export default function ClientesHeader({
         </Box>
 
         <Typography sx={{ color: '#74777F', fontSize: '0.875rem', mt: 0.5 }}>
-          Controle sua carteira de pessoas físicas e jurídicas, histórico de serviços e faturamento acumulado.
+          Quem já contratou você, quanto cada um rendeu e qual foi o último serviço.
         </Typography>
       </Box>
 
@@ -102,7 +102,7 @@ export default function ClientesHeader({
             boxShadow: '0 4px 14px rgba(30, 58, 138, 0.25)',
           }}
         >
-          Novo Cliente
+          Novo cliente
         </AppButton>
       </Box>
     </Box>

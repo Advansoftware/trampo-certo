@@ -8,6 +8,9 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import InfoIcon from '@mui/icons-material/Info';
+import CartaoInfoTermometro from './CartaoInfoTermometro';
+import { formatMoeda } from '@/lib/format';
+import { situacaoDoTeto } from '@/lib/mei';
 
 interface MeiThermometerProps {
   faturamentoAcumulado: number;
@@ -27,13 +30,12 @@ export default function MeiThermometer({
   mediaMensal,
   ano = new Date().getFullYear(),
 }: MeiThermometerProps) {
-  const formatBrl = (valor: number) =>
-    valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-  // Faixa de alerta e ritmo sugerido saem do teto real e dos meses que faltam.
+  // Faixa de alerta, limite de excesso e ritmo saem do teto recebido, não de um valor fixo.
   const valorAlerta = limiteAnual * 0.8;
+  const limiteComExcesso = limiteAnual * 1.2;
   const mesesRestantes = Math.max(1, 12 - new Date().getMonth());
   const sugestaoMensal = saldoRestante / mesesRestantes;
+  const situacao = situacaoDoTeto(percentualUtilizado);
 
   return (
     <Box
@@ -47,7 +49,6 @@ export default function MeiThermometer({
         overflow: 'hidden',
       }}
     >
-      {/* Top Header */}
       <Box
         sx={{
           display: 'flex',
@@ -78,29 +79,28 @@ export default function MeiThermometer({
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
               <Typography variant="h6" sx={{ fontWeight: 800, color: '#1A1B20', fontSize: '1.1rem' }}>
-                Termômetro do Teto MEI {ano}
+                Termômetro do teto MEI {ano}
               </Typography>
               <Box
                 sx={{
                   px: 1.5,
                   py: 0.25,
                   borderRadius: '9999px',
-                  bgcolor: '#E0E7FF',
-                  color: '#1E3A8A',
+                  bgcolor: situacao.bgcolor,
+                  color: situacao.color,
                   fontSize: '0.75rem',
                   fontWeight: 600,
                 }}
               >
-                Margem Confortável
+                {situacao.texto}
               </Box>
             </Box>
             <Typography sx={{ fontSize: '0.8125rem', color: '#74777F', mt: 0.25 }}>
-              Teto anual permitido: <strong style={{ color: '#1A1B20', fontWeight: 600 }}>R$ 81.000,00</strong>
+              Teto do ano: {formatMoeda(limiteAnual)}
             </Typography>
           </Box>
         </Box>
 
-        {/* Faturado YTD pill */}
         <Box
           sx={{
             display: 'flex',
@@ -114,10 +114,10 @@ export default function MeiThermometer({
           }}
         >
           <Typography sx={{ fontSize: '0.75rem', color: '#74777F', fontWeight: 600, textTransform: 'uppercase' }}>
-            Faturado YTD:
+            Faturado no ano:
           </Typography>
           <Typography sx={{ fontSize: '1.25rem', fontWeight: 800, color: '#1E3A8A' }}>
-            R$ {faturamentoAcumulado.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+            {formatMoeda(faturamentoAcumulado)}
           </Typography>
           <Typography sx={{ fontSize: '0.8125rem', color: '#74777F', fontWeight: 600 }}>
             ({percentualUtilizado}%)
@@ -125,7 +125,6 @@ export default function MeiThermometer({
         </Box>
       </Box>
 
-      {/* Thermometer Progress Bar */}
       <Box sx={{ mb: 3 }}>
         <Box
           sx={{
@@ -151,63 +150,48 @@ export default function MeiThermometer({
 
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1, fontSize: '0.75rem', color: '#74777F' }}>
           <span>R$ 0,00</span>
-          <span style={{ color: '#D97706', fontWeight: 600 }}>Alerta 80% (R$ {formatBrl(valorAlerta)})</span>
-          <span style={{ color: '#1A1B20', fontWeight: 600 }}>Teto Legal R$ 81.000,00</span>
+          <Box component="span" sx={{ color: '#D97706', fontWeight: 600 }}>
+            Alerta em 80% ({formatMoeda(valorAlerta)})
+          </Box>
+          <Box component="span" sx={{ color: '#1A1B20', fontWeight: 600 }}>
+            Teto {formatMoeda(limiteAnual)}
+          </Box>
         </Box>
       </Box>
 
-      {/* Projection and Security Specs */}
       <Grid container spacing={2} sx={{ mb: 2 }}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 1.5,
-              bgcolor: '#F1F4F9',
-              border: '1px solid rgba(196, 198, 207, 0.3)',
-              p: 2,
-              borderRadius: '16px',
-            }}
+          <CartaoInfoTermometro
+            icone={<VerifiedUserIcon sx={{ color: '#1E3A8A', fontSize: 24, mt: 0.25 }} />}
+            titulo="Ainda cabe até 31 de dezembro"
           >
-            <VerifiedUserIcon sx={{ color: '#1E3A8A', fontSize: 24, mt: 0.25 }} />
-            <Box>
-              <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#1A1B20', mb: 0.25 }}>
-                Margem Segura até 31/Dez
-              </Typography>
-              <Typography sx={{ fontSize: '0.8125rem', color: '#43474E', lineHeight: 1.45 }}>
-                Você ainda pode faturar <strong style={{ color: '#1E3A8A', fontWeight: 600 }}>R$ {saldoRestante.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</strong> sem nenhum risco de desenquadramento automático.
-              </Typography>
-            </Box>
-          </Box>
+            Você pode faturar mais{' '}
+            <Box component="strong" sx={{ color: '#1E3A8A', fontWeight: 600 }}>
+              {formatMoeda(saldoRestante)}
+            </Box>{' '}
+            neste ano sem passar do teto.
+          </CartaoInfoTermometro>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 1.5,
-              bgcolor: '#F1F4F9',
-              border: '1px solid rgba(196, 198, 207, 0.3)',
-              p: 2,
-              borderRadius: '16px',
-            }}
+          <CartaoInfoTermometro
+            icone={<CalendarMonthIcon sx={{ color: '#2563EB', fontSize: 24, mt: 0.25 }} />}
+            titulo="Ritmo por mês"
           >
-            <CalendarMonthIcon sx={{ color: '#2563EB', fontSize: 24, mt: 0.25 }} />
-            <Box>
-              <Typography sx={{ fontSize: '0.875rem', fontWeight: 700, color: '#1A1B20', mb: 0.25 }}>
-                Média Sugerida
-              </Typography>
-              <Typography sx={{ fontSize: '0.8125rem', color: '#43474E', lineHeight: 1.45 }}>
-                Sua média realizada é <strong style={{ color: '#1A1B20', fontWeight: 600 }}>R$ {formatBrl(mediaMensal)}/mês</strong>. Você ainda pode faturar até <strong style={{ color: '#1A1B20', fontWeight: 600 }}>R$ {formatBrl(sugestaoMensal)}/mês</strong> {mesesRestantes === 1 ? 'no mês restante' : `nos ${mesesRestantes} meses restantes`} sem estourar o teto.
-              </Typography>
-            </Box>
-          </Box>
+            Sua média é{' '}
+            <Box component="strong" sx={{ color: '#1A1B20', fontWeight: 600 }}>
+              {formatMoeda(mediaMensal)}
+            </Box>{' '}
+            por mês. Dá para chegar a{' '}
+            <Box component="strong" sx={{ color: '#1A1B20', fontWeight: 600 }}>
+              {formatMoeda(sugestaoMensal)}
+            </Box>{' '}
+            {mesesRestantes === 1 ? 'no mês que falta' : `nos ${mesesRestantes} meses que faltam`} sem estourar o
+            teto.
+          </CartaoInfoTermometro>
         </Grid>
       </Grid>
 
-      {/* Educational Notice Box */}
       <Box
         sx={{
           display: 'flex',
@@ -221,7 +205,8 @@ export default function MeiThermometer({
       >
         <InfoIcon sx={{ color: '#D97706', fontSize: 22, flexShrink: 0 }} />
         <Typography sx={{ fontSize: '0.8125rem', color: '#1A1B20', lineHeight: 1.45 }}>
-          <strong style={{ color: '#D97706', fontWeight: 700 }}>Atenção Fiscal MEI:</strong> Ultrapassar mais de 20% do teto anual (R$ 97.200,00) anula o benefício MEI com efeito <em>retroativo a 1º de Janeiro</em>, cobrando impostos como Microempresa.
+          Passar de {formatMoeda(limiteComExcesso)} no ano, que é 20% acima do teto, tira você do MEI com efeito
+          retroativo a 1º de janeiro, e os impostos passam a ser cobrados como microempresa.
         </Typography>
       </Box>
     </Box>

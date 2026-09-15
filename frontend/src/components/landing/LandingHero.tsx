@@ -7,9 +7,15 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined';
+import HeroDemonstracao from './HeroDemonstracao';
+
+const garantias = [
+  'Não pede cartão de crédito',
+  'PDF pronto para mandar no WhatsApp',
+  'O teto do ano é somado sozinho',
+];
 
 export default function LandingHero() {
   const router = useRouter();
@@ -25,7 +31,6 @@ export default function LandingHero() {
       }}
     >
       <Grid container spacing={{ xs: 5, md: 6 }} sx={{ alignItems: 'center' }}>
-        {/* Coluna de texto */}
         <Grid size={{ xs: 12, md: 7 }}>
           <Box
             sx={{
@@ -43,7 +48,7 @@ export default function LandingHero() {
             }}
           >
             <ShieldOutlinedIcon sx={{ fontSize: 18, color: '#002045' }} />
-            Feito para autônomos e prestadores de serviços MEI
+            Feito para autônomo e prestador de serviço MEI
           </Box>
 
           <Typography
@@ -57,7 +62,7 @@ export default function LandingHero() {
               mb: 2.5,
             }}
           >
-            Envie orçamentos pelo WhatsApp em 2 minutos e controle o teto do MEI.
+            Orçamento pronto em 2 minutos, do celular direto para o WhatsApp do cliente.
           </Typography>
 
           <Typography
@@ -69,10 +74,10 @@ export default function LandingHero() {
               maxWidth: 580,
             }}
           >
-            Crie propostas claras em PDF, gere cobrança via Pix com chave pronta e acompanhe quanto você faturou no ano para não levar susto com o limite de R$ 81 mil.
+            A proposta sai em PDF com a sua chave Pix já dentro. E o sistema soma o que você faturou no ano, para o
+            teto de R$ 81 mil não pegar você de surpresa.
           </Typography>
 
-          {/* Botões de Ação */}
           <Box
             sx={{
               display: 'flex',
@@ -123,11 +128,10 @@ export default function LandingHero() {
                 },
               }}
             >
-              Ver painel de demonstração
+              Ver o painel por dentro
             </Button>
           </Box>
 
-          {/* Benefícios rápidos */}
           <Box
             sx={{
               display: 'flex',
@@ -137,126 +141,17 @@ export default function LandingHero() {
               fontSize: '0.8125rem',
             }}
           >
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <CheckCircleOutlinedIcon sx={{ fontSize: 18, color: '#137333' }} />
-              <span>Sem necessidade de cartão para começar</span>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <CheckCircleOutlinedIcon sx={{ fontSize: 18, color: '#137333' }} />
-              <span>PDF pronto para enviar no WhatsApp</span>
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-              <CheckCircleOutlinedIcon sx={{ fontSize: 18, color: '#137333' }} />
-              <span>Cálculo automático de teto anual</span>
-            </Box>
+            {garantias.map((garantia) => (
+              <Box key={garantia} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <CheckCircleOutlinedIcon sx={{ fontSize: 18, color: '#137333' }} />
+                <span>{garantia}</span>
+              </Box>
+            ))}
           </Box>
         </Grid>
 
-        {/* Coluna visual com demonstração real */}
         <Grid size={{ xs: 12, md: 5 }}>
-          <Box
-            sx={{
-              bgcolor: '#FFFFFF',
-              borderRadius: '24px',
-              p: { xs: 2.5, sm: 3.5 },
-              boxShadow: '0 20px 45px -10px rgba(0, 32, 69, 0.12)',
-              border: '1px solid rgba(226, 226, 233, 0.8)',
-              position: 'relative',
-            }}
-          >
-            {/* Cabeçalho do Card */}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2.5 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: '#10B981' }} />
-                <Typography sx={{ fontWeight: 700, color: '#002045', fontSize: '0.95rem' }}>
-                  Termômetro Fiscal 2024
-                </Typography>
-              </Box>
-
-              <Box
-                sx={{
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: '9999px',
-                  bgcolor: '#E6F4EA',
-                  color: '#137333',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                }}
-              >
-                Margem Segura
-              </Box>
-            </Box>
-
-            {/* Números principais */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', mb: 1.5 }}>
-              <Box>
-                <Typography sx={{ fontSize: '0.75rem', color: '#74777F' }}>
-                  Faturamento acumulado
-                </Typography>
-                <Typography sx={{ fontSize: '1.5rem', fontWeight: 800, color: '#002045' }}>
-                  R$ 52.450,00
-                </Typography>
-              </Box>
-
-              <Box sx={{ textAlign: 'right' }}>
-                <Typography sx={{ fontSize: '0.75rem', color: '#74777F' }}>
-                  Margem disponível
-                </Typography>
-                <Typography sx={{ fontSize: '1rem', fontWeight: 700, color: '#137333' }}>
-                  R$ 28.550,00
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Barra de progresso */}
-            <Box sx={{ width: '100%', bgcolor: '#EDEDF4', borderRadius: '9999px', height: 12, overflow: 'hidden', mb: 1 }}>
-              <Box
-                sx={{
-                  height: '100%',
-                  bgcolor: '#002045',
-                  borderRadius: '9999px',
-                  width: '64.7%',
-                }}
-              />
-            </Box>
-
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#74777F', mb: 3 }}>
-              <span>R$ 0</span>
-              <span style={{ color: '#002045', fontWeight: 700 }}>64,7% utilizado</span>
-              <span>Teto: R$ 81.000</span>
-            </Box>
-
-            {/* Balão de simulação de WhatsApp */}
-            <Box
-              sx={{
-                bgcolor: '#F0F9F4',
-                border: '1px solid #D1E7DD',
-                borderRadius: '16px',
-                p: 2,
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <WhatsAppIcon sx={{ fontSize: 18, color: '#25D366' }} />
-                <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700, color: '#0F5132' }}>
-                  Proposta enviada ao cliente
-                </Typography>
-              </Box>
-
-              <Typography sx={{ fontSize: '0.8125rem', color: '#43474E', lineHeight: 1.45, mb: 1.5 }}>
-                &ldquo;Olá Carlos! Aqui está seu orçamento detalhado de instalação elétrica residencial. Valor total de R$ 1.850,00 em até 2x no Pix.&rdquo;
-              </Typography>
-
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <Typography sx={{ fontSize: '0.75rem', color: '#74777F' }}>
-                  PDF anexado • 140 KB
-                </Typography>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#137333' }}>
-                  Aprovado em 15 min
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
+          <HeroDemonstracao />
         </Grid>
       </Grid>
     </Box>

@@ -13,25 +13,12 @@ import LandingFooter from '@/components/landing/LandingFooter';
 export default function HomePage() {
   return (
     <Box sx={{ bgcolor: '#F9F9FF', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Barra de Navegação */}
       <LandingNavbar />
-
-      {/* Seção Hero de Alta Conversão */}
       <LandingHero />
-
-      {/* Dores reais da rotina do autônomo */}
       <LandingPains />
-
-      {/* Recursos Principais */}
       <LandingFeatures />
-
-      {/* Depoimentos reais */}
       <LandingTestimonials />
-
-      {/* Tabela de Preços Simples */}
       <LandingPricing />
-
-      {/* Rodapé */}
       <LandingFooter />
     </Box>
   );

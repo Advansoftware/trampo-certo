@@ -12,7 +12,7 @@ interface DashboardHeaderProps {
   userName?: string;
 }
 
-export default function DashboardHeader({ userName = 'Rodrigo' }: DashboardHeaderProps) {
+export default function DashboardHeader({ userName }: DashboardHeaderProps) {
   const router = useRouter();
 
   return (
@@ -26,50 +26,22 @@ export default function DashboardHeader({ userName = 'Rodrigo' }: DashboardHeade
       }}
     >
       <Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
-          <Box
-            sx={{
-              px: 1.5,
-              py: 0.5,
-              borderRadius: '9999px',
-              bgcolor: '#DBEAFE',
-              color: '#172554',
-              fontSize: '0.6875rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-            }}
-          >
-            Painel Financeiro MEI
-          </Box>
-          <Typography
-            component="div"
-            sx={{
-              fontSize: '0.8125rem',
-              color: '#43474E',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-            }}
-          >
-            <Box
-              component="span"
-              sx={{
-                width: 8,
-                height: 8,
-                borderRadius: '50%',
-                bgcolor: '#1E3A8A',
-                display: 'inline-block',
-                animation: 'pulse 2s infinite',
-                '@keyframes pulse': {
-                  '0%': { transform: 'scale(0.9)', opacity: 0.8 },
-                  '50%': { transform: 'scale(1.2)', opacity: 1 },
-                  '100%': { transform: 'scale(0.9)', opacity: 0.8 },
-                },
-              }}
-            />
-            Sincronizado com Simples Nacional
-          </Typography>
+        <Box
+          sx={{
+            display: 'inline-block',
+            px: 1.5,
+            py: 0.5,
+            mb: 1,
+            borderRadius: '9999px',
+            bgcolor: '#DBEAFE',
+            color: '#172554',
+            fontSize: '0.6875rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+          }}
+        >
+          Painel do MEI
         </Box>
 
         <Typography
@@ -81,23 +53,22 @@ export default function DashboardHeader({ userName = 'Rodrigo' }: DashboardHeade
             letterSpacing: '-0.02em',
           }}
         >
-          Olá, {userName}! 👋
+          {userName ? `Olá, ${userName}!` : 'Olá!'}
         </Typography>
 
         <Typography sx={{ fontSize: '0.9rem', color: '#43474E', mt: 0.5 }}>
-          Veja a saúde do seu MEI e o andamento dos seus trampos neste mês.
+          Como está o seu mês até agora.
         </Typography>
       </Box>
 
-      {/* Quick Action Buttons */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
         <AppButton
           variant="outlined"
           size="medium"
           startIcon={<ReceiptLongIcon sx={{ fontSize: 20, color: '#1E3A8A' }} />}
-          onClick={() => router.push('/orcamentos/novo')}
+          onClick={() => router.push('/recibos')}
         >
-          Emitir Recibo
+          Emitir recibo
         </AppButton>
 
         <AppButton
@@ -106,7 +77,7 @@ export default function DashboardHeader({ userName = 'Rodrigo' }: DashboardHeade
           startIcon={<AddCircleIcon sx={{ fontSize: 20 }} />}
           onClick={() => router.push('/orcamentos/novo')}
         >
-          Criar Orçamento Rápido
+          Novo orçamento
         </AppButton>
       </Box>
     </Box>

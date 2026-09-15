@@ -66,7 +66,7 @@ export default function OrcamentoA4Preview({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <DescriptionIcon sx={{ fontSize: 19, color: '#1E3A8A' }} />
           <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1B20' }}>
-            Pré-visualização do Documento A4
+            Prévia da proposta em A4
           </Typography>
           <Box
             sx={{
@@ -194,7 +194,7 @@ export default function OrcamentoA4Preview({
               }}
             >
               <Typography sx={{ fontSize: '10px', color: '#1E3A8A', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                Proposta Comercial
+                Proposta comercial
               </Typography>
               <Typography sx={{ fontSize: '17px', fontWeight: 800, color: '#1A1B20', letterSpacing: '-0.01em' }}>
                 {codigo || 'NOVO ORÇAMENTO'}
@@ -220,7 +220,7 @@ export default function OrcamentoA4Preview({
           >
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
               <Typography sx={{ fontSize: '10px', color: '#74777F', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.08em' }}>
-                Cliente Destinatário
+                Cliente
               </Typography>
               <Typography sx={{ fontSize: '15px', fontWeight: 700, color: '#1A1B20', mt: 0.25 }}>
                 {clienteNome || 'Juliana Mendes'}
@@ -232,7 +232,7 @@ export default function OrcamentoA4Preview({
 
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'flex-start', sm: 'flex-end' }, justifyContent: 'center' }}>
               <Typography sx={{ fontSize: '10px', color: '#74777F', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.08em' }}>
-                Contato do Cliente
+                Contato
               </Typography>
               <Typography sx={{ fontSize: '13px', fontWeight: 600, color: '#1A1B20', mt: 0.25 }}>
                 {clienteTelefone || '(11) 98765-4321'}
@@ -333,7 +333,7 @@ export default function OrcamentoA4Preview({
               {chavePix && (
                 <Box sx={{ mt: 0.5, pt: 0.75, borderTop: '1px solid rgba(196, 198, 207, 0.3)', display: 'flex', flexDirection: 'column' }}>
                   <Typography sx={{ fontSize: '10px', color: '#74777F', textTransform: 'uppercase', fontWeight: 600 }}>
-                    Chave PIX para Depósito / Sinal:
+                    Chave Pix para pagamento:
                   </Typography>
                   <Typography sx={{ fontSize: '12px', color: '#1E3A8A', fontWeight: 700, fontFamily: 'monospace' }}>
                     {chavePix}
@@ -373,7 +373,7 @@ export default function OrcamentoA4Preview({
               <Box sx={{ height: 1, bgcolor: 'rgba(196, 198, 207, 0.4)', my: 0.5 }} />
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                 <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1A1B20' }}>
-                  Total Geral:
+                  Total:
                 </Typography>
                 <Typography sx={{ fontSize: '20px', fontWeight: 800, color: '#1E3A8A', letterSpacing: '-0.02em' }}>
                   R$ {formatMoney(total)}
@@ -433,7 +433,7 @@ export default function OrcamentoA4Preview({
               <HandshakeIcon sx={{ fontSize: 13 }} />
             </Box>
             <Typography sx={{ fontSize: '11px', color: '#43474E' }}>
-              Documento gerado profissionalmente via <strong style={{ color: '#1E3A8A' }}>TrampoCerto</strong>
+              Proposta gerada no <strong style={{ color: '#1E3A8A' }}>TrampoCerto</strong>
             </Typography>
           </Box>
           <Typography

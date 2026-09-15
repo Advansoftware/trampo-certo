@@ -32,7 +32,7 @@ export default function FaturamentoPage() {
 
   const exportarCsv = () => {
     if (receitas.meses.length === 0) {
-      showToast('Nenhuma receita disponível para exportação.', 'warning');
+      showToast('Não há receita lançada para exportar.', 'warning');
       return;
     }
 
@@ -50,7 +50,7 @@ export default function FaturamentoPage() {
         mes.dasPagoEm || '',
       ]),
     );
-    showToast('Relatório mensal de receitas brutas exportado com sucesso!');
+    showToast('Relatório de receitas brutas baixado.');
   };
 
   const abrirPagamentoDas = (mes?: ReceitaMensal) => {
@@ -65,7 +65,7 @@ export default function FaturamentoPage() {
     try {
       await receitas.pagarDas(competencia);
       await metricas.reload();
-      showToast('Guia DAS marcada como paga! Seu histórico foi atualizado.');
+      showToast('DAS marcada como paga.');
     } catch (erro) {
       showError(erro);
     }

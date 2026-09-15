@@ -12,8 +12,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import AppButton from '@/components/common/AppButton';
+import { formatMoeda } from '@/lib/format';
+import { URL_PGMEI } from '@/lib/mei';
 
 interface DasPixModalProps {
   open: boolean;
@@ -28,18 +30,19 @@ interface DasPixModalProps {
 export default function DasPixModal({
   open,
   onClose,
-  competencia = 'Outubro/2026',
-  valor = 75.60,
-  vencimento = '20/10/2026',
-  chavePix = '00020126580014br.gov.bcb.pix0136451237890001905204000053039865802BR5913RODRIGO SILVA6009SAO PAULO62070503***6304E2A1',
+  competencia,
+  valor = 0,
+  vencimento,
+  chavePix,
   onMarkPaid,
 }: DasPixModalProps) {
-  const [copied, setCopied] = useState(false);
+  const [copiado, setCopiado] = useState(false);
 
-  const handleCopy = () => {
+  const copiarChave = () => {
+    if (!chavePix) return;
     navigator.clipboard.writeText(chavePix);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 3000);
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 3000);
   };
 
   return (
@@ -88,20 +91,21 @@ export default function DasPixModal({
           </Box>
           <Box>
             <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#1A1B20' }}>
-              Pagar Guia DAS MEI via Pix
+              Pagar a DAS com Pix
             </Typography>
             <Typography sx={{ fontSize: '0.75rem', color: '#74777F' }}>
-              Competência {competencia} • Vencimento em {vencimento}
+              {competencia && `Competência ${competencia}`}
+              {competencia && vencimento && ' • '}
+              {vencimento && `vence em ${vencimento}`}
             </Typography>
           </Box>
         </Box>
-        <IconButton onClick={onClose} size="small">
+        <IconButton onClick={onClose} size="small" aria-label="Fechar">
           <CloseIcon sx={{ fontSize: 20 }} />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
-        {/* Value Box */}
+      <DialogContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
         <Box
           sx={{
             width: '100%',
@@ -113,84 +117,84 @@ export default function DasPixModal({
           }}
         >
           <Typography sx={{ fontSize: '0.75rem', color: '#74777F', fontWeight: 600, textTransform: 'uppercase' }}>
-            Valor Total da Guia Mensal (INSS + ISS)
+            Valor da guia (INSS + ISS)
           </Typography>
-          <Typography sx={{ fontSize: '2rem', fontWeight: 800, color: '#1A1B20', letterSpacing: '-0.02em', mt: 0.25 }}>
-            R$ {valor.toFixed(2).replace('.', ',')}
-          </Typography>
-        </Box>
-
-        {/* QR Code Graphic Box */}
-        <Box
-          sx={{
-            p: 2.5,
-            bgcolor: '#FFFFFF',
-            borderRadius: '20px',
-            border: '2px solid rgba(30, 58, 138, 0.2)',
-            boxShadow: '0 8px 24px rgba(30, 41, 59, 0.06)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 1.5,
-          }}
-        >
-          <QrCode2Icon sx={{ fontSize: 160, color: '#1E3A8A' }} />
-          <Typography sx={{ fontSize: '0.75rem', color: '#74777F', textAlign: 'center', maxWidth: 260 }}>
-            Abra o app do seu banco, escolha <strong>Pagar com Pix</strong> e aponte a câmera para o código.
+          <Typography
+            sx={{ fontSize: '2rem', fontWeight: 800, color: '#1A1B20', letterSpacing: '-0.02em', mt: 0.25 }}
+          >
+            {formatMoeda(valor)}
           </Typography>
         </Box>
 
-        {/* Pix Copia e Cola Code */}
         <Box sx={{ width: '100%' }}>
           <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#43474E', mb: 1 }}>
-            Chave Pix Copia e Cola da Guia DAS
+            Pix Copia e Cola
           </Typography>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              p: 1.5,
-              borderRadius: '14px',
-              bgcolor: '#F8F9FD',
-              border: '1px solid rgba(196, 198, 207, 0.5)',
-              gap: 1.5,
-            }}
-          >
-            <Typography
-              sx={{
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-                color: '#43474E',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-                flexGrow: 1,
-              }}
-            >
-              {chavePix}
+
+          {chavePix ? (
+            <>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  p: 1.5,
+                  borderRadius: '14px',
+                  bgcolor: '#F8F9FD',
+                  border: '1px solid rgba(196, 198, 207, 0.5)',
+                  gap: 1.5,
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: 'monospace',
+                    fontSize: '0.75rem',
+                    color: '#43474E',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    flexGrow: 1,
+                  }}
+                >
+                  {chavePix}
+                </Typography>
+                <AppButton
+                  variant={copiado ? 'secondary' : 'primary'}
+                  size="small"
+                  onClick={copiarChave}
+                  startIcon={
+                    copiado ? (
+                      <CheckCircleIcon sx={{ fontSize: 16 }} />
+                    ) : (
+                      <ContentCopyIcon sx={{ fontSize: 16 }} />
+                    )
+                  }
+                >
+                  {copiado ? 'Copiado' : 'Copiar'}
+                </AppButton>
+              </Box>
+
+              <Typography sx={{ fontSize: '0.75rem', color: '#74777F', mt: 1 }}>
+                Copie o código, abra o app do banco e escolha Pix Copia e Cola.
+              </Typography>
+            </>
+          ) : (
+            <Typography sx={{ fontSize: '0.8125rem', color: '#74777F' }}>
+              Nenhum código Pix foi gerado para esta competência. Emita a guia no PGMEI e pague pelo boleto.
             </Typography>
-            <AppButton
-              variant={copied ? 'secondary' : 'primary'}
-              size="small"
-              onClick={handleCopy}
-              startIcon={copied ? <CheckCircleIcon sx={{ fontSize: 16 }} /> : <ContentCopyIcon sx={{ fontSize: 16 }} />}
-            >
-              {copied ? 'Copiado!' : 'Copiar'}
-            </AppButton>
-          </Box>
+          )}
         </Box>
       </DialogContent>
 
-      <DialogActions sx={{ p: 2.5, borderTop: '1px solid rgba(196, 198, 207, 0.4)', justifyContent: 'space-between' }}>
+      <DialogActions
+        sx={{ p: 2.5, borderTop: '1px solid rgba(196, 198, 207, 0.4)', justifyContent: 'space-between' }}
+      >
         <AppButton
           variant="surface"
           size="small"
-          startIcon={<PictureAsPdfIcon sx={{ fontSize: 16 }} />}
-          onClick={() => {
-            alert('Gerando documento PDF da guia DAS oficial (PGMEI Receita Federal)...');
-          }}
+          startIcon={<OpenInNewIcon sx={{ fontSize: 16 }} />}
+          onClick={() => window.open(URL_PGMEI, '_blank')}
         >
-          Baixar Boleto PDF
+          Emitir guia no PGMEI
         </AppButton>
 
         <Box sx={{ display: 'flex', gap: 1.5 }}>
@@ -207,7 +211,7 @@ export default function DasPixModal({
                 onClose();
               }}
             >
-              Marcar como Pago
+              Marcar como paga
             </AppButton>
           )}
         </Box>

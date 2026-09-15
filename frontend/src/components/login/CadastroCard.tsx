@@ -89,7 +89,7 @@ export default function CadastroCard({ loading, erro, onSubmit, onVoltarLogin }:
           Criar conta MEI
         </Typography>
         <Typography sx={{ fontSize: '0.875rem', color: '#43474E', mt: 0.5 }}>
-          Estes dados aparecem nos seus orçamentos e recibos — você pode ajustá-los depois.
+          Estes dados aparecem nos seus orçamentos e recibos. Dá para mudar depois.
         </Typography>
       </Box>
 

@@ -23,7 +23,7 @@ export default function RecibosPage() {
 
   const exportarCsv = () => {
     if (recibos.length === 0) {
-      showToast('Nenhum recibo disponível para exportação.', 'warning');
+      showToast('Não há recibo para exportar.', 'warning');
       return;
     }
 
@@ -41,7 +41,7 @@ export default function RecibosPage() {
         recibo.autenticacao,
       ]),
     );
-    showToast('Relatório fiscal de recibos exportado em CSV com sucesso!');
+    showToast('Arquivo CSV com os recibos baixado.');
   };
 
   return (
@@ -64,7 +64,7 @@ export default function RecibosPage() {
         open={modalAberto}
         onClose={() => setModalAberto(false)}
         onEmitir={emitir}
-        onEmitido={(recibo) => showToast(`Recibo ${recibo.codigo} emitido com sucesso!`)}
+        onEmitido={(recibo) => showToast(`Recibo ${recibo.codigo} emitido.`)}
       />
 
       <Toast message={toast.message} severity={toast.severity} onClose={hideToast} />

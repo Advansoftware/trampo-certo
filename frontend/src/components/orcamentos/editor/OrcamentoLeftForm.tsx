@@ -85,7 +85,7 @@ export default function OrcamentoLeftForm({
           }}
         >
           <EditDocumentIcon sx={{ fontSize: 16 }} />
-          <span>Emissão instantânea MEI</span>
+          <span>Orçamento do MEI</span>
         </Box>
         <Typography
           component="h1"
@@ -100,7 +100,7 @@ export default function OrcamentoLeftForm({
           {editando ? `Editar orçamento ${codigo}` : 'Criar novo orçamento'}
         </Typography>
         <Typography sx={{ fontSize: '14px', color: '#43474E', lineHeight: 1.5 }}>
-          Preencha os dados em 2 minutos. O documento técnico A4 é formatado automaticamente em tempo real.
+          Conforme você preenche, a proposta em A4 vai se montando ao lado.
         </Typography>
       </Box>
 

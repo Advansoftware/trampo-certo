@@ -21,3 +21,14 @@ export function linkWhatsApp(telefone: string, mensagem: string): string {
   const texto = encodeURIComponent(mensagem);
   return numero ? `https://wa.me/55${numero}?text=${texto}` : `https://wa.me/?text=${texto}`;
 }
+
+/** "Rodrigo Silva" -> "rodrigo-silva"; usado no link de indicação. */
+export function slugificar(valor: string): string {
+  return (valor || '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}

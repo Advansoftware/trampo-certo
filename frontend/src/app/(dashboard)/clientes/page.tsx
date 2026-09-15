@@ -33,7 +33,7 @@ export default function ClientesPage() {
 
   const exportarCsv = () => {
     if (clientes.length === 0) {
-      showToast('Nenhum cliente disponível para exportação.', 'warning');
+      showToast('Não há cliente cadastrado para exportar.', 'warning');
       return;
     }
 
@@ -54,7 +54,7 @@ export default function ClientesPage() {
         cliente.ultimoServico,
       ]),
     );
-    showToast('Relatório CSV de clientes exportado com sucesso!');
+    showToast('Arquivo CSV com os clientes baixado.');
   };
 
   return (
@@ -77,7 +77,7 @@ export default function ClientesPage() {
         open={modalNovoAberto}
         onClose={() => setModalNovoAberto(false)}
         onCriarCliente={criar}
-        onClienteCriado={(cliente) => showToast(`Cliente "${cliente.nome}" cadastrado com sucesso!`)}
+        onClienteCriado={(cliente) => showToast(`Cliente ${cliente.nome} cadastrado.`)}
       />
 
       <ClienteDetalhesModal

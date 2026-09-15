@@ -41,7 +41,7 @@ export default function CardItens({
     <Box sx={ESTILO_CARD}>
       <CardCabecalho
         icone={<FormatListBulletedIcon sx={{ fontSize: 18 }} />}
-        titulo="2. Serviços e Materiais"
+        titulo="2. Serviços e materiais"
         acao={
           <Typography sx={{ fontSize: '11px', color: '#74777F', fontWeight: 600 }}>Tabela dinâmica</Typography>
         }
@@ -91,14 +91,14 @@ export default function CardItens({
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px', color: '#43474E' }}>
-          <span>Subtotal bruto</span>
+          <span>Subtotal</span>
           <span style={{ fontWeight: 600, color: '#1A1B20' }}>R$ {formatNumero(subtotal)}</span>
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: '#43474E', fontSize: '13px' }}>
             <SellIcon sx={{ fontSize: 16, color: '#2563EB' }} />
-            <span>Desconto especial</span>
+            <span>Desconto</span>
           </Box>
           <Box sx={{ position: 'relative', width: 120 }}>
             <span

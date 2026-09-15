@@ -4,9 +4,9 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
 import Logo from '@/components/Logo';
+import { linksLanding } from './linksLanding';
 
 export default function LandingNavbar() {
   const router = useRouter();
@@ -38,65 +38,24 @@ export default function LandingNavbar() {
           <Logo height={38} />
         </Box>
 
-        {/* Links centrais no desktop */}
-        <Box
-          sx={{
-            display: { xs: 'none', md: 'flex' },
-            alignItems: 'center',
-            gap: 4,
-          }}
-        >
-          <Link
-            href="#recursos"
-            underline="none"
-            sx={{
-              color: '#43474E',
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              '&:hover': { color: '#002045' },
-            }}
-          >
-            Como funciona
-          </Link>
-          <Link
-            href="#teto-mei"
-            underline="none"
-            sx={{
-              color: '#43474E',
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              '&:hover': { color: '#002045' },
-            }}
-          >
-            Termômetro MEI
-          </Link>
-          <Link
-            href="#depoimentos"
-            underline="none"
-            sx={{
-              color: '#43474E',
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              '&:hover': { color: '#002045' },
-            }}
-          >
-            Quem usa
-          </Link>
-          <Link
-            href="#precos"
-            underline="none"
-            sx={{
-              color: '#43474E',
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              '&:hover': { color: '#002045' },
-            }}
-          >
-            Planos
-          </Link>
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 4 }}>
+          {linksLanding.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              underline="none"
+              sx={{
+                color: '#43474E',
+                fontSize: '0.9rem',
+                fontWeight: 600,
+                '&:hover': { color: '#002045' },
+              }}
+            >
+              {link.label}
+            </Link>
+          ))}
         </Box>
 
-        {/* Ações à direita */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <Button
             onClick={() => router.push('/login')}
@@ -126,9 +85,7 @@ export default function LandingNavbar() {
               textTransform: 'none',
               fontSize: '0.9rem',
               boxShadow: '0 4px 14px rgba(0, 32, 69, 0.2)',
-              '&:hover': {
-                bgcolor: '#1A365D',
-              },
+              '&:hover': { bgcolor: '#1A365D' },
             }}
           >
             Criar conta grátis

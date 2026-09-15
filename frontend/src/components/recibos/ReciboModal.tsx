@@ -181,7 +181,7 @@ export default function ReciboModal({ open, onClose, recibo }: ReciboModalProps)
         }}
       >
         <Typography sx={{ fontSize: '0.75rem', color: '#74777F', display: { xs: 'none', sm: 'block' } }}>
-          TrampoCerto MEI • Documento com Validade Fiscal
+          TrampoCerto • Recibo de prestação de serviço
         </Typography>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: { xs: '100%', sm: 'auto' }, justifyContent: 'flex-end' }}>

@@ -11,6 +11,7 @@ import LoginFooter from '@/components/login/LoginFooter';
 import { signIn, traduzirErroAuth } from '@/lib/auth-client';
 
 const AVISO_SOCIAL = 'O login social ainda não está habilitado. Entre com e-mail e senha.';
+const AVISO_RECUPERACAO = 'A recuperação de senha ainda não está disponível.';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -75,6 +76,7 @@ export default function LoginPage() {
               onSubmit={handleSubmit}
               onGovBrLogin={() => setError(AVISO_SOCIAL)}
               onGoogleLogin={() => setError(AVISO_SOCIAL)}
+              onForgotPassword={() => setError(AVISO_RECUPERACAO)}
               onRegisterClick={() => router.push('/cadastro')}
             />
           </Grid>

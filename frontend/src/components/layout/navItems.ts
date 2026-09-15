@@ -5,10 +5,10 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import GroupIcon from '@mui/icons-material/Group';
 
 export const NAV_ITEMS = [
-  { label: 'Dashboard', path: '/dashboard', icon: DashboardIcon },
-  { label: 'Orçamentos & Propostas', path: '/orcamentos', icon: RequestQuoteIcon },
-  { label: 'Recibos Emitidos', path: '/recibos', icon: ReceiptLongIcon },
-  { label: 'Faturamento & DAS MEI', path: '/faturamento', icon: AccountBalanceIcon },
+  { label: 'Painel', path: '/dashboard', icon: DashboardIcon },
+  { label: 'Orçamentos', path: '/orcamentos', icon: RequestQuoteIcon },
+  { label: 'Recibos', path: '/recibos', icon: ReceiptLongIcon },
+  { label: 'Faturamento e DAS', path: '/faturamento', icon: AccountBalanceIcon },
   { label: 'Clientes', path: '/clientes', icon: GroupIcon },
 ] as const;
 

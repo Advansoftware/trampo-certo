@@ -23,7 +23,7 @@ interface MonthlyMetricsGridProps {
 }
 
 function textoVariacao(variacao: number | null, referencia: string): string {
-  if (variacao === null) return `Sem base de comparação com ${referencia}`;
+  if (variacao === null) return `Ainda não dá para comparar com o ${referencia}`;
   const sinal = variacao >= 0 ? '+' : '';
   return `${sinal}${variacao.toFixed(0)}% em relação a ${referencia}`;
 }

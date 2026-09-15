@@ -41,7 +41,7 @@ export default function OrcamentoBreadcrumbHeader({
         </Link>
         <ChevronRightIcon sx={{ fontSize: 16, color: '#74777F' }} />
         <Typography component="span" sx={{ fontSize: '13px', fontWeight: 600, color: '#1A1B20' }}>
-          {isEditing ? `Editar Orçamento ${codigo}` : 'Novo Orçamento'}
+          {isEditing ? `Editar orçamento ${codigo}` : 'Novo orçamento'}
         </Typography>
       </Box>
 

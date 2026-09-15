@@ -36,16 +36,14 @@ export default function EditorOrcamento() {
 
   const aoCriarCliente = (cliente: Cliente) => {
     editor.cliente.selecionar(cliente);
-    showToast(`Cliente "${cliente.nome}" cadastrado e selecionado.`);
+    showToast(`Cliente ${cliente.nome} cadastrado e já selecionado.`);
   };
 
   const salvar = async () => {
     const salvo = await editor.salvar((mensagem) => showToast(mensagem, 'error'));
     if (!salvo) return;
 
-    showToast(
-      editor.editando ? 'Alterações salvas com sucesso!' : `Orçamento ${salvo.codigo} salvo com sucesso!`,
-    );
+    showToast(editor.editando ? 'Alterações salvas.' : `Orçamento ${salvo.codigo} salvo.`);
     setTimeout(() => editor.router.push('/orcamentos'), 1200);
   };
 
@@ -55,7 +53,7 @@ export default function EditorOrcamento() {
       return;
     }
     await navigator.clipboard.writeText(`${BASE_PROPOSTA}/${editor.orcamentoId}`);
-    showToast('Link público copiado para a área de transferência!');
+    showToast('Link da proposta copiado.');
   };
 
   const enviarWhatsApp = () => {

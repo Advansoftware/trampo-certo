@@ -122,10 +122,10 @@ export default function NovoReciboModal({ open, onClose, onEmitir, onEmitido }: 
           </Box>
           <Box>
             <Typography sx={{ fontSize: '1.1rem', fontWeight: 800, color: '#1A1B20' }}>
-              Emitir Novo Recibo MEI
+              Emitir recibo
             </Typography>
             <Typography sx={{ fontSize: '0.75rem', color: '#74777F' }}>
-              Gere comprovante com quitação e validade jurídica
+              Comprovante de pagamento com termo de quitação
             </Typography>
           </Box>
         </Box>
@@ -232,7 +232,7 @@ export default function NovoReciboModal({ open, onClose, onEmitir, onEmitido }: 
             disabled={salvando}
             startIcon={<CheckCircleIcon sx={{ fontSize: 18 }} />}
           >
-            {salvando ? 'Emitindo...' : 'Emitir & visualizar recibo'}
+            {salvando ? 'Emitindo...' : 'Emitir e ver o recibo'}
           </AppButton>
         </DialogActions>
       </Box>

@@ -138,7 +138,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
       >
         <Box>
           <Typography sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Valor Total Recebido
+            Valor recebido
           </Typography>
           <Typography sx={{ fontSize: '1.875rem', fontWeight: 800, color: '#1A1B20', letterSpacing: '-0.02em', lineHeight: 1.15 }}>
             R$ {formatMoney(recibo.valor)}
@@ -152,7 +152,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
 
         <Box sx={{ textAlign: { xs: 'left', sm: 'right' } }}>
           <Typography sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-            Forma de Pagamento
+            Forma de pagamento
           </Typography>
           <Typography sx={{ fontSize: '0.9375rem', fontWeight: 700, color: '#1A1B20', mt: 0.25 }}>
             {recibo.formaPagamentoLabel}
@@ -166,7 +166,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
       {/* 3. Declaração Legal de Quitação */}
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
         <Typography sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-          Termo de Quitação de Serviços
+          Termo de quitação
         </Typography>
 
         <Box
@@ -186,7 +186,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
           a quantia líquida e certa de{' '}
           <strong>R$ {formatMoney(recibo.valor)}</strong>
           {recibo.valorExtenso ? ` (${recibo.valorExtenso})` : ''},
-          referente à prestação dos serviços especializados de:
+          referente à prestação dos serviços de:
           <Box
             sx={{
               mt: 1.25,
@@ -221,15 +221,13 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, color: '#166534' }}>
             <VerifiedIcon sx={{ fontSize: 18 }} />
-            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700 }}>
-              Assinatura Eletrônica Válida
-            </Typography>
+            <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700 }}>Emitido por</Typography>
           </Box>
           <Typography sx={{ fontSize: '0.8125rem', fontWeight: 700, color: '#1A1B20' }}>
             {emissor.nome.toUpperCase()}
           </Typography>
           <Typography sx={{ fontSize: '0.6875rem', color: '#74777F' }}>
-            Emissor Autorizado • Lei Complementar nº 123/2006
+            {emissor.cnpj ? `MEI • CNPJ ${emissor.cnpj}` : 'Microempreendedor individual'}
           </Typography>
         </Box>
 
@@ -239,7 +237,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
             <QrCode2Icon sx={{ fontSize: 28, color: '#1E3A8A' }} />
             <Box>
               <Typography sx={{ fontSize: '0.6875rem', fontWeight: 700, color: '#74777F', textTransform: 'uppercase' }}>
-                Código de Autenticidade
+                Código de autenticação
               </Typography>
               <Typography sx={{ fontFamily: 'monospace', fontSize: '0.75rem', fontWeight: 800, color: '#1E3A8A' }}>
                 {recibo.autenticacao}
@@ -247,7 +245,7 @@ export default function ReciboPaperView({ recibo }: ReciboPaperViewProps) {
             </Box>
           </Box>
           <Typography sx={{ fontSize: '0.6875rem', color: '#A0A3AD', mt: 0.5 }}>
-            Emitido via TrampoCerto Gestor Financeiro MEI
+            Emitido pelo TrampoCerto
           </Typography>
         </Box>
       </Box>

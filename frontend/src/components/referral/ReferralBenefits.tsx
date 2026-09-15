@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { useRouter } from 'next/navigation';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -10,7 +9,6 @@ import SpeedIcon from '@mui/icons-material/Speed';
 import QrCode2Icon from '@mui/icons-material/QrCode2';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import CardGiftcardIcon from '@mui/icons-material/CardGiftcard';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
 import AppButton from '@/components/common/AppButton';
 
@@ -19,36 +17,34 @@ interface ReferralBenefitsProps {
 }
 
 export default function ReferralBenefits({ referrerName }: ReferralBenefitsProps) {
-  const router = useRouter();
-
   const features = [
     {
       icon: DescriptionIcon,
       iconBg: '#DBEAFE',
       iconColor: '#1E3A8A',
-      title: 'Orçamentos A4 com Cara de Empresa Grande',
-      desc: 'Monte propostas comerciais completas em menos de 2 minutos no celular. Exporte em PDF nítido e envie direto pelo WhatsApp.',
+      title: 'Orçamento em PDF pelo WhatsApp',
+      desc: 'Você monta a proposta no celular em menos de 2 minutos e manda o PDF direto para o cliente.',
     },
     {
       icon: SpeedIcon,
       iconBg: '#DCFCE7',
       iconColor: '#166534',
-      title: 'Termômetro Inteligente do Teto MEI',
-      desc: 'Acompanhe em tempo real sua proximidade do limite de R$ 81.000 da Receita Federal e nunca seja pego de surpresa com multas ou desenquadramento.',
+      title: 'Termômetro do teto do MEI',
+      desc: 'Você vê quanto já faturou no ano e quanto ainda cabe antes de encostar nos R$ 81 mil.',
     },
     {
       icon: QrCode2Icon,
       iconBg: '#FEF3C7',
       iconColor: '#D97706',
-      title: 'Recibos Automáticos & Pix Integrado',
-      desc: 'Ao finalizar o serviço, emita o recibo comercial com sua chave Pix e confirmação de pagamento na hora, passando total credibilidade ao cliente.',
+      title: 'Recibo com a sua chave Pix',
+      desc: 'Terminou o serviço, você emite o recibo com a chave Pix junto e marca o pagamento como recebido.',
     },
     {
       icon: PeopleAltIcon,
       iconBg: '#EFF6FF',
       iconColor: '#2563EB',
-      title: 'Histórico & Gestão de Clientes',
-      desc: 'Saiba exatamente quem aprovou o orçamento, quem está pendente e consulte os preços que você cobrou em serviços anteriores com facilidade.',
+      title: 'Histórico dos seus clientes',
+      desc: 'Quem aprovou, quem ainda não respondeu e quanto você cobrou nos serviços anteriores.',
     },
   ];
 
@@ -56,37 +52,37 @@ export default function ReferralBenefits({ referrerName }: ReferralBenefitsProps
     {
       number: '1',
       title: 'Você entra pelo convite',
-      desc: `Cadastre-se pelo link especial enviado por ${referrerName} em menos de 1 minuto.`,
+      desc: `Você se cadastra pelo link que ${referrerName} mandou. Leva menos de um minuto.`,
     },
     {
       number: '2',
-      title: '30 Dias Pro Grátis',
-      desc: 'Você desbloqueia todas as funcionalidades premium do TrampoCerto sem gastar 1 centavo.',
+      title: '30 dias de Pro grátis',
+      desc: 'Todos os recursos do plano Pro liberados, sem cobrança nenhuma no período.',
     },
     {
       number: '3',
       title: 'Seu amigo também ganha',
-      desc: `${referrerName} recebe 1 mês adicional de assinatura por ter te apresentado a plataforma.`,
+      desc: `${referrerName} ganha mais um mês de assinatura por ter te indicado.`,
     },
   ];
 
   const testimonials = [
     {
       name: 'Carlos Eduardo',
-      job: 'Eletricista Residencial (MEI)',
-      text: 'Antes eu mandava orçamento pelo WhatsApp no bloco de notas. Depois que comecei a mandar a folha A4 bonita do TrampoCerto, meus clientes fecham quase na hora.',
+      job: 'Eletricista residencial',
+      text: 'Eu mandava orçamento pelo bloco de notas do celular. Desde que passei a mandar a folha A4 do TrampoCerto, o cliente responde bem mais rápido.',
       stars: 5,
     },
     {
       name: 'Mariana Souza',
-      job: 'Marcenaria & Instalações',
-      text: 'O termômetro do teto MEI me salvou de desenquadrar no final do ano passado. Super fácil de usar no celular na correria da oficina.',
+      job: 'Marcenaria e instalações',
+      text: 'O termômetro do teto me salvou de desenquadrar no fim do ano passado. E dá para mexer no celular na correria da oficina.',
       stars: 5,
     },
     {
       name: 'André Guimarães',
-      job: 'Pintor & Reformas',
-      text: 'A cobrança via Pix com recibo oficial impressiona muito o cliente. Nunca mais tive dor de cabeça para receber pagamento.',
+      job: 'Pintor e reformas',
+      text: 'Mandar a cobrança no Pix junto com o recibo resolveu a parte chata de ficar cobrando pagamento.',
       stars: 5,
     },
   ];
@@ -113,7 +109,7 @@ export default function ReferralBenefits({ referrerName }: ReferralBenefitsProps
               mb: 1.5,
             }}
           >
-            Recursos Desbloqueados no Pro
+            O que vem no Pro
           </Box>
           <Typography
             variant="h3"
@@ -125,10 +121,10 @@ export default function ReferralBenefits({ referrerName }: ReferralBenefitsProps
               mb: 1,
             }}
           >
-            Tudo o que você precisa para gerenciar seus trampos
+            Os seus trampos organizados em um lugar só
           </Typography>
           <Typography sx={{ color: '#43474E', fontSize: '1rem', maxWidth: 640, mx: 'auto' }}>
-            Chega de anotar serviços em cadernos perdidos ou ficar na dúvida sobre quanto você faturou no mês.
+            Sem caderno perdido e sem dúvida sobre quanto entrou no mês.
           </Typography>
         </Box>
 
@@ -228,7 +224,7 @@ export default function ReferralBenefits({ referrerName }: ReferralBenefitsProps
               Como funciona o convite de {referrerName}
             </Typography>
             <Typography sx={{ color: '#43474E', fontSize: '0.9375rem', maxWidth: 540, mx: 'auto' }}>
-              Nosso programa de indicação recompensa tanto quem convida quanto quem é convidado.
+              No programa de indicação, quem convida e quem é convidado ganham um mês.
             </Typography>
           </Box>
 
@@ -287,10 +283,10 @@ export default function ReferralBenefits({ referrerName }: ReferralBenefitsProps
                 mb: 1,
               }}
             >
-              Mais de 4.800 profissionais já recomendam
+              Quem já usa no dia a dia
             </Typography>
             <Typography sx={{ color: '#43474E', fontSize: '0.9375rem' }}>
-              Veja o que outros autônomos e MEIs dizem sobre o TrampoCerto.
+              O que outros autônomos contam sobre o TrampoCerto.
             </Typography>
           </Box>
 
@@ -357,10 +353,10 @@ export default function ReferralBenefits({ referrerName }: ReferralBenefitsProps
                 mb: 1.5,
               }}
             >
-              Comece agora mesmo com seus 30 dias grátis
+              Comece pelos seus 30 dias grátis
             </Typography>
             <Typography sx={{ fontSize: '1rem', color: '#BFDBFE', mb: 3.5, lineHeight: 1.5 }}>
-              Sem taxas escondidas, sem burocracia e com o selo de confiança do convite de {referrerName}.
+              O convite de {referrerName} libera o período sem cobrança e sem pedir cartão.
             </Typography>
             <AppButton
               variant="secondary"

@@ -10,9 +10,8 @@ import EventBusyIcon from '@mui/icons-material/EventBusy';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AppButton from '@/components/common/AppButton';
 import { formatNumero } from '@/lib/format';
+import { URL_PGMEI } from '@/lib/mei';
 import { DasCompetencia } from '@/types';
-
-const URL_PGMEI = 'https://www8.receita.fazenda.gov.br/SimplesNacional/Aplicacoes/ATSPO/pgmei.app/';
 
 interface DasMeiCardProps {
   das: DasCompetencia;
@@ -65,7 +64,7 @@ export default function DasMeiCard({ das, onCopiarPix }: DasMeiCardProps) {
         <Typography sx={{ fontSize: '0.8125rem', color: '#74777F', mb: 2 }}>
           {pago
             ? `Pagamento registrado em ${das.pagoEm}.`
-            : `Vencimento em ${das.vencimento} — mantenha o CNPJ regular.`}
+            : `Vence em ${das.vencimento}. Pagando em dia, o CNPJ segue regular.`}
         </Typography>
 
         <Box
@@ -108,7 +107,7 @@ export default function DasMeiCard({ das, onCopiarPix }: DasMeiCardProps) {
           onClick={() => window.open(URL_PGMEI, '_blank')}
           sx={{ fontWeight: 600 }}
         >
-          Baixar guia PDF (PGMEI)
+          Emitir guia no PGMEI
         </AppButton>
       </Box>
     </Box>

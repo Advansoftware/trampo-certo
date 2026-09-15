@@ -17,11 +17,11 @@ export default function OrcamentosPage() {
 
   const exportar = () => {
     if (orcamentos.length === 0) {
-      showToast('Nenhum orçamento disponível para exportação.', 'warning');
+      showToast('Não há orçamento para exportar.', 'warning');
       return;
     }
     exportarOrcamentosCsv(orcamentos);
-    showToast('Relatório CSV de orçamentos baixado com sucesso!');
+    showToast('Arquivo CSV com os orçamentos baixado.');
   };
 
   return (

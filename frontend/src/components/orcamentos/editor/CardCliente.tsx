@@ -63,7 +63,7 @@ export default function CardCliente({
     <Box sx={ESTILO_CARD}>
       <CardCabecalho
         icone={<PersonIcon sx={{ fontSize: 18 }} />}
-        titulo="1. Dados do Cliente"
+        titulo="1. Dados do cliente"
         acao={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {editando ? (

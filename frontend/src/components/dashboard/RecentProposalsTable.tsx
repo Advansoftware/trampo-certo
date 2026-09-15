@@ -60,10 +60,10 @@ export default function RecentProposalsTable({
       >
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 800, color: '#1A1B20', fontSize: '1.125rem', letterSpacing: '-0.01em' }}>
-            Orçamentos Recentes & Andamento
+            Orçamentos recentes
           </Typography>
           <Typography sx={{ fontSize: '0.8125rem', color: '#74777F', mt: 0.25 }}>
-            Acompanhe status, aprove serviços e envie propostas oficiais com 1 clique.
+            Em que pé está cada proposta, e o atalho para responder pelo WhatsApp.
           </Typography>
         </Box>
 
@@ -147,7 +147,7 @@ export default function RecentProposalsTable({
             '&:hover': { textDecoration: 'underline', color: '#1D4ED8' },
           }}
         >
-          Exportar histórico para Contador (.CSV)
+          Exportar histórico em CSV para o contador
         </Typography>
       </Box>
 

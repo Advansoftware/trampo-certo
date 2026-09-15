@@ -26,11 +26,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const name = formatReferrerName(slug);
 
   return {
-    title: `Convite de ${name} • Ganhe 30 Dias Grátis no TrampoCerto Pro`,
-    description: `${name} te convidou para profissionalizar seus orçamentos e gerenciar seus trampos como MEI. Ative 30 dias grátis sem burocracia.`,
+    title: `Convite de ${name}: 30 dias grátis no TrampoCerto Pro`,
+    description: `${name} te convidou para usar o TrampoCerto. São 30 dias grátis para mandar orçamento em PDF pelo WhatsApp e acompanhar o teto do MEI.`,
     openGraph: {
-      title: `${name} te deu 30 dias grátis no TrampoCerto Pro!`,
-      description: 'Emita orçamentos em PDF com cara de grande empresa e controle seu limite MEI.',
+      title: `${name} te deu 30 dias grátis no TrampoCerto Pro`,
+      description: 'Orçamento em PDF pelo WhatsApp e controle do teto do MEI.',
     },
   };
 }
@@ -41,16 +41,10 @@ export default async function ReferralPage({ params }: PageProps) {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
-      {/* 1. Dedicated Referral Navbar */}
       <ReferralNavbar />
-
-      {/* 2. Hero with Personalized Inviter Card and Quick Signup */}
       <ReferralHero referrerName={referrerName} slug={slug} />
-
-      {/* 3. Unlocked Pro Features, Mechanics and Real Testimonials */}
       <ReferralBenefits referrerName={referrerName} />
 
-      {/* 4. Minimal Public Footer */}
       <Box
         component="footer"
         sx={{
@@ -63,11 +57,8 @@ export default async function ReferralPage({ params }: PageProps) {
           color: '#74777F',
         }}
       >
-        <Typography sx={{ fontSize: '0.8125rem', color: '#74777F', mb: 0.5 }}>
-          © 2026 TrampoCerto Soluções Digitais MEI • Todos os direitos reservados.
-        </Typography>
-        <Typography sx={{ fontSize: '0.75rem', color: '#A0A3AD' }}>
-          Plataforma desenvolvida segundo as diretrizes do Material You (M3) e foco em autônomos brasileiros.
+        <Typography sx={{ fontSize: '0.8125rem', color: '#74777F' }}>
+          © {new Date().getFullYear()} TrampoCerto. Todos os direitos reservados.
         </Typography>
       </Box>
     </Box>

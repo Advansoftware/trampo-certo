@@ -29,7 +29,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { metrics } = useMeiMetrics(undefined, autenticado);
 
   const [menuMobileAberto, setMenuMobileAberto] = useState(false);
-  const [busca, setBusca] = useState('');
 
   const sair = async () => {
     try {
@@ -90,12 +89,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </Box>
 
         <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-          <Topbar
-            perfil={perfil}
-            busca={busca}
-            onBuscaChange={setBusca}
-            onAbrirMenu={() => setMenuMobileAberto(true)}
-          />
+          <Topbar perfil={perfil} onAbrirMenu={() => setMenuMobileAberto(true)} />
 
           <Box component="main" sx={{ p: { xs: 2, sm: 3, md: 4 }, flexGrow: 1 }}>
             {children}

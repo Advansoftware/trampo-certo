@@ -8,20 +8,31 @@ import StarsIcon from '@mui/icons-material/Stars';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import RedeemIcon from '@mui/icons-material/Redeem';
 import AppButton from '@/components/common/AppButton';
+import { usePerfilMei } from '@/components/providers/PerfilProvider';
+import { slugificar } from '@/lib/format';
 
-export default function ReferralBanner() {
-  const referralLink = 'trampocerto.com.br/indicar/rodrigo-silva-78';
+const DOMINIO = 'trampocerto.com.br';
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(`https://${referralLink}`);
-    alert('Link de indicação copiado!');
+interface ReferralBannerProps {
+  /** Avisa a página para exibir o toast; sem isso a cópia é silenciosa. */
+  onCopiado?: (mensagem: string) => void;
+}
+
+export default function ReferralBanner({ onCopiado }: ReferralBannerProps) {
+  const perfil = usePerfilMei();
+  const slug = slugificar(perfil?.name || '') || 'convite';
+  const linkIndicacao = `${DOMINIO}/indicar/${slug}`;
+
+  const copiarLink = async () => {
+    await navigator.clipboard.writeText(`https://${linkIndicacao}`);
+    onCopiado?.('Link de indicação copiado.');
   };
 
-  const handleShareWhatsApp = () => {
-    const text = encodeURIComponent(
-      `Opa! Estou usando o TrampoCerto para mandar orçamentos e controlar o limite anual do MEI. Dá uma olhada: https://${referralLink}`,
+  const compartilharWhatsApp = () => {
+    const texto = encodeURIComponent(
+      `Opa! Estou usando o TrampoCerto para mandar orçamentos e controlar o limite anual do MEI. Dá uma olhada: https://${linkIndicacao}`,
     );
-    window.open(`https://wa.me/?text=${text}`, '_blank');
+    window.open(`https://wa.me/?text=${texto}`, '_blank');
   };
 
   return (
@@ -38,7 +49,7 @@ export default function ReferralBanner() {
         boxShadow: '0 4px 16px rgba(15, 23, 42, 0.12)',
       }}
     >
-      {/* Watermark Illustration: idêntica ao Stitch com pr-10 (40px) e alinhada à direita com margem */}
+      {/* Marca d'água decorativa */}
       <Box
         sx={{
           position: 'absolute',
@@ -59,7 +70,6 @@ export default function ReferralBanner() {
       </Box>
 
       <Box sx={{ position: 'relative', zIndex: 10, maxWidth: 672, display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* Badge */}
         <Box
           sx={{
             display: 'inline-flex',
@@ -78,10 +88,9 @@ export default function ReferralBanner() {
           }}
         >
           <StarsIcon sx={{ fontSize: 16 }} />
-          Programa Parceiro TrampoCerto
+          Programa parceiro
         </Box>
 
-        {/* Title & Description */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
           <Typography
             component="h3"
@@ -93,14 +102,13 @@ export default function ReferralBanner() {
               letterSpacing: '-0.01em',
             }}
           >
-            Seus clientes elogiam seus orçamentos e recibos?
+            Indique o TrampoCerto e ganhe um mês de Pro
           </Typography>
           <Typography sx={{ fontSize: '0.875rem', color: '#CBD5E1', lineHeight: 1.55 }}>
-            Indique o TrampoCerto para outros profissionais autônomos ou amigos MEI. A cada novo colega cadastrado, você ganha <strong style={{ color: '#FFFFFF' }}>1 mês grátis de emissor ilimitado e assessoria de teto MEI</strong>.
+            A cada colega autônomo que criar a conta pelo seu link, você ganha um mês grátis do plano Pro.
           </Typography>
         </Box>
 
-        {/* Input & WhatsApp Action */}
         <Box
           sx={{
             display: 'flex',
@@ -110,7 +118,6 @@ export default function ReferralBanner() {
             pt: 0.5,
           }}
         >
-          {/* Link pill */}
           <Box
             sx={{
               flex: 1,
@@ -127,13 +134,16 @@ export default function ReferralBanner() {
               fontSize: '13px',
             }}
           >
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {referralLink}
-            </span>
+            <Box
+              component="span"
+              sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+            >
+              {linkIndicacao}
+            </Box>
             <IconButton
-              onClick={handleCopy}
+              onClick={() => void copiarLink()}
               size="small"
-              title="Copiar Link"
+              title="Copiar link"
               sx={{
                 color: '#FFFFFF',
                 ml: 1,
@@ -146,15 +156,11 @@ export default function ReferralBanner() {
             </IconButton>
           </Box>
 
-          {/* WhatsApp Button: bg-secondary (#2563EB), hover:bg-primary (#1E3A8A) com border e shadow fiéis */}
           <AppButton
             variant="secondary"
             size="medium"
-            onClick={handleShareWhatsApp}
-            sx={{
-              whiteSpace: 'nowrap',
-              px: 3,
-            }}
+            onClick={compartilharWhatsApp}
+            sx={{ whiteSpace: 'nowrap', px: 3 }}
           >
             Compartilhar no WhatsApp
           </AppButton>

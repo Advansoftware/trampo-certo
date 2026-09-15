@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import VerifiedUserOutlinedIcon from '@mui/icons-material/VerifiedUserOutlined';
 import Logo from '@/components/Logo';
 
@@ -49,7 +48,7 @@ export default function LoginHeader() {
             }}
           >
             <VerifiedUserOutlinedIcon sx={{ fontSize: 18, color: '#74777F' }} />
-            <span>Ambiente Seguro MEI</span>
+            <span>Ambiente seguro</span>
           </Box>
         </Box>
       </Box>

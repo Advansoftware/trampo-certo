@@ -54,7 +54,7 @@ export default function ReferralNavbar() {
           }}
         >
           <CardGiftcardIcon sx={{ fontSize: 14 }} />
-          Convite Exclusivo MEI
+          Convite de um colega
         </Box>
       </Box>
 
@@ -74,7 +74,7 @@ export default function ReferralNavbar() {
           size="small"
           onClick={() => router.push('/login')}
         >
-          Entrar na Conta
+          Entrar
         </AppButton>
       </Box>
     </Box>

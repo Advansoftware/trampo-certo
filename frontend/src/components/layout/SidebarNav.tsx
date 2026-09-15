@@ -106,10 +106,9 @@ export default function SidebarNav({ metrics, onNavigate, onLogout }: SidebarNav
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, pt: 2 }}>
         <TetoMeiCard metrics={metrics} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', px: 0.5 }}>
-          <Typography sx={{ fontSize: '0.6875rem', color: '#74777F' }}>© 2026 TrampoCerto</Typography>
-          <Typography sx={{ fontSize: '0.6875rem', color: '#1E3A8A', fontWeight: 700 }}>v2.4</Typography>
-        </Box>
+        <Typography sx={{ fontSize: '0.6875rem', color: '#74777F', px: 0.5 }}>
+          © {new Date().getFullYear()} TrampoCerto
+        </Typography>
 
         <Button
           onClick={onLogout}

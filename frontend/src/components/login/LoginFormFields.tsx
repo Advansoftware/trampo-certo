@@ -3,17 +3,17 @@
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import CircularProgress from '@mui/material/CircularProgress';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
+import LoginIcon from '@mui/icons-material/Login';
+import CampoLogin from './CampoLogin';
 
 interface LoginFormFieldsProps {
   identifier: string;
@@ -27,6 +27,7 @@ interface LoginFormFieldsProps {
   onForgotPassword?: () => void;
 }
 
+/** Campos de e-mail e senha do acesso por formulário. */
 export default function LoginFormFields({
   identifier,
   setIdentifier,
@@ -38,115 +39,117 @@ export default function LoginFormFields({
   onSubmit,
   onForgotPassword,
 }: LoginFormFieldsProps) {
-  const [showPassword, setShowPassword] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   return (
-    <Box component="form" onSubmit={onSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Box>
-        <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.primary', mb: 0.75, display: 'block' }}>
-          CNPJ ou E-mail
-        </Typography>
-        <TextField
-          fullWidth
-          size="small"
-          placeholder="ex: 45.123.789/0001-90 ou seu@email.com"
-          value={identifier}
-          onChange={(e) => setIdentifier(e.target.value)}
-          required
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <BadgeOutlinedIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-      </Box>
+    <Box
+      component="form"
+      onSubmit={onSubmit}
+      sx={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}
+    >
+      <CampoLogin
+        id="identifier"
+        label="E-mail, CPF ou CNPJ"
+        valor={identifier}
+        onChange={setIdentifier}
+        placeholder="00.000.000/0001-00 ou seu@email.com"
+        icone={<BadgeOutlinedIcon sx={{ color: '#74777F', fontSize: 20 }} />}
+      />
 
-      <Box>
-        <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.primary', mb: 0.75, display: 'block' }}>
-          Sua senha cadastrada
-        </Typography>
-        <TextField
-          fullWidth
-          size="small"
-          type={showPassword ? 'text' : 'password'}
-          placeholder="Digite sua senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          slotProps={{
-            input: {
-              startAdornment: (
-                <InputAdornment position="start">
-                  <LockOutlinedIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
-                </InputAdornment>
-              ),
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={() => setShowPassword(!showPassword)}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
-      </Box>
+      <CampoLogin
+        id="password"
+        label="Senha"
+        type={mostrarSenha ? 'text' : 'password'}
+        valor={password}
+        onChange={setPassword}
+        placeholder="Sua senha"
+        icone={<LockOutlinedIcon sx={{ color: '#74777F', fontSize: 20 }} />}
+        acessorioLabel={
+          onForgotPassword && (
+            <Typography
+              component="button"
+              type="button"
+              onClick={onForgotPassword}
+              sx={{
+                border: 'none',
+                bgcolor: 'transparent',
+                cursor: 'pointer',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                color: '#002045',
+                p: 0,
+                '&:hover': { textDecoration: 'underline' },
+              }}
+            >
+              Esqueceu a senha?
+            </Typography>
+          )
+        }
+        acessorioFinal={
+          <IconButton
+            onClick={() => setMostrarSenha(!mostrarSenha)}
+            edge="end"
+            size="small"
+            aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+            sx={{ color: '#74777F' }}
+          >
+            {mostrarSenha ? (
+              <VisibilityOffOutlinedIcon fontSize="small" />
+            ) : (
+              <VisibilityOutlinedIcon fontSize="small" />
+            )}
+          </IconButton>
+        }
+      />
 
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap' }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pt: 0.5 }}>
         <FormControlLabel
           control={
             <Checkbox
-              size="small"
               checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              sx={{ color: 'primary.main', '&.Mui-checked': { color: 'primary.main' } }}
+              onChange={(evento) => setRememberMe(evento.target.checked)}
+              size="small"
+              sx={{ color: '#002045', '&.Mui-checked': { color: '#002045' } }}
             />
           }
           label={
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-              Lembrar de mim
+            <Typography sx={{ fontSize: '0.8125rem', color: '#43474E' }}>
+              Lembrar deste aparelho por 30 dias
             </Typography>
           }
         />
-        <Typography
-          variant="caption"
-          onClick={onForgotPassword}
-          sx={{
-            color: 'secondary.main',
-            fontWeight: 700,
-            cursor: 'pointer',
-            '&:hover': { textDecoration: 'underline' },
-          }}
-        >
-          Esqueci a senha
-        </Typography>
       </Box>
 
       <Button
         type="submit"
         fullWidth
-        variant="contained"
         disabled={loading}
+        variant="contained"
         sx={{
-          py: 1.4,
-          fontSize: '0.95rem',
-          fontWeight: 700,
-          borderRadius: 9999,
           mt: 1,
-          bgcolor: 'primary.main',
-          boxShadow: '0px 4px 14px rgba(0, 32, 69, 0.2)',
-          '&:hover': { bgcolor: 'primary.light' },
+          height: 54,
+          borderRadius: 9999,
+          bgcolor: '#002045',
+          color: '#FFFFFF',
+          fontSize: '1rem',
+          fontWeight: 700,
+          textTransform: 'none',
+          boxShadow: '0 4px 14px rgba(0, 32, 69, 0.25)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 1,
+          '&:hover': { bgcolor: '#1A365D' },
         }}
       >
-        {loading ? <CircularProgress size={24} color="inherit" /> : 'Entrar na minha conta'}
+        {loading ? (
+          <CircularProgress size={24} sx={{ color: '#FFFFFF' }} />
+        ) : (
+          <>
+            <span>Entrar na minha conta</span>
+            <LoginIcon sx={{ fontSize: 20 }} />
+          </>
+        )}
       </Button>
     </Box>
   );

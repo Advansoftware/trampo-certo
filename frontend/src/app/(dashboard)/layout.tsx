@@ -49,6 +49,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const sidebar = (
     <SidebarNav
       metrics={metrics}
+      admin={perfil?.admin === true}
       onNavigate={() => setMenuMobileAberto(false)}
       onLogout={() => void sair()}
     />

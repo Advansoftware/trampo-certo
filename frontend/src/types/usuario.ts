@@ -1,3 +1,5 @@
+import { Plano, StatusUsuario } from './plano';
+
 export interface PerfilMei {
   id: string;
   name: string;
@@ -9,4 +11,8 @@ export interface PerfilMei {
   chavePix: string;
   avatarInitials: string;
   image: string | null;
+  plano: Plano;
+  status: StatusUsuario;
+  /** Conta definida no .env; só ela enxerga a área administrativa. */
+  admin: boolean;
 }

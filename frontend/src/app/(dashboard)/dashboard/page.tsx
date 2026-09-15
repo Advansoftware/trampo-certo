@@ -7,11 +7,13 @@ import MeiThermometer from '@/components/dashboard/MeiThermometer';
 import MonthlyMetricsGrid from '@/components/dashboard/MonthlyMetricsGrid';
 import RecentProposalsTable from '@/components/dashboard/RecentProposalsTable';
 import ReferralBanner from '@/components/dashboard/ReferralBanner';
+import CotaPlanoCard from '@/components/planos/CotaPlanoCard';
 import EstadoCarregamento from '@/components/common/EstadoCarregamento';
 import Toast from '@/components/common/Toast';
 import { usePerfilMei } from '@/components/providers/PerfilProvider';
 import { useDestaquesMensais, useMeiMetrics } from '@/hooks/useMei';
 import { useOrcamentos } from '@/hooks/useOrcamentos';
+import { usePlano } from '@/hooks/usePlano';
 import { useToast } from '@/hooks/useToast';
 import { primeiroNome } from '@/lib/format';
 
@@ -20,6 +22,7 @@ export default function DashboardPage() {
   const metricas = useMeiMetrics();
   const destaques = useDestaquesMensais();
   const orcamentos = useOrcamentos();
+  const plano = usePlano();
   const { toast, showToast, showError, hideToast } = useToast();
 
   const copiarChavePix = async (chave: string) => {
@@ -34,6 +37,8 @@ export default function DashboardPage() {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 2.5, sm: 3.5 } }}>
       <DashboardHeader userName={primeiroNome(perfil?.name || '')} />
+
+      <CotaPlanoCard resumo={plano.resumo} />
 
       <EstadoCarregamento
         loading={metricas.loading}

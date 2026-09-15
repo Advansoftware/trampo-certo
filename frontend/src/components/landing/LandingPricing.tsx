@@ -8,7 +8,7 @@ import SecaoCabecalho from './SecaoCabecalho';
 import CartaoPlano from './CartaoPlano';
 
 const itensGratuito = [
-  'Até 10 orçamentos por mês',
+  'Até 10 orçamentos e 10 recibos por mês',
   'PDF pronto para mandar no WhatsApp',
   'Termômetro do teto do ano',
   'Aviso de vencimento da DAS',
@@ -16,8 +16,7 @@ const itensGratuito = [
 
 const itensPro = [
   'Orçamentos e recibos sem limite',
-  'Sua logo e seus contatos na proposta',
-  'Chave Pix Copia e Cola dentro da proposta',
+  'Seus dados e sua chave Pix na proposta',
   'Histórico do ano para a declaração DASN',
   'Suporte por WhatsApp',
 ];

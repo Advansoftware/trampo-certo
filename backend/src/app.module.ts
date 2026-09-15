@@ -7,6 +7,8 @@ import { ClientesModule } from './clientes/clientes.module';
 import { OrcamentosModule } from './orcamentos/orcamentos.module';
 import { RecibosModule } from './recibos/recibos.module';
 import { MeiModule } from './mei/mei.module';
+import { PlanosModule } from './planos/planos.module';
+import { AdminModule } from './admin/admin.module';
 import { HealthModule } from './health/health.module';
 
 @Module({
@@ -19,6 +21,8 @@ import { HealthModule } from './health/health.module';
     OrcamentosModule,
     RecibosModule,
     MeiModule,
+    PlanosModule,
+    AdminModule,
     HealthModule,
   ],
 })

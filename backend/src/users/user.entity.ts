@@ -1,3 +1,5 @@
+import { Plano, StatusUsuario } from '../planos/plano.entity';
+
 /** Perfil MEI exibido no app (cabeçalho, recibos, proposta A4). */
 export interface PerfilMei {
   id: string;
@@ -10,4 +12,8 @@ export interface PerfilMei {
   chavePix: string;
   avatarInitials: string;
   image: string | null;
+  plano: Plano;
+  status: StatusUsuario;
+  /** Conta definida no .env; só ela enxerga a área administrativa. */
+  admin: boolean;
 }

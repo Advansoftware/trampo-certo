@@ -17,6 +17,8 @@ export const SCHEMA_STATEMENTS: string[] = [
     phone VARCHAR(30),
     cidade VARCHAR(120),
     chavePix VARCHAR(255),
+    plano ENUM('gratuito','pro') NOT NULL DEFAULT 'gratuito',
+    status ENUM('ativo','bloqueado') NOT NULL DEFAULT 'ativo',
     createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
@@ -170,6 +172,16 @@ export const COLUMN_PATCHES: Array<{
   { table: 'user', column: 'ocupacao', ddl: 'ALTER TABLE user ADD COLUMN ocupacao VARCHAR(255) NULL' },
   { table: 'user', column: 'cidade', ddl: 'ALTER TABLE user ADD COLUMN cidade VARCHAR(120) NULL' },
   { table: 'user', column: 'chavePix', ddl: 'ALTER TABLE user ADD COLUMN chavePix VARCHAR(255) NULL' },
+  {
+    table: 'user',
+    column: 'plano',
+    ddl: "ALTER TABLE user ADD COLUMN plano ENUM('gratuito','pro') NOT NULL DEFAULT 'gratuito'",
+  },
+  {
+    table: 'user',
+    column: 'status',
+    ddl: "ALTER TABLE user ADD COLUMN status ENUM('ativo','bloqueado') NOT NULL DEFAULT 'ativo'",
+  },
   { table: 'orcamentos', column: 'clienteId', ddl: 'ALTER TABLE orcamentos ADD COLUMN clienteId VARCHAR(36) NULL' },
   { table: 'orcamentos', column: 'desconto', ddl: 'ALTER TABLE orcamentos ADD COLUMN desconto DECIMAL(12,2) NOT NULL DEFAULT 0' },
   { table: 'orcamentos', column: 'chavePix', ddl: 'ALTER TABLE orcamentos ADD COLUMN chavePix VARCHAR(255) NULL' },

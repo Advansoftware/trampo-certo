@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService, SqlParam } from '../database/database.service';
+import { Plano, StatusUsuario } from '../planos/plano.entity';
+import { ehAdmin } from '../common/utils/admin.util';
 import { PerfilMei } from './user.entity';
 
 interface UserRow {
@@ -12,6 +14,8 @@ interface UserRow {
   cidade: string | null;
   chavePix: string | null;
   image: string | null;
+  plano: Plano | null;
+  status: StatusUsuario | null;
 }
 
 export interface PerfilUpdates {
@@ -29,7 +33,7 @@ export class UsersRepository {
 
   async findById(id: string): Promise<PerfilMei | null> {
     const row = await this.db.queryOne<UserRow>(
-      'SELECT id, name, email, ocupacao, cnpj, phone, cidade, chavePix, image FROM user WHERE id = ?',
+      'SELECT id, name, email, ocupacao, cnpj, phone, cidade, chavePix, image, plano, status FROM user WHERE id = ?',
       [id],
     );
     return row ? toPerfil(row) : null;
@@ -67,5 +71,8 @@ function toPerfil(row: UserRow): PerfilMei {
     chavePix: row.chavePix || '',
     avatarInitials: iniciais(row.name),
     image: row.image,
+    plano: row.plano ?? 'gratuito',
+    status: row.status ?? 'ativo',
+    admin: ehAdmin(row.email),
   };
 }

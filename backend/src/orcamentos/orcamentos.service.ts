@@ -1,5 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { ClientesRepository } from '../clientes/clientes.repository';
+import { PlanosService } from '../planos/planos.service';
 import { Orcamento, OrcamentoStatus, STATUS_BLOQUEADOS } from './orcamento.entity';
 import { OrcamentoPayload, parseCreateOrcamento, parseStatus, parseUpdateOrcamento } from './dto/orcamento.dto';
 import { OrcamentosRepository } from './orcamentos.repository';
@@ -14,6 +15,7 @@ export class OrcamentosService {
   constructor(
     private readonly repository: OrcamentosRepository,
     private readonly clientesRepository: ClientesRepository,
+    private readonly planosService: PlanosService,
   ) {}
 
   findAll(userId: string): Promise<Orcamento[]> {
@@ -27,6 +29,8 @@ export class OrcamentosService {
   }
 
   async create(userId: string, body: Record<string, unknown>): Promise<Orcamento> {
+    await this.planosService.assertPodeCriar(userId, 'orcamentos');
+
     const payload = parseCreateOrcamento(body);
     payload.clienteId = await this.resolverCliente(userId, payload);
 

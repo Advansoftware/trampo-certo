@@ -4,3 +4,5 @@ export { orcamentosApi } from './orcamentos.api';
 export { recibosApi } from './recibos.api';
 export { meiApi } from './mei.api';
 export { usuariosApi } from './usuarios.api';
+export { planosApi } from './planos.api';
+export { adminApi } from './admin.api';

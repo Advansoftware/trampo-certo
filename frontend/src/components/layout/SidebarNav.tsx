@@ -13,18 +13,21 @@ import Button from '@mui/material/Button';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Logo from '@/components/Logo';
 import { MeiMetrics } from '@/types';
-import { NAV_ITEMS } from './navItems';
+import { NAV_ITEMS, NAV_ITEM_ADMIN } from './navItems';
 import TetoMeiCard from './TetoMeiCard';
 
 interface SidebarNavProps {
   metrics: MeiMetrics | null;
+  /** Acrescenta o item de administração ao menu. */
+  admin?: boolean;
   onNavigate?: () => void;
   onLogout: () => void;
 }
 
-export default function SidebarNav({ metrics, onNavigate, onLogout }: SidebarNavProps) {
+export default function SidebarNav({ metrics, admin = false, onNavigate, onLogout }: SidebarNavProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const itens = admin ? [...NAV_ITEMS, NAV_ITEM_ADMIN] : NAV_ITEMS;
 
   return (
     <Box
@@ -65,7 +68,7 @@ export default function SidebarNav({ metrics, onNavigate, onLogout }: SidebarNav
         </Box>
 
         <List sx={{ mt: 2, p: 0 }}>
-          {NAV_ITEMS.map((item) => {
+          {itens.map((item) => {
             const ativo = pathname === item.path || (item.path !== '/dashboard' && pathname.startsWith(item.path));
             const Icone = item.icon;
 

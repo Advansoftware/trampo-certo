@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { randomBytes } from 'crypto';
 import { ClientesRepository } from '../clientes/clientes.repository';
 import { OrcamentosRepository } from '../orcamentos/orcamentos.repository';
+import { PlanosService } from '../planos/planos.service';
 import { valorPorExtenso } from '../common/utils/extenso.util';
 import { Recibo } from './recibo.entity';
 import { parseCreateRecibo, ReciboPayload } from './dto/recibo.dto';
@@ -13,6 +14,7 @@ export class RecibosService {
     private readonly repository: RecibosRepository,
     private readonly clientesRepository: ClientesRepository,
     private readonly orcamentosRepository: OrcamentosRepository,
+    private readonly planosService: PlanosService,
   ) {}
 
   findAll(userId: string): Promise<Recibo[]> {
@@ -26,6 +28,8 @@ export class RecibosService {
   }
 
   async create(userId: string, body: Record<string, unknown>): Promise<Recibo> {
+    await this.planosService.assertPodeCriar(userId, 'recibos');
+
     const payload = parseCreateRecibo(body);
     const orcamento = await this.carregarOrcamento(userId, payload);
 

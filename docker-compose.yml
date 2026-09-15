@@ -23,11 +23,16 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
-      interval: 10s
+      # Lê a senha da env do próprio container ($$ escapa a interpolação do Compose):
+      # senha com caractere especial não quebra o comando, como aconteceria ao
+      # interpolar o valor direto na linha do healthcheck.
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
       timeout: 5s
-      retries: 12
-      start_period: 30s
+      retries: 20
+      # A primeira inicialização do MySQL 8.4 em VPS modesto passa de 30s;
+      # falhas dentro desta janela não marcam o container como unhealthy.
+      start_period: 90s
 
   api:
     build:
